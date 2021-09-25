@@ -8,10 +8,11 @@
           <div class="col-2" align="center">
             <q-btn
               rounded
-              class="cursor-pointer"
-              style="background-color:#FFC24C;"
-              label="+ Add new category"
+              class="cursor-pointer q-pa-xs"
+              style="background-color:#FFC24C;font-size:18px;"
+              label="+ Category"
               no-caps=""
+              @click="addBtn == 1"
             />
           </div>
         </div>
@@ -48,12 +49,11 @@
                 alt=""
               />
             </div>
-            <div class="col underLine cursor-pointer"><u>edit</u></div>
+            <div class="col underLine cursor-pointer"><u>Edit</u></div>
           </div>
         </div>
       </div>
       <!-- bg Drop  -->
-      <div></div>
     </div>
   </div>
 </template>
@@ -62,6 +62,8 @@
 export default {
   data() {
     return {
+      editBtn: 0,
+      addBtn: 0,
       data: [
         {
           orderid: 100,
@@ -95,7 +97,9 @@ export default {
     };
   },
   methods: {
-    deleteBtn() {}
+    deleteBtn() {},
+    editCategory() {},
+    addCategory() {}
   }
 };
 </script>
