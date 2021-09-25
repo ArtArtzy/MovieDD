@@ -1,9 +1,10 @@
 <template>
   <div style="max-width:1600px; margin:auto;" class="bgmain">
-    <div class="contentDiv " style="z-index:90">
-      <div class="text-h6 absolute-center" align="center">
-        ถ้าเนื้อคู่ยังไม่ว่าง งั้นขอเนื้อย่างก่อนก็ได้<br />
-        Oops...หน้านี้คิวแรกของการทำเลยนะ....ccc
+    <div class="contentDiv">
+      <div class="boxWhite shadow-4" style="z-index:1;">
+        <div>
+          <img src="" alt="" />
+        </div>
       </div>
     </div>
   </div>
@@ -50,9 +51,7 @@ export default {
 
 <style lang="scss" scoped>
 .boxWhite {
-  position: relative;
-  left: 500px;
-  width: calc(100vw - 300px);
+  width: 1200px;
   height: calc(100vh - 20px);
   background-color: rgba($color: #ffffff, $alpha: 0.5);
   border-radius: 30px;
@@ -65,5 +64,11 @@ export default {
   background-image: url("../../public/images/bg.jpg");
   background-size: cover;
   background-position: center;
+  padding: 10px;
+}
+.editBtn {
+  padding-top: 30px;
+  position: relative;
+  right: 0px;
 }
 </style>
