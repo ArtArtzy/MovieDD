@@ -2,8 +2,11 @@
 .contentDiv {
   width: calc(100% - 350px);
   position: relative;
-  top: -100vh;
-  left: 340px;
+  top: 0vh;
+  left: 0px;
   height: 100vh;
   overflow-y: auto;
+}
+.brx {
+  border: 10px solid red;
 }
