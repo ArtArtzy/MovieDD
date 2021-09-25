@@ -1,6 +1,11 @@
 <template>
-  <div class="bg-red">
-    <div class="boxWhite brx">1223<br />4567</div>
+  <div style="max-width:1600px; margin:auto;" class="bgmain">
+    <div class="contentDiv " style="z-index:90">
+      <div class="text-h6 absolute-center" align="center">
+        ถ้าเนื้อคู่ยังไม่ว่าง งั้นขอเนื้อย่างก่อนก็ได้<br />
+        Oops...หน้านี้คิวแรกของการทำเลยนะ....ccc
+      </div>
+    </div>
   </div>
 </template>
 
@@ -55,5 +60,10 @@ export default {
 }
 .brx {
   border: solid 1px red;
+}
+.bgmain {
+  background-image: url("../../public/images/bg.jpg");
+  background-size: cover;
+  background-position: center;
 }
 </style>
