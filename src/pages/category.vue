@@ -1,11 +1,59 @@
 <template>
   <div style="max-width:1600px; margin:auto;" class="bgmain">
     <div class="contentDiv">
-      <div class="boxWhite shadow-4" style="z-index:1;">
-        <div>
-          <img src="" alt="" />
+      <div class="boxWhite shadow-4">
+        <!-- เพิ่มหมวด -->
+        <div class="q-pt-lg row">
+          <div class="col-10"></div>
+          <div class="col-2" align="center">
+            <q-btn
+              rounded
+              class="cursor-pointer"
+              style="background-color:#FFC24C;"
+              label="+ Add new category"
+              no-caps=""
+            />
+          </div>
+        </div>
+        <div class="inBox q-pt-md">
+          <div class="row q-pa-sm" style="font-size:20px;" align="center">
+            <div class="col">Order id</div>
+            <div class="col">Category</div>
+            <div class="col">Movie</div>
+            <div class="col">Series</div>
+            <div class="col">Status</div>
+            <div class="col">Delete</div>
+            <div class="col">Edit</div>
+          </div>
+          <hr />
+          <div
+            class="row q-pa-sm"
+            v-for="(item, index) in data"
+            :key="index"
+            :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+            align="center"
+          >
+            <div class="col">{{ item.orderid }}</div>
+            <div class="col">{{ item.catname }}</div>
+            <div class="col">{{ item.movie }}</div>
+            <div class="col">{{ item.series }}</div>
+            <div class="col">
+              <div class="onlineBtn" v-show="item.status">online</div>
+              <div class="offlineBtn" v-show="!item.status">offline</div>
+            </div>
+            <div class="col">
+              <img
+                class="cursor-pointer"
+                src="../../public/images/delBin.svg"
+                alt=""
+              />
+            </div>
+            <div class="col underLine cursor-pointer"><u>edit</u></div>
+          </div>
         </div>
       </div>
+      <!-- bg Drop  -->
+      <div></div>
     </div>
   </div>
 </template>
@@ -45,6 +93,9 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    deleteBtn() {}
   }
 };
 </script>
@@ -66,9 +117,20 @@ export default {
   background-position: center;
   padding: 10px;
 }
-.editBtn {
-  padding-top: 30px;
-  position: relative;
-  right: 0px;
+.onlineBtn {
+  background-color: #00a642;
+  color: white;
+  border-radius: 10px;
+  width: 90px;
+}
+.offlineBtn {
+  background-color: #e83939;
+  color: white;
+  border-radius: 10px;
+  width: 90px;
+}
+.inBox {
+  width: 95%;
+  margin: auto;
 }
 </style>
