@@ -2,8 +2,8 @@
   <q-layout view="lHh Lpr lFf">
     <div class="" style="background-color:#E0EFFF">
       <div
-        style="max-width:1600px; margin:auto; width:100%"
-        class="fullscreen shadow-10"
+        style="max-width:350px; width:100%;margin-left:calc()"
+        class="fullscreen"
       >
         <div class="leftdrawer shadow-4 ">
           <!-- //****Menu */ -->
