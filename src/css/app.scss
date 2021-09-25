@@ -19,5 +19,24 @@ body {
   overflow-y: auto;
 }
 .brx {
-  border: 10px solid red;
+  border: 1px solid red;
+}
+.boxWhite {
+  width: calc(100% - 30px);
+  height: calc(100vh - 20px);
+  background-color: rgba($color: #ffffff, $alpha: 0.5);
+  border-radius: 30px;
+  border: 2px solid white;
+  margin-top: 10px;
+}
+.contentDiv {
+  width: calc(100% - 270px);
+  position: relative;
+  top: -100vh;
+  left: 300px;
+  height: 100vh;
+  overflow-y: auto;
+  background-image: url("../../public/images/bg.jpg");
+  background-size: cover;
+  background-position: center;
 }

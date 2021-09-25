@@ -1,13 +1,14 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <div class="" style="background-color:#E0EFFF">
+    <div class="fullscreen bgmain ">
       <div
-        style="max-width:350px; width:100%;margin-left:calc()"
-        class="fullscreen"
+        style="max-width:1600px; margin:auto;"
+        class=" bgmainpage shadow-10 "
       >
-        <div class="leftdrawer shadow-4 ">
-          <!-- //****Menu */ -->
-          <div class="" style="height:calc(100vh - 50px);">
+        <div style="height:10px"></div>
+        <div class="leftdrawer ">
+          <div style="height:calc(100vh - 50px); position:absolute;">
+            <!-- Header -->
             <div class="row fontEdit items-center">
               <img
                 src="../../public/images/logo.png"
@@ -19,6 +20,7 @@
                 <div>{{ userType }}</div>
               </div>
             </div>
+            <!-- Category -->
             <div v-show="accessMenu.category == 1">
               <div class="setMenu" v-show="menu == 1">
                 <img src="../../public/images/menu1red.png" alt="" />
@@ -31,6 +33,7 @@
                 />
               </div>
             </div>
+            <!-- Movie -->
             <div v-show="accessMenu.movie == 1">
               <div class="setMenu" v-show="menu == 2">
                 <img src="../../public/images/menu2red.png" alt="" />
@@ -43,6 +46,7 @@
                 />
               </div>
             </div>
+            <!-- Series -->
             <div v-show="accessMenu.series == 1">
               <div class="setMenu" v-show="menu == 3">
                 <img src="../../public/images/menu3red.png" alt="" />
@@ -55,6 +59,7 @@
                 />
               </div>
             </div>
+            <!-- Ads -->
             <div v-show="accessMenu.ads == 1">
               <div class="setMenu" v-show="menu == 4">
                 <img src="../../public/images/menu4red.png" alt="" />
@@ -67,6 +72,7 @@
                 />
               </div>
             </div>
+            <!-- Analytic -->
             <div v-show="accessMenu.stat == 1">
               <div class="setMenu" v-show="menu == 5">
                 <img src="../../public/images/menu5red.png" alt="" />
@@ -79,6 +85,7 @@
                 />
               </div>
             </div>
+            <!-- user -->
             <div v-show="accessMenu.user == 1">
               <div class="setMenu" v-show="menu == 6">
                 <img src="../../public/images/menu6red.png" alt="" />
@@ -91,6 +98,7 @@
                 />
               </div>
             </div>
+            <!-- admin -->
             <div v-show="accessMenu.usersystem == 1">
               <div class="setMenu" v-show="menu == 7">
                 <img src="../../public/images/menu7red.png" alt="" />
@@ -112,17 +120,14 @@
               />
             </div>
           </div>
-          <!-- End of menu -->
         </div>
+        <q-page-container>
+          <router-view />
+        </q-page-container>
       </div>
-
-      <q-page-container>
-        <router-view />
-      </q-page-container>
     </div>
   </q-layout>
 </template>
-
 <script>
 export default {
   data() {
@@ -164,21 +169,17 @@ export default {
 </script>
 <style lang="scss" scoped>
 .leftdrawer {
-  margin: 10px;
+  padding-top: 10px;
   margin-left: 30px;
-  width: 300px;
+  width: 270px;
   height: calc(100vh - 20px);
   background-color: rgba($color: #ffffff, $alpha: 0.5);
   border-radius: 30px;
   border: 2px solid white;
 }
-.bgmain {
-  background-image: url("../../public/images/bg.jpg");
-  background-size: cover;
-  background-position: center;
-}
 .bgmainpage {
-  background-color: rgba(12, 6, 44, 0.85);
+  background-color: #c2ddfd;
+  width: 100%;
 }
 .fontEdit {
   padding-bottom: 20px;
@@ -191,7 +192,7 @@ export default {
 }
 .exitBtn {
   position: absolute;
-  left: 12px;
-  bottom: 50px;
+
+  bottom: 0px;
 }
 </style>

@@ -2,7 +2,7 @@
   <div style="max-width:1600px; width:100%; margin:auto;" class="bgmain">
     <div class="contentDiv">
       <div class="boxWhite ">
-        Movie
+        Ads
       </div>
     </div>
   </div>
