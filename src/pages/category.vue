@@ -20,11 +20,11 @@
           <div class="row q-pa-sm" style="font-size:20px;" align="center">
             <div class="col-2 q-px-md" align="left">Order id</div>
             <div class="col" align="left">Category</div>
-            <div class="col-1">Movie</div>
-            <div class="col-1">Series</div>
-            <div class="col-1">Status</div>
-            <div class="col-1">Delete</div>
-            <div class="col-1">Edit</div>
+            <div class="col">Movie</div>
+            <div class="col">Series</div>
+            <div class="col">Status</div>
+            <div class="col">Delete</div>
+            <div class="col">Edit</div>
           </div>
           <hr />
           <div
@@ -34,11 +34,11 @@
             :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
             align="center"
           >
-            <div class="col-1 q-px-md" align="left">{{ item.orderid }}</div>
+            <div class="col-2 q-px-md" align="left">{{ item.orderid }}</div>
             <div class="col" align="left">{{ item.catname }}</div>
-            <div class="col-1">{{ item.movie }}</div>
-            <div class="col-1">{{ item.series }}</div>
-            <div class="col-1">
+            <div class="col">{{ item.movie }}</div>
+            <div class="col">{{ item.series }}</div>
+            <div class="col">
               <div class="onlineBtn" v-show="item.status">online</div>
               <div class="offlineBtn" v-show="!item.status">offline</div>
             </div>
