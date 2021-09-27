@@ -4,19 +4,19 @@
       <div class="q-pt-md">
         <img src="../../public/images/logo.png" alt="" />
       </div>
-      <div class="inputText q-mt-md">
+      <div class="inputText q-mt-sm">
         <q-input
-          filled
+          outlined
           v-model="userName"
-          label="ชื่อผู้ใช้งาน"
+          label="Username"
           ref="usernameBlock"
         />
       </div>
       <div class="inputText q-ma-md">
         <q-input
           v-model="password"
-          filled
-          label="รหัสผ่าน"
+          outlined
+          label="Password"
           :type="isPwd ? 'password' : 'text'"
           @keyup.enter="loginBtn"
         >
@@ -29,10 +29,11 @@
           </template>
         </q-input>
       </div>
-      <div class="q-pa-md">
+      <div class="q-px-md q-pt-sm">
         <q-btn
-          style="background: #FFc24c;width:120px;height45px;"
-          label="เข้าสู่ระบบ"
+          style="background: #FFc24c;width:120px;height:45px;"
+          label="Sign in"
+          no-caps=""
           @click="loginBtn"
         />
       </div>
@@ -51,7 +52,7 @@ export default {
   },
   methods: {
     loginBtn() {
-      this.$router.push("category");
+      this.$router.push("welcome");
     }
   },
   mounted() {
@@ -76,7 +77,5 @@ export default {
 .inputText {
   width: 330px;
   height: 55px;
-  border: solid 1px #515151;
-  border-radius: 5px;
 }
 </style>
