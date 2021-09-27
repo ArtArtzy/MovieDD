@@ -3,6 +3,7 @@ const routes = [
     path: "/category",
     component: () => import("layouts/MainLayout.vue"),
     children: [
+      { path: "/welcome", component: () => import("pages/welcome.vue") },
       { path: "", component: () => import("pages/category.vue") },
       { path: "/movie", component: () => import("pages/movie.vue") },
       { path: "/series", component: () => import("pages/series.vue") },
