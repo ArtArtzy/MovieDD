@@ -17,7 +17,6 @@
               />
               <div class="q-pl-sm">
                 <div>{{ userName }}</div>
-                <div>{{ userType }}</div>
               </div>
             </div>
             <!-- Category -->
@@ -134,7 +133,6 @@ export default {
     return {
       menu: 1,
       userName: "once",
-      userType: "ผู้ดูแลระบบ",
       menuList: [
         "/",
         "/category",
@@ -163,7 +161,29 @@ export default {
     menuBtn(id) {
       this.menu = id;
       this.$router.push(this.menuList[id]);
+    },
+    setMenu() {
+      if (this.$route.name == "welcome") {
+        this.menu = 0;
+      } else if (this.$route.name == "category") {
+        this.menu = 1;
+      } else if (this.$route.name == "movie") {
+        this.menu = 2;
+      } else if (this.$route.name == "series") {
+        this.menu = 3;
+      } else if (this.$route.name == "ads") {
+        this.menu = 4;
+      } else if (this.$route.name == "stat") {
+        this.menu = 5;
+      } else if ((this.$router.name = "user")) {
+        this.menu = 6;
+      } else if ((this.$router.name = "userssytem")) {
+        this.menu = 7;
+      }
     }
+  },
+  mounted() {
+    this.setMenu();
   }
 };
 </script>
