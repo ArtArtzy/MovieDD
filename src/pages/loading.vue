@@ -68,6 +68,8 @@ export default {
             icon: "far fa-times-circle"
           });
         } else {
+          let token = res.data[0].token;
+          this.$q.localStorage.set("token", token);
           this.$router.push("welcome");
         }
       } else {

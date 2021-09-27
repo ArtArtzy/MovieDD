@@ -110,6 +110,7 @@
                 />
               </div>
             </div>
+
             <!-- exit btn  -->
             <div class="setMenu exitBtn" @click="exitBtn">
               <img
@@ -128,6 +129,7 @@
   </q-layout>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -180,10 +182,30 @@ export default {
       } else if ((this.$router.name = "userssytem")) {
         this.menu = 7;
       }
+    },
+    async loadData() {
+      let token = this.$q.localStorage.getItem("token");
+      let data = {
+        token: token
+      };
+      let url = this.serverpath + "bo_checktoken.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      if (res.data.length > 0) {
+        console.log(res.data);
+        this.userName = res.data[0].username;
+        this.accessMenu.category = Number(res.data[0].us_category);
+        this.accessMenu.movie = Number(res.data[0].us_movie);
+        this.accessMenu.series = Number(res.data[0].us_series);
+        this.accessMenu.ads = Number(res.data[0].us_ads);
+        this.accessMenu.stat = Number(res.data[0].us_stat);
+        this.accessMenu.user = Number(res.data[0].us_user);
+        this.accessMenu.usersystem = Number(res.data[0].us_admin);
+      }
     }
   },
   mounted() {
     this.setMenu();
+    this.loadData();
   }
 };
 </script>
