@@ -297,6 +297,13 @@ export default {
     },
     addAdminOk() {
       this.addAdmin = false;
+      this.$q.notify({
+        progress: true,
+        message: "Add new admin complete",
+        color: "positive",
+        position: "top",
+        icon: "fas fa-check"
+      });
     },
     deleteUser(item) {},
     editUser(item) {}

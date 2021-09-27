@@ -112,7 +112,7 @@
             </div>
 
             <!-- exit btn  -->
-            <div class="setMenu exitBtn" @click="exitBtn">
+            <div class="setMenu exitBtn" @click="exitCheck = true">
               <img
                 src="../../public/images/exit.png"
                 alt=""
@@ -126,6 +126,32 @@
         </q-page-container>
       </div>
     </div>
+    <!-- exit check  -->
+    <q-dialog v-model="exitCheck" persistent>
+      <q-card>
+        <div class="delBox" align="center">
+          <q-icon
+            class="fas fa-exclamation-circle q-pa-md"
+            size="64px"
+            color="red"
+          />
+          <div style="font-size:24px;">Are you sure?</div>
+          <div style="font-size:14px;">
+            You want to log out from this system!
+          </div>
+          <div class="row q-pt-md" style="width:280px;margin:auto;">
+            <div class="ynBtn q-ma-sm" @click="exitCheck = false">Cancel</div>
+            <div
+              class="ynBtn q-ma-sm"
+              style="background-color:#ffc24c"
+              @click="exitPage()"
+            >
+              Yes
+            </div>
+          </div>
+        </div>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 <script>
@@ -135,6 +161,7 @@ export default {
     return {
       menu: 1,
       userName: "once",
+      exitCheck: false,
       menuList: [
         "/",
         "/category",
@@ -157,7 +184,7 @@ export default {
     };
   },
   methods: {
-    exitBtn() {
+    exitPage() {
       this.$router.push("/");
     },
     menuBtn(id) {
@@ -177,9 +204,9 @@ export default {
         this.menu = 4;
       } else if (this.$route.name == "stat") {
         this.menu = 5;
-      } else if ((this.$router.name = "user")) {
+      } else if (this.$router.name == "user") {
         this.menu = 6;
-      } else if ((this.$router.name = "userssytem")) {
+      } else if (this.$router.name == "usersytem") {
         this.menu = 7;
       }
     },
@@ -191,7 +218,6 @@ export default {
       let url = this.serverpath + "bo_checktoken.php";
       let res = await axios.post(url, JSON.stringify(data));
       if (res.data.length > 0) {
-        console.log(res.data);
         this.userName = res.data[0].username;
         this.accessMenu.category = Number(res.data[0].us_category);
         this.accessMenu.movie = Number(res.data[0].us_movie);
@@ -234,7 +260,20 @@ export default {
 }
 .exitBtn {
   position: absolute;
-
   bottom: 0px;
+}
+.delBox {
+  width: 400px;
+  height: 250px;
+  background-color: #edf2fe;
+  border-radius: 10px;
+}
+.ynBtn {
+  width: 120px;
+  height: 45px;
+  border-radius: 5px;
+  border: 1px solid #ffc24c;
+  cursor: pointer;
+  line-height: 45px;
 }
 </style>
