@@ -50,7 +50,10 @@
                 @click="deleteBtn(item.orderid)"
               />
             </div>
-            <div class="col-1 underLine cursor-pointer" @click="editBtn = true">
+            <div
+              class="col-1 underLine cursor-pointer"
+              @click="editCategory(item.orderid)"
+            >
               <u>Edit</u>
             </div>
           </div>
@@ -104,13 +107,62 @@
                 Category name
               </div>
               <div class="" style="width:300px;margin:auto;">
-                <q-input v-model="editId" label="000" />
+                <q-input v-model="editId" label="category" />
               </div>
             </div>
-            <div class="row q-pt-md" style="width:280px;margin:auto;">
+            <div class="row q-pt-md" style="width:350px;margin:auto;">
               <div class="ynBtn q-ma-sm" @click="addBtn = false" align="center">
                 Cancel
               </div>
+              <div class="q-pa-md"></div>
+              <div
+                class="ynBtn q-ma-sm"
+                style="background-color:#ffc24c;"
+                align="center"
+              >
+                Yes
+              </div>
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
+
+      <!-- edit  -->
+      <q-dialog v-model="editBtn" persistent>
+        <q-card class="editBox">
+          <div class="">
+            <div
+              class="q-pa-md"
+              style="font-size:24px;color:#797575;"
+              align="center"
+            >
+              Edit category
+            </div>
+            <div class="row">
+              <div class="typeEdit">
+                Order id
+              </div>
+              <div style="width:300px;margin:auto;">
+                <q-input v-model="editId" label="000" />
+              </div>
+            </div>
+            <div class="row ">
+              <div class="typeEdit">
+                Category name
+              </div>
+              <div class="" style="width:300px;margin:auto;">
+                <q-input v-model="editId" label="category" />
+              </div>
+            </div>
+            <div class="row q-pt-md" style="width:350px;margin:auto;">
+              <div
+                class="ynBtn q-ma-sm"
+                @click="editBtn = false"
+                align="center"
+              >
+                Cancel
+              </div>
+              <div class="q-pa-md"></div>
               <div
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c;"
@@ -135,7 +187,7 @@ export default {
   data() {
     return {
       editBtn: false,
-      addBtn: true,
+      addBtn: false,
       delBtn: false,
       editId: "",
       editCat: "",
@@ -175,8 +227,9 @@ export default {
     deleteBtn(item) {
       this.delBtn = true;
     },
-    editCategory() {},
-    addCategory() {}
+    editCategory(item) {
+      this.editBtn = true;
+    }
   }
 };
 </script>
