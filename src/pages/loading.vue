@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -51,8 +52,32 @@ export default {
     };
   },
   methods: {
-    loginBtn() {
-      this.$router.push("welcome");
+    async loginBtn() {
+      if (this.password.length > 0 && this.userName.length > 0) {
+        let data = {
+          username: this.userName,
+          password: this.password
+        };
+        let url = this.serverpath + "bo_checkusername.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        if (res.data == "NR") {
+          this.$q.notify({
+            message: "Username / password incorrect",
+            color: "negative",
+            position: "top",
+            icon: "far fa-times-circle"
+          });
+        } else {
+          this.$router.push("welcome");
+        }
+      } else {
+        this.$q.notify({
+          message: "Username / password incorrect",
+          color: "negative",
+          position: "top",
+          icon: "far fa-times-circle"
+        });
+      }
     }
   },
   mounted() {
