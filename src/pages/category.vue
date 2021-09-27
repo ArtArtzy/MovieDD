@@ -18,8 +18,8 @@
         </div>
         <div class="inBox q-pt-md">
           <div class="row q-pa-sm" style="font-size:20px;" align="center">
-            <div class="col-2 q-px-md" align="left">Order id</div>
-            <div class="col" align="left">Category</div>
+            <div class="col-2" align="left">Order id</div>
+            <div class="col-2" align="left">Category</div>
             <div class="col">Movie</div>
             <div class="col">Series</div>
             <div class="col">Status</div>
@@ -34,15 +34,15 @@
             :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
             align="center"
           >
-            <div class="col-2 q-px-md" align="left">{{ item.orderid }}</div>
-            <div class="col" align="left">{{ item.catname }}</div>
+            <div class="col-2" align="left">{{ item.orderid }}</div>
+            <div class="col-2" align="left">{{ item.catname }}</div>
             <div class="col">{{ item.movie }}</div>
             <div class="col">{{ item.series }}</div>
             <div class="col">
               <div class="onlineBtn" v-show="item.status">online</div>
               <div class="offlineBtn" v-show="!item.status">offline</div>
             </div>
-            <div class="col-1">
+            <div class="col">
               <img
                 class="cursor-pointer"
                 src="../../public/images/delBin.svg"
@@ -51,7 +51,7 @@
               />
             </div>
             <div
-              class="col-1 underLine cursor-pointer"
+              class="col underLine cursor-pointer"
               @click="editCategory(item.orderid)"
             >
               <u>Edit</u>

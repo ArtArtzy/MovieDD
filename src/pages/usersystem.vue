@@ -9,9 +9,9 @@
               rounded
               class="cursor-pointer q-pa-xs"
               style="background-color:#FFC24C;font-size:18px;"
-              label="+ Category"
+              label="+ admin"
               no-caps=""
-              @click="addBtn = true"
+              @click="addAdmin = true"
             />
           </div>
         </div>
@@ -19,12 +19,28 @@
           <div class="row q-pa-sm" style="font-size:20px;" align="center">
             <div class="col-2 q-px-md" align="left">Username</div>
             <div class="col-2">Password</div>
-            <div class="col">cat</div>
-            <div class="col">mov</div>
-            <div class="col">ser</div>
-            <div class="col">ana</div>
-            <div class="col">user</div>
-            <div class="col">userana</div>
+            <div class="col">
+              <img src="../../public/images/iconCategory.svg" alt="" />
+            </div>
+            <div class="col">
+              <img src="../../public/images/iconMovie.svg" alt="" />
+            </div>
+            <div class="col">
+              <img src="../../public/images/iconSeries.svg" alt="" />
+            </div>
+
+            <div class="col">
+              <img src="../../public/images/iconAds.svg" alt="" />
+            </div>
+            <div class="col">
+              <img src="../../public/images/iconAnalytic.svg" alt="" />
+            </div>
+            <div class="col">
+              <img src="../../public/images/iconUser.svg" alt="" />
+            </div>
+            <div class="col">
+              <img src="../../public/images/iconAdmin.svg" alt="" />
+            </div>
             <div class="col">Delete</div>
             <div class="col">Edit</div>
           </div>
@@ -39,17 +55,26 @@
           >
             <div class="col-2 q-pl-lg" align="left">{{ item.username }}</div>
             <div class="col-2">{{ item.password }}</div>
-            <div class="col">{{ item.us_category }}</div>
-            <div class="col">{{ item.us_category }}</div>
-            <div class="col">{{ item.us_category }}</div>
-            <div class="col">{{ item.us_category }}</div>
-            <div class="col">{{ item.us_category }}</div>
-            <div class="col">{{ item.us_category }}</div>
-            <div class="col brx">
+            <div class="col">
+              <div v-show="item.us_category == 1">
+                <img src="../../public/images/true.svg" alt="" />
+              </div>
+              <div v-show="item.us_category == 0">
+                <img src="../../public/images/false.svg" alt="" />
+              </div>
+            </div>
+            <div class="col">{{ item.us_movie }}</div>
+            <div class="col">{{ item.us_series }}</div>
+            <div class="col">{{ item.us_ads }}</div>
+            <div class="col">{{ item.us_analytic }}</div>
+            <div class="col">{{ item.us_user }}</div>
+            <div class="col">{{ item.us_admin }}</div>
+            <div class="col">
               <img
                 class="cursor-pointer"
                 src="../../public/images/delBin.svg"
                 alt=""
+                @click="deleteUser(item.username)"
               />
             </div>
             <div
@@ -70,7 +95,7 @@ export default {
   data() {
     return {
       editBtn: false,
-      addBtn: false,
+      addAdmin: false,
       delBtn: false,
       data: [
         {
