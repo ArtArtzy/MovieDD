@@ -28,6 +28,7 @@ body {
   border-radius: 30px;
   border: 2px solid white;
   margin-top: 10px;
+  overflow-y: auto;
 }
 .contentDiv {
   width: calc(100% - 270px);

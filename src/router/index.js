@@ -31,8 +31,8 @@ export default function(/* { store, ssrContext } */) {
 Vue.mixin({
   data() {
     return {
-      serverpath: "https://www.yaksaconcept.com/movieddapi/"
-      // serverpath: "http://localhost/moviedd/"
+      //    serverpath: "https://www.yaksaconcept.com/movieddapi/"
+      serverpath: "http://localhost/movieddapi/"
     };
   }
 });

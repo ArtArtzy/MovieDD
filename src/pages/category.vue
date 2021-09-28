@@ -39,12 +39,16 @@
             <div class="col">{{ item.movie }}</div>
             <div class="col">{{ item.series }}</div>
             <div class="col">
-              <div class="onlineBtn" v-show="item.status">online</div>
-              <div class="offlineBtn" v-show="!item.status">offline</div>
+              <div class="onlineBtn cursor-pointer" v-show="item.status == 1">
+                online
+              </div>
+              <div class="offlineBtn cursor-pointer" v-show="item.status == 0">
+                offline
+              </div>
             </div>
             <div class="col">
               <img
-                class="cursor-pointer"
+                class="cursor-pointer "
                 src="../../public/images/delBin.svg"
                 alt=""
                 @click="deleteBtn(item.orderid)"
@@ -107,7 +111,7 @@
                 Category name
               </div>
               <div class="" style="width:300px;margin:auto;">
-                <q-input v-model="editId" label="category" />
+                <q-input v-model="editCat" label="category" />
               </div>
             </div>
             <div class="row q-pt-md" style="width:350px;margin:auto;">
@@ -183,6 +187,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -205,20 +210,6 @@ export default {
           movie: 24,
           series: 4,
           status: 1
-        },
-        {
-          orderid: 300,
-          catname: "ไซไฟ",
-          movie: 20,
-          series: 8,
-          status: 1
-        },
-        {
-          orderid: 400,
-          catname: "สารคดี",
-          movie: 20,
-          series: 8,
-          status: 0
         }
       ]
     };
@@ -229,7 +220,15 @@ export default {
     },
     editCategory(item) {
       this.editBtn = true;
+    },
+    async loadData() {
+      let url = this.serverpath + "bo_loadcategory.php";
+      let res = await axios.get(url);
+      this.data = res.data;
     }
+  },
+  mounted() {
+    this.loadData();
   }
 };
 </script>

@@ -217,13 +217,14 @@ export default {
       };
       let url = this.serverpath + "bo_checktoken.php";
       let res = await axios.post(url, JSON.stringify(data));
+      console.log(res.data);
       if (res.data.length > 0) {
         this.userName = res.data[0].username;
         this.accessMenu.category = Number(res.data[0].us_category);
         this.accessMenu.movie = Number(res.data[0].us_movie);
         this.accessMenu.series = Number(res.data[0].us_series);
         this.accessMenu.ads = Number(res.data[0].us_ads);
-        this.accessMenu.stat = Number(res.data[0].us_stat);
+        this.accessMenu.stat = Number(res.data[0].us_analytic);
         this.accessMenu.user = Number(res.data[0].us_user);
         this.accessMenu.usersystem = Number(res.data[0].us_admin);
       }
