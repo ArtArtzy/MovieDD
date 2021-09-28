@@ -39,10 +39,18 @@
             <div class="col">{{ item.movie }}</div>
             <div class="col">{{ item.series }}</div>
             <div class="col">
-              <div class="onlineBtn cursor-pointer" v-show="item.status == 1">
+              <div
+                class="onlineBtn cursor-pointer"
+                v-show="item.status == 1"
+                @click="changeSta(item)"
+              >
                 online
               </div>
-              <div class="offlineBtn cursor-pointer" v-show="item.status == 0">
+              <div
+                class="offlineBtn cursor-pointer"
+                v-show="item.status == 0"
+                @click="changeSta(item)"
+              >
                 offline
               </div>
             </div>
@@ -51,12 +59,12 @@
                 class="cursor-pointer "
                 src="../../public/images/delBin.svg"
                 alt=""
-                @click="deleteBtn(item.orderid)"
+                @click="deleteBtn(item)"
               />
             </div>
             <div
               class="col underLine cursor-pointer"
-              @click="editCategory(item.orderid)"
+              @click="editCategory(item)"
             >
               <u>Edit</u>
             </div>
@@ -75,11 +83,15 @@
             />
             <div style="font-size:24px;">Are you sure?</div>
             <div style="font-size:14px;">
-              You want to delete this category !
+              You want to delete <b>{{ editId }} {{ editCat }}</b> !
             </div>
             <div class="row q-pt-md" style="width:280px;margin:auto;">
-              <div class="ynBtn q-ma-sm" @click="delBtn = false">Cancel</div>
-              <div class="ynBtn q-ma-sm" style="background-color:#ffc24c">
+              <div class="ynBtn q-ma-sm" @click="clrmem()">Cancel</div>
+              <div
+                class="ynBtn q-ma-sm"
+                style="background-color:#ffc24c"
+                @click="deleteOk()"
+              >
                 Yes
               </div>
             </div>
@@ -103,7 +115,7 @@
                 Order id
               </div>
               <div style="width:300px;margin:auto;">
-                <q-input v-model="editId" label="000" />
+                <q-input v-model="editId" />
               </div>
             </div>
             <div class="row ">
@@ -111,11 +123,11 @@
                 Category name
               </div>
               <div class="" style="width:300px;margin:auto;">
-                <q-input v-model="editCat" label="category" />
+                <q-input v-model="editCat" />
               </div>
             </div>
             <div class="row q-pt-md" style="width:350px;margin:auto;">
-              <div class="ynBtn q-ma-sm" @click="addBtn = false" align="center">
+              <div class="ynBtn q-ma-sm" @click="clrmem()" align="center">
                 Cancel
               </div>
               <div class="q-pa-md"></div>
@@ -123,6 +135,7 @@
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c;"
                 align="center"
+                @click="addCat()"
               >
                 Yes
               </div>
@@ -147,7 +160,7 @@
                 Order id
               </div>
               <div style="width:300px;margin:auto;">
-                <q-input v-model="editId" label="000" />
+                <q-input v-model="editId" />
               </div>
             </div>
             <div class="row ">
@@ -155,15 +168,11 @@
                 Category name
               </div>
               <div class="" style="width:300px;margin:auto;">
-                <q-input v-model="editId" label="category" />
+                <q-input v-model="editCat" />
               </div>
             </div>
             <div class="row q-pt-md" style="width:350px;margin:auto;">
-              <div
-                class="ynBtn q-ma-sm"
-                @click="editBtn = false"
-                align="center"
-              >
+              <div class="ynBtn q-ma-sm" @click="clrmem()" align="center">
                 Cancel
               </div>
               <div class="q-pa-md"></div>
@@ -171,6 +180,7 @@
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c;"
                 align="center"
+                @click="editOk()"
               >
                 Yes
               </div>
@@ -180,7 +190,6 @@
       </q-dialog>
       <!-- bg drop  -->
       <div class="bgDrop fullscreen" v-show="addBtn || editBtn || delBtn"></div>
-
       <!-- end bgDrop  -->
     </div>
   </div>
@@ -196,6 +205,7 @@ export default {
       delBtn: false,
       editId: "",
       editCat: "",
+      indexId: 0,
       data: [
         {
           orderid: 100,
@@ -215,16 +225,106 @@ export default {
     };
   },
   methods: {
+    clrmem() {
+      this.editId = "";
+      this.editCat = "";
+      this.indexId = 0;
+      this.editBtn = this.addBtn = this.delBtn = false;
+    },
+    async addCat() {
+      let data = {
+        orderid: this.editId,
+        catname: this.editCat,
+        movie: 0,
+        series: 0,
+        status: 0
+      };
+      let url = this.serverpath + "bo_addcategory.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.$q.notify({
+        progress: true,
+        message: "Add new category complete",
+        color: "positive",
+        position: "top",
+        icon: "fas fa-check"
+      });
+      this.clrmem();
+      this.loadData();
+    },
+    async changeSta(item) {
+      let sta = 0;
+      if (item.status == 0) sta = 1;
+      let data = {
+        id: item.id,
+        status: sta
+      };
+      if (item.status == 0) data.status = 1;
+      let url = this.serverpath + "bo_changestatuscategory.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      this.loadData();
+    },
     deleteBtn(item) {
+      if (item.movie > 0 || item.series > 0) {
+        this.$q.notify({
+          progress: true,
+          message: "This category have a movie/series",
+          color: "negative",
+          position: "top",
+          icon: "fas fa-times"
+        });
+        return;
+      }
       this.delBtn = true;
+      this.editId = item.orderid;
+      this.indexId = item.id;
+      this.editCat = item.catname;
+    },
+    async deleteOk() {
+      let data = {
+        id: this.indexId
+      };
+      let url = this.serverpath + "bo_delcategory.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.$q.notify({
+        progress: true,
+        message: "Delete category complete",
+        color: "positive",
+        position: "top",
+        icon: "fas fa-check"
+      });
+      this.clrmem();
+      this.loadData();
     },
     editCategory(item) {
       this.editBtn = true;
+      this.editId = item.orderid;
+      this.editCat = item.catname;
+      this.indexId = item.id;
+    },
+    async editOk() {
+      let data = {
+        id: this.indexId,
+        orderid: this.editId,
+        catname: this.editCat
+      };
+      let url = this.serverpath + "bo_editcategory.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.$q.notify({
+        progress: true,
+        message: "Edit category complete",
+        color: "positive",
+        position: "top",
+        icon: "fas fa-check"
+      });
+      this.clrmem();
+      this.loadData();
     },
     async loadData() {
       let url = this.serverpath + "bo_loadcategory.php";
       let res = await axios.get(url);
       this.data = res.data;
+      this.data.sort((a, b) => a.orderid - b.orderid);
     }
   },
   mounted() {

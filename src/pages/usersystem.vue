@@ -495,7 +495,7 @@ export default {
           message: "Please input User name & Password",
           color: "negative",
           position: "top",
-          icon: "fas fa-check"
+          icon: "fas fa-times"
         });
         return;
       }
@@ -515,7 +515,7 @@ export default {
           message: "Please select page",
           color: "negative",
           position: "top",
-          icon: "fas fa-check"
+          icon: "fas fa-times"
         });
         return;
       }
@@ -538,7 +538,7 @@ export default {
           message: "This User name exist",
           color: "negative",
           position: "top",
-          icon: "fas fa-check"
+          icon: "fas fa-times"
         });
         this.userStr = "";
       } else {
