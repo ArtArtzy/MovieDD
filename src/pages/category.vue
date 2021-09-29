@@ -232,24 +232,57 @@ export default {
       this.editBtn = this.addBtn = this.delBtn = false;
     },
     async addCat() {
-      let data = {
-        orderid: this.editId,
-        catname: this.editCat,
-        movie: 0,
-        series: 0,
-        status: 0
-      };
-      let url = this.serverpath + "bo_addcategory.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      this.$q.notify({
-        progress: true,
-        message: "Add new category complete",
-        color: "positive",
-        position: "top",
-        icon: "fas fa-check"
-      });
-      this.clrmem();
-      this.loadData();
+      if (this.editId == "" || this.editCat == "") {
+        this.$q.notify({
+          progress: true,
+          message: "Plese input Order and Category",
+          color: "negative",
+          position: "top",
+          icon: "fas fa-times"
+        }); // ไม่ได้ใส่ order id กับ categry
+        return;
+      } else {
+        let data = {
+          orderid: this.editId,
+          catname: this.editCat,
+          movie: 0,
+          series: 0,
+          status: 0
+        };
+        let url = this.serverpath + "bo_addcategory.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        if (res.data == "NR") {
+          this.$q.notify({
+            progress: true,
+            message: "This Order id  exist",
+            color: "negative",
+            position: "top",
+            icon: "fas fa-times"
+          });
+          // ไม่ได้ใส่ order id
+          this.editId = "";
+        } else if (res.data == "NRC") {
+          this.$q.notify({
+            progress: true,
+            message: "This Category exist",
+            color: "negative",
+            position: "top",
+            icon: "fas fa-times"
+          });
+          // ไม่ได้ใส่ category
+          this.editCat = "";
+        } else {
+          this.$q.notify({
+            progress: true,
+            message: "Add new category complete",
+            color: "positive",
+            position: "top",
+            icon: "fas fa-check"
+          });
+          this.clrmem();
+          this.loadData();
+        }
+      } // เพิ่ม category
     },
     async changeSta(item) {
       let sta = 0;
@@ -258,7 +291,6 @@ export default {
         id: item.id,
         status: sta
       };
-      if (item.status == 0) data.status = 1;
       let url = this.serverpath + "bo_changestatuscategory.php";
       let res = await axios.post(url, JSON.stringify(data));
 
@@ -303,6 +335,17 @@ export default {
       this.indexId = item.id;
     },
     async editOk() {
+      if (this.editId == "" || this.editCat == "") {
+        this.$q.notify({
+          progress: true,
+          message: "Plese input order id and category",
+          color: "negative",
+          position: "top",
+          icon: "fas fa-times"
+        });
+        return;
+        // ไม่ได้ใส่ order id กับ categry
+      }
       let data = {
         id: this.indexId,
         orderid: this.editId,
@@ -310,15 +353,28 @@ export default {
       };
       let url = this.serverpath + "bo_editcategory.php";
       let res = await axios.post(url, JSON.stringify(data));
-      this.$q.notify({
-        progress: true,
-        message: "Edit category complete",
-        color: "positive",
-        position: "top",
-        icon: "fas fa-check"
-      });
-      this.clrmem();
-      this.loadData();
+      if (res.data == "finish") {
+        this.$q.notify({
+          progress: true,
+          message: "Edit category complete",
+          color: "positive",
+          position: "top",
+          icon: "fas fa-check"
+        });
+        this.clrmem();
+        this.loadData();
+      } else if (res.data == "notchange") {
+        this.clrmem();
+        this.loadData();
+      } else {
+        this.$q.notify({
+          progress: true,
+          message: res.data,
+          color: "negative",
+          position: "top",
+          icon: "fas fa-times"
+        });
+      }
     },
     async loadData() {
       let url = this.serverpath + "bo_loadcategory.php";
