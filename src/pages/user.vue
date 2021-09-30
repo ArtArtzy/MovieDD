@@ -217,9 +217,22 @@ export default {
       if (this.staOtp == 3) {
         let url = this.serverpath + "bo_deluser.php";
         let res = await axios.post(url, JSON.stringify(data));
+        this.$q.notify({
+          progress: true,
+          message: "Delete user complete",
+          color: "negative",
+          position: "top"
+        });
       } else {
         let url = this.serverpath + "bo_changestatususer.php";
         let res = await axios.post(url, JSON.stringify(data));
+        this.$q.notify({
+          progress: true,
+          message: "Update user status complete",
+          color: "positive",
+          position: "top",
+          icon: "fas fa-check"
+        });
       }
       this.clrmem();
       this.loadData();
