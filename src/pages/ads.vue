@@ -3,7 +3,7 @@
     <div class="contentDiv">
       <div class="boxWhite ">
         <div class="row q-pt-lg">
-          <div class="row col-3 q-pl-xl" style="font-size:24px;">
+          <div class="row items-center col-3 q-pl-xl" style="font-size:16px;">
             Status
             <div class="q-pl-md">
               <q-select
@@ -11,13 +11,13 @@
                 v-model="adsOpt"
                 :options="optads"
                 :dense="true"
-                style="width:100px;"
+                style="width:120px;font-size:16px;"
                 @input="loadAds()"
               >
               </q-select>
             </div>
           </div>
-          <div class="col row" style="font-size:24px;">
+          <div class="col row items-center" style="font-size:16px;">
             Page
             <div class="q-pl-md">
               <q-select
@@ -25,10 +25,13 @@
                 v-model.number="adsPage"
                 :options="pageAds"
                 :dense="true"
-                style="width:60px;"
+                style="width:60px;font-size:16px;"
                 @input="showPage"
               >
               </q-select>
+            </div>
+            <div class="q-pl-sm" style="font-size:16px;">
+              of {{ Math.ceil(this.dataShow.length / 3) }}
             </div>
           </div>
           <div class="col-3" align="center">
