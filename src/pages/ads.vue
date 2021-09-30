@@ -26,7 +26,7 @@
                 :options="pageAds"
                 :dense="true"
                 style="width:60px;"
-                @input="showPage()"
+                @input="showPage"
               >
               </q-select>
             </div>
@@ -43,14 +43,17 @@
         </div>
         <div class="q-mt-md" align="center">
           <q-scroll-area class="" style="height:88vh; max-width: 90vw;">
-            <!-- ads box  -->
-            <div class="inBox shadow-3 q-mt-md" v-for="i in endAd + 1" :key="i">
+            <div
+              class="inBox shadow-3 q-mt-md"
+              v-for="(item, index) in dataShowPage"
+              :key="index"
+            >
               <div class="row q-pt-md items-center">
                 <div class="col-5 q-pl-xl" align="left">
                   <div style="font-size:24px;">
-                    {{ dataShow[i + stAd - 1].at_title }}
+                    {{ item.at_title }}
                     <div style="font-size:18px;">
-                      Target URL : <u>{{ dataShow[i + stAd - 1].at_target }}</u>
+                      Target URL : <u>{{ item.at_target }}</u>
                     </div>
                   </div>
                 </div>
@@ -63,14 +66,12 @@
                     <div class="leditBox"></div>
                     <div class="col">
                       <div style="font-size:14px;">Weight</div>
-                      <div style="font-size:20px;">
-                        {{ dataShow[i + stAd - 1].at_weight }}%
-                      </div>
+                      <div style="font-size:20px;">{{ item.at_weight }}%</div>
                     </div>
                     <div class="leditBox"></div>
                     <div class="col-5">
                       <div style="font-size:24px;">
-                        <u>{{ dataShow[i + stAd - 1].statview }} Clicks</u>
+                        <u>{{ item.statview }} Clicks</u>
                       </div>
                     </div>
                   </div>
@@ -79,16 +80,10 @@
                   <div><u>Edit</u></div>
                 </div>
                 <div class="col q-pr-xl">
-                  <div
-                    v-show="dataShow[i + stAd - 1].status == 1"
-                    class="onBox"
-                  >
+                  <div v-show="item.status == 1" class="onBox">
                     online
                   </div>
-                  <div
-                    v-show="dataShow[i + stAd - 1].status == 0"
-                    class="offBox"
-                  >
+                  <div v-show="item.status == 0" class="offBox">
                     offline
                   </div>
                 </div>
@@ -107,7 +102,7 @@
                 <div class="shadow-3" style="width:800px;height:130px;"></div>
               </div>
             </div>
-            <!-- end ads box  -->
+
             <div class="q-pb-sm"></div>
           </q-scroll-area>
         </div>
@@ -125,9 +120,10 @@ export default {
       optads: ["all", "online", "offline"],
       adsPage: 1,
       pageAds: [],
-      stAd: 0,
-      endAd: 2,
+      stAd: 1,
+      endAd: 3,
       dataShow: [],
+      dataShowPage: [],
       data: [
         {
           at_id: 1,
@@ -154,6 +150,7 @@ export default {
   },
   methods: {
     loadAds() {
+      this.adsPage = 1;
       if (this.adsOpt == "all") {
         this.dataShow = this.data;
       } else if (this.adsOpt == "online") {
@@ -165,31 +162,31 @@ export default {
     },
     calPage() {
       this.pageAds = [];
-      this.adsPage = 1;
+
       let pageMax = Math.ceil(this.dataShow.length / 3);
-      this.stAd = (this.adsPage - 1) * 3;
+      this.stAd = 1;
       if (pageMax > 1) {
-        this.endAd = 2;
+        this.endAd = 3;
       } else {
-        this.endAd = this.dataShow.length - 1;
+        this.endAd = this.dataShow.length;
       }
       for (let i = 1; i <= pageMax; i++) {
         this.pageAds.push(i);
       }
-      console.log(this.stAd);
-      console.log(this.endAd);
+      this.showPage();
     },
     showPage() {
-      console.log("page" + this.adsPage);
-      let pageMax = Math.ceil(this.dataShow.length / 3);
-      this.stAd = (this.adsPage - 1) * 3;
-      if (this.adsPage < pageMax) {
-        this.endAd = this.stAd + 2;
-      } else {
-        this.endAd = this.stAd + (this.dataShow.length - (pageMax - 1) * 3 - 1);
+      this.stAd = (this.adsPage - 1) * 3 + 1;
+      this.endAd = this.stAd + 2;
+      if (this.endAd > this.dataShow.length) {
+        this.endAd = this.dataShow.length;
       }
-      console.log(this.stAd);
-      console.log(this.endAd);
+
+      this.dataShowPage = [];
+
+      for (let i = this.stAd - 1; i < this.endAd; i++) {
+        this.dataShowPage.push(this.dataShow[i]);
+      }
     },
     async loadData() {
       let url = this.serverpath + "bo_loadads.php";
@@ -197,6 +194,7 @@ export default {
       this.data = res.data;
       //  this.data.sort((a, b) => a.orderid - b.orderid);
       this.dataShow = res.data;
+      this.adsPage = 1;
       this.calPage();
     }
   },
