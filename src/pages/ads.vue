@@ -3,9 +3,35 @@
     <div class="contentDiv">
       <div class="boxWhite ">
         <div class="row q-pt-lg">
-          <div class="col-3 q-pl-xl" style="font-size:24px;">Status</div>
-          <div class="col" style="font-size:24px;">Page</div>
-          <div class="col-2" align="center">
+          <div class="row col-3 q-pl-xl" style="font-size:24px;">
+            Status
+            <div class="q-pl-md">
+              <q-select
+                color="orange-13"
+                v-model="adsOpt"
+                :options="optads"
+                :dense="true"
+                style="width:100px;"
+                @input="loadAds()"
+              >
+              </q-select>
+            </div>
+          </div>
+          <div class="col row" style="font-size:24px;">
+            Page
+            <div class="q-pl-md">
+              <q-select
+                color="orange-13"
+                v-model.number="adsPage"
+                :options="pageAds"
+                :dense="true"
+                style="width:60px;"
+                @input="showPage()"
+              >
+              </q-select>
+            </div>
+          </div>
+          <div class="col-3" align="center">
             <q-btn
               rounded
               class="cursor-pointer "
@@ -17,11 +43,71 @@
         </div>
         <div class="q-mt-md" align="center">
           <q-scroll-area class="" style="height:88vh; max-width: 90vw;">
-            <div
-              class="inBox shadow-3 q-mt-md"
-              v-for="(item, index) in data"
-              :key="index"
-            ></div>
+            <!-- ads box  -->
+            <div class="inBox shadow-3 q-mt-md" v-for="i in endAd + 1" :key="i">
+              <div class="row q-pt-md items-center">
+                <div class="col-5 q-pl-xl" align="left">
+                  <div style="font-size:24px;">
+                    {{ dataShow[i + stAd - 1].at_title }}
+                    <div style="font-size:18px;">
+                      Target URL : <u>{{ dataShow[i + stAd - 1].at_target }}</u>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4" align="center">
+                  <div class="editBox row q-ma-sm q-pa-sm items-center">
+                    <div class="col">
+                      <div style="font-size:14px;">Duration</div>
+                      <div style="font-size:20px;">xx Day</div>
+                    </div>
+                    <div class="leditBox"></div>
+                    <div class="col">
+                      <div style="font-size:14px;">Weight</div>
+                      <div style="font-size:20px;">
+                        {{ dataShow[i + stAd - 1].at_weight }}%
+                      </div>
+                    </div>
+                    <div class="leditBox"></div>
+                    <div class="col-5">
+                      <div style="font-size:24px;">
+                        <u>{{ dataShow[i + stAd - 1].statview }} Clicks</u>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col q-pl-lg">
+                  <div><u>Edit</u></div>
+                </div>
+                <div class="col q-pr-xl">
+                  <div
+                    v-show="dataShow[i + stAd - 1].status == 1"
+                    class="onBox"
+                  >
+                    online
+                  </div>
+                  <div
+                    v-show="dataShow[i + stAd - 1].status == 0"
+                    class="offBox"
+                  >
+                    offline
+                  </div>
+                </div>
+              </div>
+              <hr style="width:95%;" />
+              <div class="row items-center q-pa-md">
+                <div class="col-2">Mobile</div>
+                <div class="shadow-3" style="width:350px;height:90px;"></div>
+              </div>
+              <div class="row items-center q-pa-md">
+                <div class="col-2">Tablet</div>
+                <div class="shadow-3" style="width:750px;height:200px;"></div>
+              </div>
+              <div class="row items-center q-pa-md">
+                <div class="col-2">Tablet</div>
+                <div class="shadow-3" style="width:800px;height:130px;"></div>
+              </div>
+            </div>
+            <!-- end ads box  -->
             <div class="q-pb-sm"></div>
           </q-scroll-area>
         </div>
@@ -31,9 +117,17 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      adsOpt: "all",
+      optads: ["all", "online", "offline"],
+      adsPage: 1,
+      pageAds: [],
+      stAd: 0,
+      endAd: 2,
+      dataShow: [],
       data: [
         {
           at_id: 1,
@@ -55,9 +149,59 @@ export default {
           status: 1,
           at_timestamp: "2147483647"
         }
-      ],
-      option: [online, offline]
+      ]
     };
+  },
+  methods: {
+    loadAds() {
+      if (this.adsOpt == "all") {
+        this.dataShow = this.data;
+      } else if (this.adsOpt == "online") {
+        this.dataShow = this.data.filter(x => x.status == 1);
+      } else {
+        this.dataShow = this.data.filter(x => x.status == 0);
+      }
+      this.calPage();
+    },
+    calPage() {
+      this.pageAds = [];
+      this.adsPage = 1;
+      let pageMax = Math.ceil(this.dataShow.length / 3);
+      this.stAd = (this.adsPage - 1) * 3;
+      if (pageMax > 1) {
+        this.endAd = 2;
+      } else {
+        this.endAd = this.dataShow.length - 1;
+      }
+      for (let i = 1; i <= pageMax; i++) {
+        this.pageAds.push(i);
+      }
+      console.log(this.stAd);
+      console.log(this.endAd);
+    },
+    showPage() {
+      console.log("page" + this.adsPage);
+      let pageMax = Math.ceil(this.dataShow.length / 3);
+      this.stAd = (this.adsPage - 1) * 3;
+      if (this.adsPage < pageMax) {
+        this.endAd = this.stAd + 2;
+      } else {
+        this.endAd = this.stAd + (this.dataShow.length - (pageMax - 1) * 3 - 1);
+      }
+      console.log(this.stAd);
+      console.log(this.endAd);
+    },
+    async loadData() {
+      let url = this.serverpath + "bo_loadads.php";
+      let res = await axios.get(url);
+      this.data = res.data;
+      //  this.data.sort((a, b) => a.orderid - b.orderid);
+      this.dataShow = res.data;
+      this.calPage();
+    }
+  },
+  mounted() {
+    this.loadData();
   }
 };
 </script>
@@ -74,5 +218,27 @@ export default {
   height: 646px;
   background-color: #ffffff;
   border-radius: 10px;
+}
+.editBox {
+  border: 1px solid black;
+}
+.leditBox {
+  height: 45px;
+  width: 1px;
+  background-color: black;
+}
+.onBox {
+  border-radius: 50px;
+  width: 82px;
+  height: 25px;
+  color: white;
+  background-color: $positive;
+}
+.offBox {
+  border-radius: 50px;
+  width: 82px;
+  height: 25px;
+  color: white;
+  background-color: $negative;
 }
 </style>
