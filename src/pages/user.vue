@@ -2,7 +2,7 @@
   <div style="max-width:1600px; width:100%; margin:auto;" class="bgmain">
     <div class="contentDiv">
       <div class="boxWhite ">
-        <div class="inBox q-pt-md">
+        <div class="inBox q-pt-xl">
           <div class="row q-pa-sm" style="font-size:20px;" align="center">
             <div class="col-2" align="left">Username</div>
             <div class="col-2" align="left">Password</div>

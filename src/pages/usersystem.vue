@@ -18,8 +18,8 @@
           <div class="col-2" align="center">
             <q-btn
               rounded
-              class="cursor-pointer q-pa-xs"
-              style="background-color:#FFC24C;font-size:18px;width:130px;"
+              class="cursor-pointer"
+              style="background-color:#FFC24C;font-size:18px;width:160px;"
               label="+ admin"
               no-caps=""
               @click="addAdmin = true"

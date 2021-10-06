@@ -3,13 +3,13 @@
     <div class="contentDiv">
       <div class="boxWhite ">
         <!-- เพิ่มหมวด -->
-        <div class="q-pt-lg row">
-          <div class="col-10"></div>
+        <div class="row items-center q-pt-lg">
+          <div class="col"></div>
           <div class="col-2" align="center">
             <q-btn
               rounded
-              class="cursor-pointer q-pa-xs"
-              style="background-color:#FFC24C;font-size:18px;"
+              class="cursor-pointer"
+              style="background-color:#FFC24C;font-size:18px;width:160px"
               label="+ Category"
               no-caps=""
               @click="addBtn = true"

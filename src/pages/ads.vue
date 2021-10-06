@@ -34,11 +34,11 @@
               of {{ Math.ceil(this.dataShow.length / 3) }}
             </div>
           </div>
-          <div class="col-3" align="center">
+          <div class="col-2" align="center">
             <q-btn
               rounded
               class="cursor-pointer "
-              style="background-color:#FFC24C;font-size:18px;width:160px;"
+              style="background-color:#FFC24C;font-size:18px;width:160px"
               label="+ ads"
               no-caps=""
             />
