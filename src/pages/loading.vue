@@ -46,7 +46,7 @@
             style="background: #FFc24c;width:120px;height:45px;"
             label="Sign in"
             no-caps=""
-            @click="loginBtn"
+            @click="loginBtnPass"
           />
         </div>
         <div class="cursor-pointer q-pt-md" @click="backToSigIn">
@@ -63,18 +63,23 @@ export default {
   data() {
     return {
       loginTime: true, //เป็นการ login ครั้งแรก
-      password: "",
-      isPwd: true,
-      userName: "",
-      userNameBack: ""
+      isPwd: true, //ใช้ในรูปตาในการเปิดปิด password
+      password: "", //ช่องใส่ password
+      userName: "", // ช่องใส่ username
+      userNameBack: "" //ชื่อ username เมื่อ login ต้างไว้
     };
   },
   methods: {
     backToSigIn() {
+      //เมื่อ user กด ข้อความ sign in as different user
       this.loginTime = true;
       localStorage.clear();
     },
+    loginBtnPass() {
+      this.$router.push("welcome");
+    },
     async loginBtn() {
+      //ทำการ login ปกติก
       if (this.password.length > 0 && this.userName.length > 0) {
         let data = {
           username: this.userName,

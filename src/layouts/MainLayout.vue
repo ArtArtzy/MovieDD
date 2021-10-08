@@ -185,6 +185,7 @@ export default {
   },
   methods: {
     exitPage() {
+      localStorage.clear();
       this.$router.push("/");
     },
     menuBtn(id) {
