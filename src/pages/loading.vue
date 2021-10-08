@@ -4,6 +4,7 @@
       <div class="q-pt-md">
         <img src="../../public/images/logo.png" alt="" />
       </div>
+      <!-- กรณี login ครั้งแรก -->
       <div v-show="loginTime">
         <div class="inputText q-mt-sm">
           <q-input
@@ -39,6 +40,7 @@
           />
         </div>
       </div>
+      <!-- กรณีเคย login มาแล้ว -->
       <div v-show="!loginTime">
         <div class="text-black">Welcome back .... {{ userNameBack }}</div>
         <div class="q-px-md q-pt-md">
@@ -70,16 +72,17 @@ export default {
     };
   },
   methods: {
+    //เมื่อ user กด ข้อความ sign in as different user
     backToSigIn() {
-      //เมื่อ user กด ข้อความ sign in as different user
       this.loginTime = true;
       localStorage.clear();
     },
+    //เมื่อกด login ในหน้า welcome back
     loginBtnPass() {
       this.$router.push("welcome");
     },
+    //ทำการ login ปกติก
     async loginBtn() {
-      //ทำการ login ปกติก
       if (this.password.length > 0 && this.userName.length > 0) {
         let data = {
           username: this.userName,
@@ -109,8 +112,8 @@ export default {
         });
       }
     },
+    //เมื่อ login ค้า่งไว้แล้วกลับมาอีกครั้ง
     async checkToken() {
-      //เมื่อ login ค้า่งไว้แล้วกลับมาอีกครั้ง
       this.tokenData = this.$q.localStorage.getItem("token");
       if (this.tokenData !== null) {
         let data = { token: this.tokenData };
@@ -122,8 +125,6 @@ export default {
           this.loginTime = false;
           console.log(res.data);
           this.userNameBack = res.data[0].username;
-          // this.typePage = 2;
-          // this.user.name = res.data.realname;
         }
       }
     }
