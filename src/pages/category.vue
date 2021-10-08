@@ -83,7 +83,8 @@
             />
             <div style="font-size:24px;">Are you sure?</div>
             <div style="font-size:14px;">
-              You want to delete <b>{{ editId }} {{ editCat }}</b> !
+              You want to delete
+              <span class="text-red">{{ editId }} {{ editCat }}</span> !
             </div>
             <div class="row q-pt-md" style="width:280px;margin:auto;">
               <div class="ynBtn q-ma-sm" @click="clrmem()">Cancel</div>
@@ -226,12 +227,14 @@ export default {
   },
   methods: {
     clrmem() {
+      // เคลียร์ค่าในตัว จำค่า
       this.editId = "";
       this.editCat = "";
       this.indexId = 0;
       this.editBtn = this.addBtn = this.delBtn = false;
     },
     async addCat() {
+      // functionหลังจากกดปุ่ม OK ใน dialog ของ addcategory
       if (this.editId == "" || this.editCat == "") {
         this.$q.notify({
           progress: true,
@@ -244,10 +247,7 @@ export default {
       } else {
         let data = {
           orderid: this.editId,
-          catname: this.editCat,
-          movie: 0,
-          series: 0,
-          status: 0
+          catname: this.editCat
         };
         let url = this.serverpath + "bo_addcategory.php";
         let res = await axios.post(url, JSON.stringify(data));
@@ -271,7 +271,7 @@ export default {
           });
           // ไม่ได้ใส่ category
           this.editCat = "";
-        } else {
+        } else if (res.data == "OK") {
           this.$q.notify({
             progress: true,
             message: "Add new category complete",
@@ -285,6 +285,7 @@ export default {
       } // เพิ่ม category
     },
     async changeSta(item) {
+      // เปลี่ยน offline/online
       let sta = 0;
       if (item.status == 0) sta = 1;
       let data = {
@@ -297,6 +298,7 @@ export default {
       this.loadData();
     },
     deleteBtn(item) {
+      // กดปุ่มลบหมวดหนัง
       if (item.movie > 0 || item.series > 0) {
         this.$q.notify({
           progress: true,
@@ -313,6 +315,7 @@ export default {
       this.editCat = item.catname;
     },
     async deleteOk() {
+      // กดปุ่ม ok ใน dialog ลบหมวดหนัง
       let data = {
         id: this.indexId
       };
@@ -329,12 +332,14 @@ export default {
       this.loadData();
     },
     editCategory(item) {
+      // กดปุ่ม Edit
       this.editBtn = true;
       this.editId = item.orderid;
       this.editCat = item.catname;
       this.indexId = item.id;
     },
     async editOk() {
+      // กดปุ่ม ok ใน dialog ของ edit หมวดหนัง
       if (this.editId == "" || this.editCat == "") {
         this.$q.notify({
           progress: true,
@@ -353,7 +358,7 @@ export default {
       };
       let url = this.serverpath + "bo_editcategory.php";
       let res = await axios.post(url, JSON.stringify(data));
-      if (res.data == "finish") {
+      if (res.data == "OK") {
         this.$q.notify({
           progress: true,
           message: "Edit category complete",
