@@ -308,7 +308,11 @@
           <div class="checkBox" align="left">
             <div class="row q-pt-sm">
               <div class="col-5">
-                <q-checkbox color="green" v-model="check[0]">
+                <q-checkbox
+                  color="green"
+                  v-model="check[0]"
+                  :disable="(userStr = 'admin')"
+                >
                   <div class="row items-center">
                     <img src="../../public/images/iconCategory.svg" style= />
                     <div class="q-pl-xs">Category</div>
