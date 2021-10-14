@@ -111,6 +111,15 @@
               <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
                 {{ item.synopsis }}
               </div>
+              <div v-show="item.episode.length > 0">
+                <div class="row">
+                  <div v-for="(item2, index2) in item.episode" :key="index2">
+                    <div class="epBox">
+                      ซีซั่น {{ index2 + 1 }} - {{ item2 }} ตอน
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="col-1">
@@ -221,7 +230,8 @@ export default {
           trailerCode: "",
           promotion: 1,
           new: 1,
-          status: 0
+          status: 0,
+          episode: [12, 12, 4]
         },
         {
           id: 2,
@@ -241,7 +251,8 @@ export default {
           trailerCode: "",
           promotion: 1,
           new: 1,
-          status: 1
+          status: 1,
+          episode: []
         }
       ]
     };
@@ -272,5 +283,11 @@ export default {
   height: 25px;
   width: 87px;
   border-radius: 5px;
+}
+.epBox {
+  text-align: center;
+  width: 130px;
+  border: 1px solid black;
+  margin-right: 15px;
 }
 </style>
