@@ -41,6 +41,7 @@
               style="background-color:#FFC24C;font-size:18px;width:160px"
               label="+ ads"
               no-caps=""
+              @click="addAds()"
             />
           </div>
         </div>
@@ -80,7 +81,9 @@
                   </div>
                 </div>
                 <div class="col q-pl-lg">
-                  <div><u>Edit</u></div>
+                  <div class="cursor-pointer" @click="editAds(item)">
+                    <u>Edit</u>
+                  </div>
                 </div>
                 <div class="col q-pr-xl">
                   <div v-show="item.status == 1" class="onBox">
@@ -105,11 +108,137 @@
                 <div class="shadow-3" style="width:800px;height:130px;"></div>
               </div>
             </div>
-
             <div class="q-pb-sm"></div>
           </q-scroll-area>
         </div>
       </div>
+      <!----------------------------------------- dialog  ------------------>
+      <!-- add Ads  -->
+      <q-dialog v-model="addBtn" persistent>
+        <q-card class="diaBox" style="font-size:18px;">
+          <div class="row items-center" align="center">
+            <div class="col-1"></div>
+            <div class="col" style="font-size:24px;">Add</div>
+            <div class="col-1">
+              <q-btn
+                class="q-pa-sm"
+                icon="far fa-times-circle"
+                flat
+                rounded
+                size="lg"
+                dense
+                v-close-popup
+                @click="clrmem()"
+              />
+            </div>
+          </div>
+          <div class="row items-center q-py-sm" align="center">
+            <div class="col-4">ชื่อแคมเปญ</div>
+            <div class="col">
+              <q-input class="" style="width:350px;" v-model="mname" dense />
+            </div>
+            <div class="col-3"></div>
+          </div>
+          <div class="row items-center q-py-sm" align="center">
+            <div class="col-4">Weight</div>
+            <div class="col">
+              <q-input class="" style="width:350px;" v-model="mweight" dense />
+            </div>
+            <div class="col-3"></div>
+          </div>
+          <div class="row items-center q-py-sm" align="center">
+            <div class="col-4">URL destination</div>
+            <div class="col">
+              <q-input class="" style="width:350px;" v-model="murl" dense />
+            </div>
+            <div class="col-3"></div>
+          </div>
+          <div class="row items-center q-py-sm" align="center">
+            <div class="col-4">folder</div>
+            <div class="col">
+              <q-input class="" style="width:350px;" v-model="mfolder" dense />
+            </div>
+            <div class="col-3"></div>
+          </div>
+          <div class="row ynDia">
+            <div class="ynBtn q-ma-sm" @click="clrmem()" align="center">
+              Cancel
+            </div>
+            <div
+              class="ynBtn q-ma-sm"
+              style="background-color:#ffc24c"
+              @click="addOk()"
+              align="center"
+            >
+              Ok
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- edit Ads  -->
+      <q-dialog v-model="editBtn" persistent>
+        <q-card class="diaBox" style="font-size:18px;">
+          <div class="row items-center" align="center">
+            <div class="col-1"></div>
+            <div class="col" style="font-size:24px;">Edit</div>
+            <div class="col-1">
+              <q-btn
+                class="q-pa-sm"
+                icon="far fa-times-circle"
+                flat
+                rounded
+                size="lg"
+                dense
+                v-close-popup
+                @click="clrmem()"
+              />
+            </div>
+          </div>
+          <div class="row items-center q-py-sm" align="center">
+            <div class="col-4">ชื่อแคมเปญ</div>
+            <div class="col">
+              <q-input class="" style="width:350px;" v-model="mname" dense />
+            </div>
+            <div class="col-3"></div>
+          </div>
+          <div class="row items-center q-py-sm" align="center">
+            <div class="col-4">Weight</div>
+            <div class="col">
+              <q-input class="" style="width:350px;" v-model="mweight" dense />
+            </div>
+            <div class="col-3"></div>
+          </div>
+          <div class="row items-center q-py-sm" align="center">
+            <div class="col-4">URL destination</div>
+            <div class="col">
+              <q-input class="" style="width:350px;" v-model="murl" dense />
+            </div>
+            <div class="col-3"></div>
+          </div>
+          <div class="row items-center q-py-sm" align="center">
+            <div class="col-4">folder</div>
+            <div class="col">
+              <q-input class="" style="width:350px;" v-model="mfolder" dense />
+            </div>
+            <div class="col-3"></div>
+          </div>
+          <div class="row ynDia">
+            <div class="ynBtn q-ma-sm" @click="clrmem()" align="center">
+              Cancel
+            </div>
+            <div
+              class="ynBtn q-ma-sm"
+              style="background-color:#ffc24c"
+              align="center"
+              @click=""
+            >
+              Ok
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- bg drop  -->
+      <div class="bgDrop fullscreen" v-show="addBtn || editBtn"></div>
     </div>
   </div>
 </template>
@@ -148,10 +277,34 @@ export default {
           status: 1,
           at_timestamp: "2147483647"
         }
-      ]
+      ],
+      addBtn: false,
+      editBtn: false,
+      mname: "",
+      mweight: "",
+      murl: "",
+      mfolder: ""
     };
   },
   methods: {
+    clrmem() {
+      this.addBtn = false;
+      this.editBtn = false;
+      this.mname = "";
+      this.mweight = "";
+      this.murl = "";
+      this.mfolder = "";
+    },
+    addAds() {
+      this.addBtn = true;
+    },
+    editAds(item) {
+      this.editBtn = true;
+      this.mname = item.at_title;
+      this.mweight = item.at_weight;
+      this.murl = item.at_target;
+      this.mfolder = item.at_folder;
+    },
     loadAds() {
       this.adsPage = 1;
       if (this.adsOpt == "all") {
@@ -190,6 +343,61 @@ export default {
       for (let i = this.stAd - 1; i < this.endAd; i++) {
         this.dataShowPage.push(this.dataShow[i]);
       }
+    },
+    async addOk() {
+      if (
+        this.mname == "" ||
+        this.mweight == "" ||
+        this.mweight == "" ||
+        this.mfolder == ""
+      ) {
+        this.$q.notify({
+          progress: true,
+          message: "Plese input all fields",
+          color: "negative",
+          position: "top",
+          icon: "fas fa-times"
+        }); // ใส่ข้อมูลไม่ครบ
+        return;
+      } else {
+        let data = {
+          at_title: this.mname,
+          at_folder: this.mfolder,
+          at_weight: this.mweight,
+          at_target: this.murl
+        };
+        let url = this.serverpath + "bo_addads.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        if (res.data == "NR") {
+          this.$q.notify({
+            progress: true,
+            message: "This campaign exist",
+            color: "negative",
+            position: "top",
+            icon: "fas fa-times"
+          });
+          // ชื่อแคมเปญซ้ำ
+        } else if (res.data == "NRF") {
+          this.$q.notify({
+            progress: true,
+            message: "This folder exist",
+            color: "negative",
+            position: "top",
+            icon: "fas fa-times"
+          });
+          // ชื่อแคมเปญซ้ำ
+        } else if (res.data == "OK") {
+          this.$q.notify({
+            progress: true,
+            message: "Add new ads complete",
+            color: "positive",
+            position: "top",
+            icon: "fas fa-check"
+          });
+          this.loadData();
+          this.clrmem();
+        }
+      } // เพิ่ม category
     },
     async loadData() {
       let url = this.serverpath + "bo_loadads.php";
@@ -241,5 +449,31 @@ export default {
   height: 25px;
   color: white;
   background-color: $negative;
+}
+.bgDrop {
+  background-color: rgba($color: #000000, $alpha: 0.6);
+}
+.diaBox {
+  max-width: 900px;
+  width: 750px;
+  height: 400px;
+  border-radius: 30px;
+}
+.ynBtn {
+  margin: auto;
+  width: 120px;
+  height: 45px;
+  border-radius: 5px;
+  border: 1px solid #ffc24c;
+  cursor: pointer;
+  line-height: 45px;
+}
+.ynDia {
+  margin: auto;
+  position: absolute;
+  bottom: 30px;
+  margin-left: 200px;
+  width: 400px;
+  height: 45px;
 }
 </style>
