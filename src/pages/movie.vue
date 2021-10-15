@@ -511,6 +511,7 @@
                   type="file"
                   dense
                 /> -->
+
                 <q-file
                   v-model="posterMobileFile"
                   dense
@@ -758,7 +759,7 @@ export default {
           movieCodeEng: "kbfhda",
           movieCodeTh: "agssaga",
           trailerCode: "NDAywf",
-          promotion: 1,
+          promotion: 1, //promotion =1 , promotion = 0
           promotionMobilePic: 0, //รูปภาพ promotion สำหรับ mobile
           PromotionTabletPic: 0, //รูปภาพ promotion สำหรับ tablet
           PromotionPCPic: 0, //รูปภาพ promotion สำหรับ PC
