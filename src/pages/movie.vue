@@ -209,7 +209,6 @@
         </div>
         <!-- end moviebox  -->
       </div>
-      <!---------------------------------------------------dialog box  ------------------------------------->
       <!-- add box  -->
       <q-dialog class="" v-model="addMovie" persistent>
         <q-card class="diaBox">
@@ -744,7 +743,7 @@ export default {
           id: 1,
           nameEng: "A man who defies The World of BL",
           nameTh: "เรื่องรักวายๆ ผมขอบายได้ไหมครับ",
-          poster: null,
+          poster: 1, //poster =0 ไม่มีรูป poster = 1 มีรูป
           year: "2021",
           dayUpload: 10,
           view: 321,
@@ -763,8 +762,8 @@ export default {
           promotionMobilePic: 0, //รูปภาพ promotion สำหรับ mobile
           PromotionTabletPic: 0, //รูปภาพ promotion สำหรับ tablet
           PromotionPCPic: 0, //รูปภาพ promotion สำหรับ PC
-          new: 1,
-          status: 0
+          new: 1, //หนังใหม่
+          status: 0 //online, offline
         }
       ],
       mnameEng: "", // type m ตัวจำ ชือ ไว้ใช้ใน dialog
@@ -913,7 +912,7 @@ export default {
   },
   mounted() {
     this.loadcatatmovie();
-    this.checkTime();
+    // this.checkTime();
   }
 };
 </script>
