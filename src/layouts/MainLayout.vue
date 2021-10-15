@@ -239,7 +239,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .leftdrawer {
-  padding-top: 10px;
   margin-left: 30px;
   width: 270px;
   height: calc(100vh - 20px);
