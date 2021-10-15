@@ -175,7 +175,16 @@
                 v-show="!item.promotion"
                 class="btnMovie bg-grey"
                 align="center"
-                @click="promotionBTN(item.id)"
+                @click="
+                  promotionBTN(
+                    item.id,
+                    item.nameEng,
+                    item.nameTh,
+                    item.promotionMobilePic,
+                    item.promotionTabletPic,
+                    item.promotionPCPic
+                  )
+                "
               >
                 Promotion
               </div>
@@ -408,7 +417,7 @@
               Promotion
             </div>
             <div class="col" align="center" style="font-size:36px;">
-              A man who defies The World of BL
+              {{ promotionMovieNameEng }}
             </div>
             <div class="col-2"></div>
           </div>
@@ -424,12 +433,13 @@
               />
             </div>
             <div class="col" align="center">
-              เรื่องรักวายๆ ผมขอบายได้ไหมครับ
+              {{ promotionMovieNameThai }}
             </div>
             <div class="col-2"></div>
           </div>
           <div class="row items-center" aling="center" style="font-size:14px;">
             <div class="col"></div>
+            <!-- ปุ่มเลือก Mobile / tablet / pc -->
             <div
               v-show="indexPoster == 1"
               class="picPosterBTN q-ma-md cursor-pointer"
@@ -488,18 +498,39 @@
               <div class="q-py-xl col" style="padding-top:120px;">
                 jpg - 360x445 px
               </div>
-              <q-input
-                class="q-pl-md"
-                style="margin-left:50px;"
-                @input="
-                  val => {
-                    posterM = val[0];
-                  }
-                "
-                borderless
-                type="file"
-                dense
-              />
+              <div>
+                <!-- <q-input
+                  class="q-pl-md"
+                  style="margin-left:50px;"
+                  @input="
+                    val => {
+                      posterM = val[0];
+                    }
+                  "
+                  borderless
+                  type="file"
+                  dense
+                /> -->
+                <q-file
+                  v-model="posterMobileFile"
+                  dense
+                  style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
+                  borderless
+                  accept=".jpg"
+                  class="bg-white q-mt-lg"
+                  @input="uploadFilePosterMobile()"
+                >
+                  <template v-slot:prepend>
+                    <div class="absolute-center fit" align="center">
+                      <span class="text-black" style="font-size:12px;"
+                        >upload poster file</span
+                      >
+                    </div>
+                  </template>
+
+                  <template v-slot:file></template>
+                </q-file>
+              </div>
             </div>
             <div
               v-show="indexPoster == 1 && posterM != null"
@@ -728,6 +759,9 @@ export default {
           movieCodeTh: "agssaga",
           trailerCode: "NDAywf",
           promotion: 1,
+          promotionMobilePic: 0, //รูปภาพ promotion สำหรับ mobile
+          PromotionTabletPic: 0, //รูปภาพ promotion สำหรับ tablet
+          PromotionPCPic: 0, //รูปภาพ promotion สำหรับ PC
           new: 1,
           status: 0
         }
@@ -754,15 +788,26 @@ export default {
       editMovie: false,
       previewMovieBtn: false,
       previewtrailerBtn: false,
-      promotionMovie: false,
+      promotionMovie: false, //เปิดหน้าต่าง Promotion
+      promotionMovieNameEng: "", //ชื่อหนังภาษาอังกฤษ
+      promotionMovieNameThai: "", //ชื่อหนังภาษาไทย
+      promotionMovieId: "", //รหัสโปรโมชั่นหนัง
       promotionOn: false,
-      indexPoster: 1,
-      posterM: null,
-      posterT: null,
-      posterP: null
+      indexPoster: 1, //ประเภทพของรูป Promotion 1 = mobile / 2 = tablet / 3= PC
+      posterM: null, //รูปภาพของ Promotion สำหรับ Mobile
+      posterT: null, //รูปภาพของ Promotion สำหรับ Tablet
+      posterP: null, //รูปภาพของ Promotion สำหรับ PC
+      posterMobileFile: "" //
     };
   },
   methods: {
+    async uploadFilePosterMobile() {
+      let formData = new FormData();
+      formData.append("file", this.posterMobileFile);
+      formData.append("id", this.promotionMovieId);
+      const url = this.serverpath + "bo_uploadPromotionMobile.php";
+      let data = await axios.post(url, formData);
+    },
     addOk() {},
     cancelAdd() {
       this.clrmem();
@@ -821,9 +866,23 @@ export default {
     editMovieBtn(item) {
       this.editMovie = true;
     },
-    promotionBTN(posterId) {
+    promotionBTN(
+      posterId,
+      posterEng,
+      posterThai,
+      promotionMobilePic,
+      promotionTabletPic,
+      promotionPCPic
+    ) {
+      //กดปุ่ม Promotion จากหน้าหลัก ส่ง id, MovieEng, MovieThai
+      this.promotionMovieNameEng = posterEng;
+      this.promotionMovieNameThai = posterThai;
+      this.promotionMovieId = posterId;
+      promotionPCPic == 1 ? (this.posterP = 1) : (this.posterP = null);
+      promotionTabletPic == 1 ? (this.posterT = 1) : (this.posterT = null);
+      promotionMobilePic == 1 ? (this.posterM = 1) : (this.posterM = null);
       this.promotionMovie = true;
-      this.checkPoster(posterId);
+      // this.checkPoster(posterId);
     },
     checkPoster(posterId) {
       //     this.posterM = "http://localhost/moviedd/promotion/" + posterId + "m.jpg";

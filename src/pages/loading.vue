@@ -123,7 +123,7 @@ export default {
           localStorage.clear();
         } else {
           this.loginTime = false;
-          console.log(res.data);
+
           this.userNameBack = res.data[0].username;
         }
       }
