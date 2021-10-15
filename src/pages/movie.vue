@@ -786,7 +786,6 @@ export default {
       mHBO: false,
       mnew: false,
       mtype: null,
-<<<<<<< HEAD
       addMovie: false,
       editMovie: false,
       previewMovieBtn: false,
@@ -801,18 +800,6 @@ export default {
       posterT: null, //รูปภาพของ Promotion สำหรับ Tablet
       posterP: null, //รูปภาพของ Promotion สำหรับ PC
       posterMobileFile: "" //
-=======
-      addMovie: false, // true เมื่อกดปุ่ม add
-      editMovie: false, // true เมื่อกดปุ่ม edit
-      previewMovieBtn: false, // true เมื่อกดปุ่ม preview Movie
-      previewtrailerBtn: false, // true เมื่อกดปุ่ม preview Trailer
-      promotionMovie: false, // true เมื่อกดปุ่ม promotion
-      promotionOn: false, // ตัว toggle ใน dialog promotion
-      indexPoster: 1, // ตัวเลือก poster ในหน้า promotion 1=mobile 2=tablet 3=pc
-      posterM: null, // ตัวบอกว่ามีโปสเตอร์อยู่ไหม
-      posterT: null,
-      posterP: null
->>>>>>> main
     };
   },
   methods: {
