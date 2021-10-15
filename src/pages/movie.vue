@@ -80,6 +80,11 @@
               </div>
               <div style="font-size:18px;">{{ item.nameTh }}</div>
               <div class="row q-py-sm" style="font-size:14px;">
+                <div class="col-1">{{ item.year }}</div>
+                <div class="col-1">{{ item.mpaRate }}</div>
+                <div class="col-2">
+                  {{ item.hour }} ชั่วโมง {{ item.min }} นาที
+                </div>
                 <div class="col-4 row">
                   <div>{{ item.type[0] }}&nbsp;</div>
                   <div
@@ -89,11 +94,6 @@
                   >
                     | {{ item.type[i] }}&nbsp;
                   </div>
-                </div>
-                <div class="col-1">{{ item.year }}</div>
-                <div class="col-1">{{ item.mpaRate }}</div>
-                <div class="col-2">
-                  {{ item.hour }} ชั่วโมง {{ item.min }} นาที
                 </div>
                 <div v-show="item.movieCodeTh" class="testMovie" align="center">
                   TH Sound
@@ -390,7 +390,7 @@
             />
             <!-- expired date  -->
             <div class="row ynDia">
-              <div class="ynBtn q-ma-sm" @click="cancelAdd()" align="center">
+              <div class="ynBtn q-ma-sm" @click="clrmem()" align="center">
                 Cancel
               </div>
               <div
@@ -766,9 +766,9 @@ export default {
           status: 0
         }
       ],
-      mnameEng: "",
-      mnameTh: "",
-      mposter: null,
+      mnameEng: "", // type m ตัวจำ ชือ ไว้ใช้ใน dialog
+      mnameTh: "", // จำชื่อ eng
+      mposter: null, // ตัว choosen ไฟล์รูป poster ในช่อง add
       myear: "",
       mmpaRate: "",
       mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"],
@@ -777,6 +777,8 @@ export default {
       msynopsis: "",
       mmovieCodeTh: "",
       mmovieCodeEng: "",
+      mdayUpload: "",
+      mdayExpired: "", // day upload  +15
       mtrailerCode: "",
       mNetflix: false,
       mDisney: false,
@@ -784,6 +786,7 @@ export default {
       mHBO: false,
       mnew: false,
       mtype: null,
+<<<<<<< HEAD
       addMovie: false,
       editMovie: false,
       previewMovieBtn: false,
@@ -798,6 +801,18 @@ export default {
       posterT: null, //รูปภาพของ Promotion สำหรับ Tablet
       posterP: null, //รูปภาพของ Promotion สำหรับ PC
       posterMobileFile: "" //
+=======
+      addMovie: false, // true เมื่อกดปุ่ม add
+      editMovie: false, // true เมื่อกดปุ่ม edit
+      previewMovieBtn: false, // true เมื่อกดปุ่ม preview Movie
+      previewtrailerBtn: false, // true เมื่อกดปุ่ม preview Trailer
+      promotionMovie: false, // true เมื่อกดปุ่ม promotion
+      promotionOn: false, // ตัว toggle ใน dialog promotion
+      indexPoster: 1, // ตัวเลือก poster ในหน้า promotion 1=mobile 2=tablet 3=pc
+      posterM: null, // ตัวบอกว่ามีโปสเตอร์อยู่ไหม
+      posterT: null,
+      posterP: null
+>>>>>>> main
     };
   },
   methods: {
@@ -809,10 +824,6 @@ export default {
       let data = await axios.post(url, formData);
     },
     addOk() {},
-    cancelAdd() {
-      this.clrmem();
-      this.addMovie = false;
-    },
     clrmem() {
       this.mnameEng = "";
       this.mnameTh = "";
@@ -835,6 +846,13 @@ export default {
       this.promotionMovie = false;
       this.promotionOn = false;
       this.indexPoster = 1;
+      this.editMovie = false;
+      this.promotionMovie = false;
+      this.previewMovieBtn = false;
+      this.previewtrailerBtn = false;
+      this.posterM = null;
+      this.posterT = null;
+      this.posterP = null;
     },
     async loadcatatmovie() {
       this.movieCatOpt = [];
@@ -888,10 +906,26 @@ export default {
       //     this.posterM = "http://localhost/moviedd/promotion/" + posterId + "m.jpg";
       this.posterT = "http://localhost/moviedd/promotion/" + posterId + "t.jpg";
       this.posterP = "http://localhost/moviedd/promotion/" + posterId + "p.jpg";
+    },
+    checkTime() {
+      let today = new Date();
+      let mi = today.getTime() + 1296000000;
+      let a = new Date(mi);
+      this.mdayExpired =
+        a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+      this.mdayUpload =
+        today.getDate() +
+        "/" +
+        (today.getMonth() + 1) +
+        "/" +
+        today.getFullYear();
+      console.log(this.mdayUpload);
+      console.log(this.mdayExpired);
     }
   },
   mounted() {
     this.loadcatatmovie();
+    this.checkTime();
   }
 };
 </script>
