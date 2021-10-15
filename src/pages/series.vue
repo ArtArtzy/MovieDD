@@ -63,13 +63,8 @@
         <!-- movie box  -->
         <div v-for="(item, index) in data" :key="index">
           <div class="movieBox row " style="margin:10px;">
-            <div class="picMovie q-ma-md shadow-2">
-              <img
-                :src="
-                  'http://localhost/moviedd/posterseries/' + item.id + '.jpg'
-                "
-                alt=""
-              />
+            <div class="q-ma-md">
+              <img class="shadow-4" :src="urlPoster(item.id)" alt="" />
             </div>
             <div class="col q-pt-md">
               <div class="row" style="line-height:30px;">
@@ -82,6 +77,11 @@
               </div>
               <div style="font-size:18px;">{{ item.nameTh }}</div>
               <div class="row" style="font-size:14px;">
+                <div class="col-1">{{ item.year }}</div>
+                <div class="col-1">{{ item.mpaRate }}</div>
+                <div class="col-2">
+                  {{ item.hour }} ชั่วโมง {{ item.min }} นาที
+                </div>
                 <div class="col-3 row">
                   <div>{{ item.type[0] }}&nbsp;</div>
                   <div
@@ -91,21 +91,6 @@
                   >
                     | {{ item.type[i] }}&nbsp;
                   </div>
-                </div>
-                <div class="col-1">{{ item.year }}</div>
-                <div class="col-1">{{ item.mpaRate }}</div>
-                <div class="col-2">
-                  {{ item.hour }} ชั่วโมง {{ item.min }} นาที
-                </div>
-                <div v-show="item.movieCodeTh" class="testMovie" align="center">
-                  TH Sound
-                </div>
-                <div
-                  v-show="item.movieCodeEng"
-                  class="testMovie"
-                  align="center"
-                >
-                  TH Sub
                 </div>
               </div>
               <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
@@ -131,7 +116,7 @@
                     size="20px"
                     style="max-height:30px;"
                   >
-                    <q-badge floating color="red">{{
+                    <q-badge v-show="item.alert != 0" floating color="red">{{
                       item.alert
                     }}</q-badge></q-btn
                   >
@@ -256,6 +241,11 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    urlPoster(id) {
+      return this.serverpath + "/poster/series/" + id + ".jpg";
+    }
   }
 };
 </script>
