@@ -41,10 +41,7 @@ const routes = [
       { path: "/ads", component: () => import("pages/ads.vue"), name: "ads" }
     ]
   },
-  {
-    path: "/test",
-    component: () => import("pages/test.vue")
-  },
+
   {
     path: "/",
     component: () => import("pages/loading.vue")
