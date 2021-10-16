@@ -218,7 +218,7 @@ export default {
       };
       let url = this.serverpath + "bo_checktoken.php";
       let res = await axios.post(url, JSON.stringify(data));
-      console.log(res.data);
+
       if (res.data.length > 0) {
         this.userName = res.data[0].username;
         this.accessMenu.category = Number(res.data[0].us_category);

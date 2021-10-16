@@ -30,6 +30,9 @@
               :options="movieCatOpt"
               dense
               style="width:120px;font-size:16px;"
+              emit-value
+              map-options
+              @input="refreshCat()"
             >
             </q-select>
           </div>
@@ -63,11 +66,17 @@
         <!-- movie box  -->
         <div v-for="(item, index) in data" :key="index">
           <div class="movieBox row">
-            <div class="picMovie q-ma-md q-mt-lg shadow-2">
-              <img
-                :src="'http://localhost/moviedd/poster/' + item.id + '.jpg'"
-                alt=""
-              />
+            <div
+              class="picMovie q-ma-md q-mt-lg shadow-2"
+              v-if="item.poster == 1"
+            >
+              <img :src="serverpath + 'poster/movie/' + item.id + '.jpg'" />
+            </div>
+            <div
+              class="picMovie q-ma-md q-mt-lg shadow-2"
+              v-if="item.poster == 0"
+            >
+              <img :src="serverpath + 'poster/movie/nophoto.jpg'" />
             </div>
             <div class="col q-pt-md">
               <div class="row" style="line-height:30px;">
@@ -75,7 +84,7 @@
                   {{ item.nameEng }}
                 </div>
                 <div class="q-pl-md" style="font-size:14px;color:blue">
-                  <u>{{ item.dayUpload }} days | {{ item.view }} views</u>
+                  <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
                 </div>
               </div>
               <div style="font-size:18px;">{{ item.nameTh }}</div>
@@ -83,16 +92,16 @@
                 <div class="col-1">{{ item.year }}</div>
                 <div class="col-1">{{ item.mpaRate }}</div>
                 <div class="col-2">
-                  {{ item.hour }} ชั่วโมง {{ item.min }} นาที
+                  {{ item.durationHour }} ชั่วโมง {{ item.durationMin }} นาที
                 </div>
                 <div class="col-4 row">
-                  <div>{{ item.type[0] }}&nbsp;</div>
+                  <div>{{ catName(item.type[0]) }}&nbsp;</div>
                   <div
                     v-for="i in item.type.length - 1"
                     :key="i"
                     v-show="item.type[i]"
                   >
-                    | {{ item.type[i] }}&nbsp;
+                    | {{ catName(item.type[i]) }}&nbsp;
                   </div>
                 </div>
                 <div v-show="item.movieCodeTh" class="testMovie" align="center">
@@ -206,6 +215,7 @@
               </div>
             </div>
           </div>
+          <div style="height:15px;"></div>
         </div>
         <!-- end moviebox  -->
       </div>
@@ -734,38 +744,12 @@ export default {
   data() {
     return {
       searchMovie: "",
-      movieCat: "แอคชัน",
-      movieCatOpt: [],
-      movieP: 1,
-      moviePage: [1, 2, 3, 4],
-      data: [
-        {
-          id: 1,
-          nameEng: "A man who defies The World of BL",
-          nameTh: "เรื่องรักวายๆ ผมขอบายได้ไหมครับ",
-          poster: 1, //poster =0 ไม่มีรูป poster = 1 มีรูป
-          year: "2021",
-          dayUpload: 10,
-          view: 321,
-          mpaRate: "PG",
-          hour: "1",
-          min: "27",
-          type: ["แอคชัน", "ดราม่า", "ตลก", ""],
-          synopsis:
-            "เมื่อ Luke Hobbs ถูกส่งจากอังกฤษเพื่อไป หยุด ผู้ก่อการร้าย ที่มุ่งหวังจะทำลายโลก เขาต้องร่วมมือกับ Shaw นักปราบมือดีจาก USA แต่ทุกอย่างไม่ได้ง่ายอย่างที่คิด",
+      movieCat: 0, //ประเภทหนังที่ filter
+      movieCatOpt: [], //รายชื่อประเภทของหนัง
+      movieP: 1, //หน้าปัจจุบัน
+      moviePage: [], // Array ลำดับเลข 1 ถึงหน้าสุดท้าย
+      data: [], //ข้อมูลที่โชว์
 
-          alert: 5,
-          movieCodeEng: "kbfhda",
-          movieCodeTh: "agssaga",
-          trailerCode: "NDAywf",
-          promotion: 1, //promotion =1 , promotion = 0
-          promotionMobilePic: 0, //รูปภาพ promotion สำหรับ mobile
-          PromotionTabletPic: 0, //รูปภาพ promotion สำหรับ tablet
-          PromotionPCPic: 0, //รูปภาพ promotion สำหรับ PC
-          new: 1, //หนังใหม่
-          status: 0 //online, offline
-        }
-      ],
       mnameEng: "", // type m ตัวจำ ชือ ไว้ใช้ใน dialog
       mnameTh: "", // จำชื่อ eng
       mposter: null, // ตัว choosen ไฟล์รูป poster ในช่อง add
@@ -803,6 +787,78 @@ export default {
     };
   },
   methods: {
+    refreshCat() {
+      //เปลี่ยน Category
+      this.loadMovieData();
+    },
+    async loadpagenumber() {
+      //หาจำนวนหน้าทั้งหมดและใส่หน้าใน List
+      let data = {
+        cat: this.movieCat
+      };
+      let url = this.serverpath + "bo_moviepagenumber.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.moviePage = [];
+      for (let i = 1; i <= res.data; i++) {
+        this.moviePage.push(i);
+      }
+    },
+
+    async loadcatatmovie() {
+      //โหลดประเภทหนัง
+      this.movieCatOpt = [];
+      let url = this.serverpath + "bo_loadcategory.php";
+      let res = await axios.get(url);
+      let temp2 = {
+        label: "ทั้งหมด",
+        value: 0
+      };
+      this.movieCatOpt.push(temp2);
+      let dataTemp = res.data;
+      dataTemp = dataTemp.sort((a, b) => a.orderid - b.orderid);
+      dataTemp.forEach(x => {
+        let temp = {
+          label: x.catname,
+          value: x.id
+        };
+        this.movieCatOpt.push(temp);
+      });
+      this.movieCat = this.movieCatOpt[0].value;
+    },
+
+    catName(id) {
+      let temp = this.movieCatOpt.filter(x => x.value == id);
+      return temp[0].label;
+    },
+
+    async loadMovieData() {
+      //โหลดข้อมูลหนัง
+      this.data = [];
+      let data = {
+        catName: this.movieCat,
+        pagedata: this.movieP
+      };
+      let url = this.serverpath + "bo_movieshowdata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      res.data.forEach(x => {
+        //หาวันที่ upload ไป
+        let dateUploadMovie = new Date(x.timestamp);
+        let dateUploadTime = dateUploadMovie.getTime();
+        let dateCurrent = new Date();
+        let dateCurrentTime = dateCurrent.getTime();
+        let dateDiff = dateCurrentTime - dateUploadTime;
+        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
+
+        let movieType = x.type.split(",");
+        movieType = movieType.map(x => {
+          return x.replace("[", "").replace("]", "");
+        });
+        x.type = movieType;
+
+        this.data.push(x);
+      });
+    },
+
     async uploadFilePosterMobile() {
       let formData = new FormData();
       formData.append("file", this.posterMobileFile);
@@ -841,18 +897,7 @@ export default {
       this.posterT = null;
       this.posterP = null;
     },
-    async loadcatatmovie() {
-      this.movieCatOpt = [];
-      let url = this.serverpath + "bo_loadcategory.php";
-      let res = await axios.get(url);
-      res.data.forEach(x => {
-        let temp = {
-          label: x.catname,
-          value: x.id
-        };
-        this.movieCatOpt.push(temp);
-      });
-    },
+
     previewMovie(item) {
       this.mnameEng = item.nameEng;
       //      this.mnameTh=item.nameTh;
@@ -906,12 +951,15 @@ export default {
         (today.getMonth() + 1) +
         "/" +
         today.getFullYear();
-      console.log(this.mdayUpload);
-      console.log(this.mdayExpired);
+      // console.log(this.mdayUpload);
+      // console.log(this.mdayExpired);
     }
   },
+
   mounted() {
     this.loadcatatmovie();
+    this.loadpagenumber();
+    this.loadMovieData();
     // this.checkTime();
   }
 };
