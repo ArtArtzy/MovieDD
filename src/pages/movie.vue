@@ -232,6 +232,7 @@
                 <q-input
                   class=""
                   style="width:260px;"
+                  placeholder="Plese insert Title"
                   v-model="addmovie.titleEn"
                   dense
                 />
@@ -241,6 +242,7 @@
                 <q-input
                   class=""
                   style="width:260px;"
+                  placeholder="Plese insert Title"
                   v-model="addmovie.titleTh"
                   dense
                 />
@@ -252,6 +254,7 @@
                 <q-input
                   class=""
                   style="width:160px;"
+                  placeholder="Plese insert Year"
                   v-model="addmovie.year"
                   dense
                 />
@@ -276,6 +279,7 @@
                   <q-input
                     class="q-pl-sm"
                     style="width:70px;"
+                    placeholder="0"
                     v-model="addmovie.durationHour"
                     dense
                   />
@@ -285,6 +289,7 @@
                   <q-input
                     class="q-pl-sm"
                     style="width:74px;"
+                    placeholder="0"
                     v-model="addmovie.durationMin"
                     dense
                   />
@@ -767,7 +772,7 @@ export default {
         titleTh: "",
         titleEn: "",
         year: "",
-        mpaRating: "",
+        mpaRating: "G",
         durationHour: "",
         durationMin: "",
         posterFile: "",
@@ -775,7 +780,7 @@ export default {
         movieCodeThaiSound: "",
         movieCodeThaiSub: "",
         trailerCode: "",
-        category: "",
+        category: null,
         netflix: false,
         disney: false,
         amazon: false,
@@ -840,6 +845,28 @@ export default {
       //Check input
       if (this.addmovie.titleEn.length == 0) {
         this.redNotify("Please input Title name (En)");
+        return;
+      }
+      if (this.addmovie.year.length == 0) {
+        this.redNotify("Please input year");
+        return;
+      }
+      if (
+        this.addmovie.durationHour.length == 0 &&
+        this.addmovie.durationMin.length == 0
+      ) {
+        this.redNotify("Please input duration");
+        return;
+      }
+      if (
+        this.addmovie.movieCodeThaiSub == 0 &&
+        this.addmovie.movieCodeThaiSound == 0
+      ) {
+        this.redNotify("Please input Movie Code");
+        return;
+      }
+      if (this.addmovie.category.length < 3 || this.addmovie.category == null) {
+        this.redNotify("Please pick category at least 3");
         return;
       }
       let data = {
