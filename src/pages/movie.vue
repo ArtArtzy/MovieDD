@@ -406,7 +406,6 @@
               color="positive"
             />
 
-            <!-- expired date  -->
             <div class="row ynDia">
               <div
                 class="ynBtn q-ma-sm"
@@ -775,7 +774,7 @@ export default {
         mpaRating: "G",
         durationHour: "",
         durationMin: "",
-        posterFile: "",
+        posterFile: null,
         synopsis: "",
         movieCodeThaiSound: "",
         movieCodeThaiSub: "",
