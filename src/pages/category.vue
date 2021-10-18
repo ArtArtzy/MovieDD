@@ -27,48 +27,50 @@
             <div class="col">Edit</div>
           </div>
           <hr />
-          <div
-            class="row q-pa-sm"
-            v-for="(item, index) in data"
-            :key="index"
-            :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
-            align="center"
-          >
-            <div class="col-2" align="left">{{ item.orderid }}</div>
-            <div class="col-2" align="left">{{ item.catname }}</div>
-            <div class="col">{{ item.movie }}</div>
-            <div class="col">{{ item.series }}</div>
-            <div class="col">
-              <div
-                class="onlineBtn cursor-pointer"
-                v-show="item.status == 1"
-                @click="changeSta(item)"
-              >
-                online
-              </div>
-              <div
-                class="offlineBtn cursor-pointer"
-                v-show="item.status == 0"
-                @click="changeSta(item)"
-              >
-                offline
-              </div>
-            </div>
-            <div class="col">
-              <img
-                class="cursor-pointer "
-                src="../../public/images/delBin.svg"
-                alt=""
-                @click="deleteBtn(item)"
-              />
-            </div>
+          <q-scroll-area class="" style="height:80vh; max-width: 90vw;">
             <div
-              class="col underLine cursor-pointer"
-              @click="editCategory(item)"
+              class="row q-pa-sm"
+              v-for="(item, index) in data"
+              :key="index"
+              :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+              align="center"
             >
-              <u>Edit</u>
+              <div class="col-2" align="left">{{ item.orderid }}</div>
+              <div class="col-2" align="left">{{ item.catname }}</div>
+              <div class="col">{{ item.movie }}</div>
+              <div class="col">{{ item.series }}</div>
+              <div class="col">
+                <div
+                  class="onlineBtn cursor-pointer"
+                  v-show="item.status == 1"
+                  @click="changeSta(item)"
+                >
+                  online
+                </div>
+                <div
+                  class="offlineBtn cursor-pointer"
+                  v-show="item.status == 0"
+                  @click="changeSta(item)"
+                >
+                  offline
+                </div>
+              </div>
+              <div class="col">
+                <img
+                  class="cursor-pointer "
+                  src="../../public/images/delBin.svg"
+                  alt=""
+                  @click="deleteBtn(item)"
+                />
+              </div>
+              <div
+                class="col underLine cursor-pointer"
+                @click="editCategory(item)"
+              >
+                <u>Edit</u>
+              </div>
             </div>
-          </div>
+          </q-scroll-area>
         </div>
       </div>
       <!-- dialog Box -->

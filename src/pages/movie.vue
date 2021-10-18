@@ -57,7 +57,7 @@
               style="background-color:#FFC24C;font-size:18px;width:160px;"
               label="+ Movie"
               no-caps
-              @click="showAddMovieBtn"
+              @click="showAddMovieBtn()"
             />
           </div>
         </div>
@@ -738,7 +738,7 @@
       <div
         class="bgDrop fullscreen"
         v-show="
-          addMovie ||
+          dialogAddMovie ||
             editMovie ||
             promotionMovie ||
             previewMovieBtn ||
@@ -864,10 +864,14 @@ export default {
         this.redNotify("Please input Movie Code");
         return;
       }
-      if (this.addmovie.category.length < 3 || this.addmovie.category == null) {
+      if (this.addmovie.category == null) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      } else if (this.addmovie.category.length < 3) {
         this.redNotify("Please pick category at least 3");
         return;
       }
+
       let data = {
         nameEng: this.addmovie.titleEn,
         nameTh: this.addmovie.titleTh,

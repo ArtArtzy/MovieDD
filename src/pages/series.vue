@@ -54,7 +54,7 @@
               style="background-color:#FFC24C;font-size:18px;width:160px;"
               label="+ Movie"
               no-caps
-              @click="addMovie = true"
+              @click=""
             />
           </div>
         </div>
@@ -121,7 +121,7 @@
                     }}</q-badge></q-btn
                   >
                 </div>
-                <div class="col cursor-pointer" @click="editMovieBtn(item)">
+                <div class="col cursor-pointer" @click="">
                   <u>Edit</u>
                 </div>
               </div>
