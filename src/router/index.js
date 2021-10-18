@@ -34,5 +34,23 @@ Vue.mixin({
       //    serverpath: "https://www.yaksaconcept.com/movieddapi/"
       serverpath: "http://localhost/moviedd/"
     };
+  },
+  methods: {
+    redNotify(text) {
+      this.$q.notify({
+        message: text,
+        icon: "fas fa-exclamation",
+        color: "negative",
+        position: "top"
+      });
+    },
+    greenNotify(text) {
+      this.$q.notify({
+        message: text,
+
+        color: "secondary",
+        position: "top"
+      });
+    }
   }
 });

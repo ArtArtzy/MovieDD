@@ -57,7 +57,7 @@
               style="background-color:#FFC24C;font-size:18px;width:160px;"
               label="+ Movie"
               no-caps
-              @click="addMovie = true"
+              @click="showAddMovieBtn"
             />
           </div>
         </div>
@@ -219,8 +219,8 @@
         </div>
         <!-- end moviebox  -->
       </div>
-      <!-- add box  -->
-      <q-dialog class="" v-model="addMovie" persistent>
+      <!-- add movie box  -->
+      <q-dialog class="" v-model="dialogAddMovie" persistent>
         <q-card class="diaBox">
           <div class="q-pt-md" style="font-size:24px;" align="center">
             Add movie
@@ -232,7 +232,7 @@
                 <q-input
                   class=""
                   style="width:260px;"
-                  v-model="mnameEng"
+                  v-model="addmovie.titleEn"
                   dense
                 />
               </div>
@@ -241,7 +241,7 @@
                 <q-input
                   class=""
                   style="width:260px;"
-                  v-model="mnameTh"
+                  v-model="addmovie.titleTh"
                   dense
                 />
               </div>
@@ -249,14 +249,19 @@
             <div class="row ">
               <div class="col row items-end">
                 <div class="col-4">Year</div>
-                <q-input class="" style="width:160px;" v-model="myear" dense />
+                <q-input
+                  class=""
+                  style="width:160px;"
+                  v-model="addmovie.year"
+                  dense
+                />
               </div>
               <div class="col row items-end">
                 <div class="col-4">Mpa Rating</div>
                 <q-select
                   class=""
                   color="blue"
-                  v-model="mmpaRate"
+                  v-model="addmovie.mpaRating"
                   :options="mpaOpt"
                   dense
                   style="width:80px;font-size:16px;"
@@ -271,7 +276,7 @@
                   <q-input
                     class="q-pl-sm"
                     style="width:70px;"
-                    v-model="mhour"
+                    v-model="addmovie.durationHour"
                     dense
                   />
                 </div>
@@ -280,27 +285,25 @@
                   <q-input
                     class="q-pl-sm"
                     style="width:74px;"
-                    v-model="mmin"
+                    v-model="addmovie.durationMin"
                     dense
                   />
                 </div>
                 <div>m</div>
               </div>
               <div class="col row items-center" style="padding-top:20px;">
-                <div class="">
-                  Poster file
+                <div class="row " style="width: 300px;">
+                  <div class="col">Poster file</div>
+                  <div class="col posterFilePos">
+                    <q-file
+                      v-model="addmovie.posterFile"
+                      dense
+                      accept=".jpg"
+                      label="Pick one file"
+                    >
+                    </q-file>
+                  </div>
                 </div>
-                <q-input
-                  class="q-pl-md"
-                  @input="
-                    val => {
-                      mposter = val[0];
-                    }
-                  "
-                  borderless
-                  type="file"
-                  dense
-                />
               </div>
             </div>
             <div class="q-pt-md">Synopsis</div>
@@ -310,7 +313,7 @@
                 borderless
                 type="textarea"
                 style="max-height:450px;"
-                v-model="msynopsis"
+                v-model="addmovie.synopsis"
                 dense
               />
             </div>
@@ -320,7 +323,7 @@
                 <q-input
                   class=""
                   style="width:200px;"
-                  v-model="mmovieCodeTh"
+                  v-model="addmovie.movieCodeThaiSound"
                   dense
                 />
               </div>
@@ -329,7 +332,7 @@
                 <q-input
                   class=""
                   style="width:200px;"
-                  v-model="mmovieCodeEng"
+                  v-model="addmovie.movieCodeThaiSub"
                   dense
                 />
               </div>
@@ -339,7 +342,7 @@
               <q-input
                 class=""
                 style="width:200px;"
-                v-model="mtrailerCode"
+                v-model="addmovie.trailerCode"
                 dense
               />
             </div>
@@ -348,7 +351,7 @@
               <q-select
                 class="q-pl-lg"
                 color="teal"
-                v-model="mtype"
+                v-model="addmovie.category"
                 :options="movieCatOpt"
                 multiple
                 counter
@@ -365,47 +368,52 @@
               <q-checkbox
                 class="col-2"
                 dense
-                v-model="mNetflix"
+                v-model="addmovie.netflix"
                 label="Netflix"
                 color="positive"
               />
               <q-checkbox
                 class="col-2"
                 dense
-                v-model="mDisney"
+                v-model="addmovie.disney"
                 label="Disney"
                 color="positive"
               />
               <q-checkbox
                 class="col-2"
                 dense
-                v-model="mAmazon"
+                v-model="addmovie.amazon"
                 label="Amazon"
                 color="positive"
               /><q-checkbox
                 class="col-2"
                 dense
-                v-model="mHBO"
+                v-model="addmovie.hbo"
                 label="HBO"
                 color="positive"
               />
             </div>
             <q-checkbox
+              :label="labelExpired"
               class="q-pt-md"
               dense
-              v-model="mnew"
-              label="New arraival (expired date 20/10/2021)"
+              v-model="addmovie.newArraival"
               color="positive"
             />
+
             <!-- expired date  -->
             <div class="row ynDia">
-              <div class="ynBtn q-ma-sm" @click="clrmem()" align="center">
+              <div
+                class="ynBtn q-ma-sm"
+                @click="closeAddMovieBtn()"
+                align="center"
+              >
                 Cancel
               </div>
               <div
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c"
-                @click="addOk()"
+                @click="addMovieBtn()"
                 align="center"
               >
                 Ok
@@ -753,6 +761,29 @@ export default {
       mnameEng: "", // type m ตัวจำ ชือ ไว้ใช้ใน dialog
       mnameTh: "", // จำชื่อ eng
       mposter: null, // ตัว choosen ไฟล์รูป poster ในช่อง add
+      // Add movie
+      dialogAddMovie: false,
+      addmovie: {
+        titleTh: "",
+        titleEn: "",
+        year: "",
+        mpaRating: "",
+        durationHour: "",
+        durationMin: "",
+        posterFile: "",
+        synopsis: "",
+        movieCodeThaiSound: "",
+        movieCodeThaiSub: "",
+        trailerCode: "",
+        category: "",
+        netflix: false,
+        disney: false,
+        amazon: false,
+        hbo: false,
+        newArraival: false,
+        expiredDate: ""
+      },
+      labelExpired: "", // คำอธิบาย label สำหรับ New arraival
       myear: "",
       mmpaRate: "",
       mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"],
@@ -770,7 +801,7 @@ export default {
       mHBO: false,
       mnew: false,
       mtype: null,
-      addMovie: false,
+
       editMovie: false,
       previewMovieBtn: false,
       previewtrailerBtn: false,
@@ -787,6 +818,50 @@ export default {
     };
   },
   methods: {
+    //ปุ่มเพิ่ม Movie
+    showAddMovieBtn() {
+      // expired date
+      let today = new Date();
+      let mi = today.getTime() + 1296000000;
+      let a = new Date(mi);
+      this.addmovie.expiredDate =
+        a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+      this.labelExpired =
+        "New arrival (expireed date " + this.addmovie.expiredDate + ")";
+      this.addmovie.titleTh = "";
+      this.dialogAddMovie = true;
+    },
+    // ปิดปุ่ม add movie
+    closeAddMovieBtn() {
+      this.dialogAddMovie = false;
+    },
+    //ปุ่ม saves หนัง ใน add movie
+    addMovieBtn() {
+      //Check input
+      if (this.addmovie.titleEn.length == 0) {
+        this.redNotify("Please input Title name (En)");
+        return;
+      }
+      let data = {
+        nameEng: this.addmovie.titleEn,
+        nameTh: this.addmovie.titleTh,
+        year: this.addmovie.year,
+        mparate: this.addmovie.mpaRating,
+        durationHour: this.addmovie.durationHour,
+        durationMin: this.addmovie.durationMin,
+        type: this.addmovie.category,
+        synopsis: this.addmovie.synopsis,
+        movieCodeEng: this.addmovie.movieCodeThaiSub,
+        movieCodeTh: this.addmovie.movieCodeThaiSound,
+        trailerCode: this.addmovie.trailerCode,
+        netflix: this.addmovie.netflix ? 1 : 0,
+        disney: this.addmovie.disney ? 1 : 0,
+        amazon: this.addmovie.amazon ? 1 : 0,
+        hbo: this.addmovie.hbo ? 1 : 0,
+        new: this.addmovie.newArraival ? 1 : 0,
+        expiredDate: this.addmovie.newArraival ? this.addmovie.expiredDate : 0
+      };
+    },
     refreshCat() {
       //เปลี่ยน Category
       this.loadMovieData();
@@ -827,6 +902,7 @@ export default {
     },
 
     catName(id) {
+      //ใช้แสดงชื่อ category
       let temp = this.movieCatOpt.filter(x => x.value == id);
       return temp[0].label;
     },
@@ -866,7 +942,7 @@ export default {
       const url = this.serverpath + "bo_uploadPromotionMobile.php";
       let data = await axios.post(url, formData);
     },
-    addOk() {},
+
     clrmem() {
       this.mnameEng = "";
       this.mnameTh = "";
@@ -944,12 +1020,12 @@ export default {
       let mi = today.getTime() + 1296000000;
       let a = new Date(mi);
       this.mdayExpired =
-        a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+        a.getDate() + "-" + (a.getMonth() + 1) + "-" + a.getFullYear();
       this.mdayUpload =
         today.getDate() +
-        "/" +
+        "-" +
         (today.getMonth() + 1) +
-        "/" +
+        "-" +
         today.getFullYear();
       // console.log(this.mdayUpload);
       // console.log(this.mdayExpired);
@@ -1063,5 +1139,9 @@ export default {
   width: 975px;
   height: 600px;
   border-radius: 30px;
+}
+.posterFilePos {
+  position: relative;
+  top: -10px;
 }
 </style>
