@@ -26,7 +26,7 @@
                 :options="pageAds"
                 :dense="true"
                 style="width:60px;font-size:16px;"
-                @input="showPage"
+                @input="showPage()"
               >
               </q-select>
             </div>
@@ -86,10 +86,18 @@
                   </div>
                 </div>
                 <div class="col q-pr-xl">
-                  <div v-show="item.status == 1" class="onBox">
+                  <div
+                    v-show="item.status == 1"
+                    class="onBox cursor-pointer"
+                    @click="changeStatus(item)"
+                  >
                     online
                   </div>
-                  <div v-show="item.status == 0" class="offBox">
+                  <div
+                    v-show="item.status == 0"
+                    class="offBox"
+                    @click="changeStatus(item)"
+                  >
                     offline
                   </div>
                 </div>
@@ -211,14 +219,26 @@
           <div class="row items-center q-py-sm" align="center">
             <div class="col-4">URL destination</div>
             <div class="col">
-              <q-input class="" style="width:350px;" v-model="murl" dense />
+              <q-input
+                class=""
+                style="width:350px;"
+                v-model="murl"
+                disable=""
+                dense
+              />
             </div>
             <div class="col-3"></div>
           </div>
           <div class="row items-center q-py-sm" align="center">
             <div class="col-4">folder</div>
             <div class="col">
-              <q-input class="" style="width:350px;" v-model="mfolder" dense />
+              <q-input
+                class=""
+                style="width:350px;"
+                v-model="mfolder"
+                disable=""
+                dense
+              />
             </div>
             <div class="col-3"></div>
           </div>
@@ -230,7 +250,7 @@
               class="ynBtn q-ma-sm"
               style="background-color:#ffc24c"
               align="center"
-              @click=""
+              @click="editOk()"
             >
               Ok
             </div>
@@ -290,6 +310,7 @@ export default {
     clrmem() {
       this.addBtn = false;
       this.editBtn = false;
+      this.mid = "";
       this.mname = "";
       this.mweight = "";
       this.murl = "";
@@ -299,11 +320,45 @@ export default {
       this.addBtn = true;
     },
     editAds(item) {
-      this.editBtn = true;
+      this.mid = item.at_id;
       this.mname = item.at_title;
       this.mweight = item.at_weight;
       this.murl = item.at_target;
       this.mfolder = item.at_folder;
+      this.editBtn = true;
+    },
+    async editOk() {
+      let data = {
+        at_id: this.mid,
+        at_title: this.mname,
+        at_folder: this.mfolder,
+        at_weight: this.mweight,
+        at_target: this.murl
+      };
+      let url = this.serverpath + "bo_editads.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      if (res.data == "OK") {
+        this.$q.notify({
+          progress: true,
+          message: "Edit ads complete",
+          color: "positive",
+          position: "top",
+          icon: "fas fa-check"
+        });
+        this.clrmem();
+        this.loadData();
+      } else if (res.data == "notchange") {
+        this.clrmem();
+        this.loadData();
+      } else {
+        this.$q.notify({
+          progress: true,
+          message: res.data,
+          color: "negative",
+          position: "top",
+          icon: "fas fa-times"
+        });
+      }
     },
     loadAds() {
       this.adsPage = 1;
@@ -343,6 +398,36 @@ export default {
       for (let i = this.stAd - 1; i < this.endAd; i++) {
         this.dataShowPage.push(this.dataShow[i]);
       }
+    },
+    async changeStatus(item) {
+      let sta = 0;
+      if (item.status == 0) sta = 1;
+      else sta = 0;
+      let data = {
+        at_id: item.at_id,
+        status: sta
+      };
+      let url = this.serverpath + "bo_changestatusads.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      if (sta == 0) {
+        this.$q.notify({
+          progress: true,
+          message: item.at_title + " status change to offline",
+          color: "positive",
+          position: "top",
+          icon: "fas fa-check"
+        });
+      } else {
+        this.$q.notify({
+          progress: true,
+          message: item.at_title + " status change to online",
+          color: "positive",
+          position: "top",
+          icon: "fas fa-check"
+        });
+      }
+      this.loadData();
     },
     async addOk() {
       if (
