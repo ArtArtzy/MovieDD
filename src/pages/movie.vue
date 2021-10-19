@@ -208,18 +208,18 @@
                   Promotion
                 </div>
                 <div
-                  v-show="item.status"
+                  v-show="item.status == 1"
                   class="btnMovie bg-positive"
                   align="center"
-                  @click="item.status = 0"
+                  @click="changeStatus(item)"
                 >
                   online
                 </div>
                 <div
-                  v-show="!item.status"
+                  v-show="item.status == 0"
                   class="btnMovie bg-negative"
                   align="center"
-                  @click="item.status = 1"
+                  @click="changeStatus(item)"
                 >
                   offline
                 </div>
@@ -1300,6 +1300,37 @@ export default {
         this.redNotify("Please pick poster file");
         return;
       }
+    },
+    //เปลี่ยน status online/offline ของหนัง
+    async changeStatus(item) {
+      let sta = 0;
+      if (item.status == 0) sta = 1;
+      else sta = 0;
+      let data = {
+        id: item.id,
+        status: sta
+      };
+      let url = this.serverpath + "bo_changestatusmovie.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      if (sta == 0) {
+        this.$q.notify({
+          progress: true,
+          message: item.nameEng + " status change to offline",
+          color: "positive",
+          position: "top",
+          icon: "fas fa-check"
+        });
+      } else {
+        this.$q.notify({
+          progress: true,
+          message: item.nameEng + " status change to online",
+          color: "positive",
+          position: "top",
+          icon: "fas fa-check"
+        });
+      }
+      this.loadMovieData();
     },
     async uploadFilePosterMobile() {
       let formData = new FormData();
