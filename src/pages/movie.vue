@@ -406,7 +406,6 @@
               color="positive"
             />
 
-            <!-- expired date  -->
             <div class="row ynDia">
               <div
                 class="ynBtn q-ma-sm"
@@ -841,7 +840,7 @@ export default {
       this.dialogAddMovie = false;
     },
     //ปุ่ม saves หนัง ใน add movie
-    addMovieBtn() {
+    async addMovieBtn() {
       //Check input
       if (this.addmovie.titleEn.length == 0) {
         this.redNotify("Please input Title name (En)");
@@ -892,6 +891,11 @@ export default {
         new: this.addmovie.newArraival ? 1 : 0,
         expiredDate: this.addmovie.newArraival ? this.addmovie.expiredDate : 0
       };
+      let url = this.serverpath + "bo_movieadddata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      if (res.data == "finish") {
+        this.dialogAddMovie = false;
+      }
     },
     refreshCat() {
       //เปลี่ยน Category
