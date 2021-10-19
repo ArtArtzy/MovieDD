@@ -1150,7 +1150,9 @@ export default {
         url = this.serverpath + "bo_movieaddcat.php";
         let res = await axios.post(url, JSON.stringify(data3));
       }
+      this.greenNotify("Add new movie completely");
       this.dialogAddMovie = false;
+      this.loadMovieData();
     },
     //เปลี่ยน Category
     refreshCat() {
@@ -1264,7 +1266,7 @@ export default {
       this.dialogEditMovie = true;
     },
     //บันทึกแก้ไขหนัง
-    saveEditMovieBtn() {
+    async saveEditMovieBtn() {
       //Check input
       if (this.addmovie.titleEn.length == 0) {
         this.redNotify("Please input Title name (En)");
@@ -1300,6 +1302,38 @@ export default {
         this.redNotify("Please pick poster file");
         return;
       }
+      //ปรับรูปแบบของ category
+      let categoryData = "";
+      this.addmovie.category.forEach(x => {
+        categoryData += "[" + x + "],";
+      });
+      categoryData = categoryData.slice(0, -1);
+
+      let data = {
+        nameEng: this.addmovie.titleEn,
+        nameTh: this.addmovie.titleTh,
+        year: this.addmovie.year,
+        mparate: this.addmovie.mpaRating,
+        durationHour: this.addmovie.durationHour,
+        durationMin: this.addmovie.durationMin,
+        type: categoryData,
+        synopsis: this.addmovie.synopsis,
+        movieCodeEng: this.addmovie.movieCodeThaiSub,
+        movieCodeTh: this.addmovie.movieCodeThaiSound,
+        trailerCode: this.addmovie.trailerCode,
+        netflix: this.addmovie.netflix ? 1 : 0,
+        disney: this.addmovie.disney ? 1 : 0,
+        amazon: this.addmovie.amazon ? 1 : 0,
+        hbo: this.addmovie.hbo ? 1 : 0,
+        new: this.addmovie.newArraival ? 1 : 0,
+        expiredDate: this.addmovie.newArraival ? this.addmovie.expiredDate : 0,
+        id: this.editMovieId
+      };
+      let url = this.serverpath + "bo_movieeditdata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.greenNotify("update movie completely");
+      this.dialogEditMovie = false;
+      this.loadMovieData();
     },
     //เปลี่ยน status online/offline ของหนัง
     async changeStatus(item, index) {
@@ -1332,6 +1366,14 @@ export default {
       }
       this.data[index].status = sta;
       //this.loadMovieData();
+    },
+
+    async deletePosterFileBtn() {
+      let data = {
+        id: this.editMovieId
+      };
+      let url = this.serverpath + "bo_deleteposterfile.php";
+      let res = await axios.post(url, JSON.stringify(data));
     },
     async uploadFilePosterMobile() {
       let formData = new FormData();
