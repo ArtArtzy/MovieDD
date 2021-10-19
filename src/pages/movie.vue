@@ -61,166 +61,173 @@
             />
           </div>
         </div>
+        <div class="q-pt-md"></div>
         <!-- end header  -->
-        <div class="q-pt-lg"></div>
-        <!-- movie box  -->
-        <div v-for="(item, index) in data" :key="index">
-          <div class="movieBox row">
-            <div
-              class="picMovie q-ma-md q-mt-lg shadow-2"
-              v-if="item.poster == 1"
-            >
-              <img
-                :src="serverpath + 'poster/movie/' + item.id + '.jpg'"
-                style="width:100px;"
-              />
-            </div>
-            <div
-              class="picMovie q-ma-md q-mt-lg shadow-2"
-              v-if="item.poster == 0"
-            >
-              <img :src="serverpath + 'poster/movie/nophoto.jpg'" />
-            </div>
-            <div class="col q-pt-md">
-              <div class="row" style="line-height:30px;">
-                <div style="font-size:24px;">
-                  {{ item.nameEng }}
-                </div>
-                <div class="q-pl-md" style="font-size:14px;color:blue">
-                  <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
-                </div>
+        <q-scroll-area class="" style="height:88vh; max-width: 90vw;">
+          <!-- movie box  -->
+
+          <div v-for="(item, index) in data" :key="index">
+            <div class="movieBox row">
+              <div
+                class="picMovie q-ma-md q-mt-lg shadow-2"
+                v-if="item.poster == 1"
+              >
+                <img
+                  :src="serverpath + 'poster/movie/' + item.id + '.jpg'"
+                  style="width:100px;"
+                />
               </div>
-              <div style="font-size:18px;">{{ item.nameTh }}</div>
-              <div class="row q-py-sm" style="font-size:14px;">
-                <div class="col-1">{{ item.year }}</div>
-                <div class="col-1">{{ item.mpaRate }}</div>
-                <div class="col-2">
-                  {{ item.durationHour }} ชั่วโมง {{ item.durationMin }} นาที
-                </div>
-                <div class="col-4 row">
-                  <div>{{ catName(item.type[0]) }}&nbsp;</div>
-                  <div
-                    v-for="i in item.type.length - 1"
-                    :key="i"
-                    v-show="item.type[i]"
-                  >
-                    | {{ catName(item.type[i]) }}&nbsp;
+              <div
+                class="picMovie q-ma-md q-mt-lg shadow-2"
+                v-if="item.poster == 0"
+              >
+                <img :src="serverpath + 'poster/movie/nophoto.jpg'" />
+              </div>
+              <div class="col q-pt-md">
+                <div class="row" style="line-height:30px;">
+                  <div style="font-size:24px;">
+                    {{ item.nameEng }}
+                  </div>
+                  <div class="q-pl-md" style="font-size:14px;color:blue">
+                    <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
                   </div>
                 </div>
-                <div v-show="item.movieCodeTh" class="testMovie" align="center">
-                  TH Sound
+                <div style="font-size:18px;">{{ item.nameTh }}</div>
+                <div class="row q-py-sm" style="font-size:14px;">
+                  <div class="col-1">{{ item.year }}</div>
+                  <div class="col-1">{{ item.mparate }}</div>
+                  <div class="col-2">
+                    {{ item.durationHour }} ชั่วโมง {{ item.durationMin }} นาที
+                  </div>
+                  <div class="col-4 row">
+                    <div>{{ catName(item.type[0]) }}&nbsp;</div>
+                    <div
+                      v-for="i in item.type.length - 1"
+                      :key="i"
+                      v-show="item.type[i]"
+                    >
+                      | {{ catName(item.type[i]) }}&nbsp;
+                    </div>
+                  </div>
+                  <div
+                    v-show="item.movieCodeTh"
+                    class="testMovie"
+                    align="center"
+                  >
+                    TH Sound
+                  </div>
+                  <div
+                    v-show="item.movieCodeEng"
+                    class="testMovie"
+                    align="center"
+                  >
+                    TH Sub
+                  </div>
+                </div>
+                <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
+                  {{ item.synopsis }}
+                </div>
+              </div>
+
+              <div class="col-1">
+                <div class="row q-pt-md">
+                  <div class="col">
+                    <q-btn
+                      flat
+                      class="far fa-bell"
+                      size="20px"
+                      style="max-height:30px;"
+                    >
+                      <q-badge v-show="item.alert != 0" floating color="red">{{
+                        item.alert
+                      }}</q-badge>
+                    </q-btn>
+                  </div>
+                  <div class="col cursor-pointer" @click="editMovieBtn(item)">
+                    <u>Edit</u>
+                  </div>
                 </div>
                 <div
-                  v-show="item.movieCodeEng"
-                  class="testMovie"
+                  v-show="item.movieCodeTh || item.movieCodeEng"
+                  class="btnMovie bg-primary"
+                  align="center"
+                  @click="previewMovie(item)"
+                >
+                  <q-icon class="fas fa-play" />
+                  movie
+                </div>
+                <div
+                  v-show="!(item.movieCodeTh || item.movieCodeEng)"
+                  class="btnMovie bg-grey"
                   align="center"
                 >
-                  TH Sub
+                  <q-icon class="fas fa-play" />
+                  movie
                 </div>
-              </div>
-              <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
-                {{ item.synopsis }}
+                <div
+                  v-show="item.trailerCode"
+                  class="btnMovie bg-primary"
+                  align="center"
+                  @click="previewtrailer(item)"
+                >
+                  <q-icon class="fas fa-play" />
+                  trailer
+                </div>
+                <div
+                  v-show="!item.trailerCode"
+                  class="btnMovie bg-grey"
+                  align="center"
+                >
+                  <q-icon class="fas fa-play" />
+                  trailer
+                </div>
+                <div
+                  v-show="item.promotion"
+                  class="btnMovie bg-positive"
+                  align="center"
+                  @click="item.promotion = 0"
+                >
+                  Promotion
+                </div>
+                <div
+                  v-show="!item.promotion"
+                  class="btnMovie bg-grey"
+                  align="center"
+                  @click="
+                    promotionBTN(
+                      item.id,
+                      item.nameEng,
+                      item.nameTh,
+                      item.promotionMobilePic,
+                      item.promotionTabletPic,
+                      item.promotionPCPic
+                    )
+                  "
+                >
+                  Promotion
+                </div>
+                <div
+                  v-show="item.status"
+                  class="btnMovie bg-positive"
+                  align="center"
+                  @click="item.status = 0"
+                >
+                  online
+                </div>
+                <div
+                  v-show="!item.status"
+                  class="btnMovie bg-negative"
+                  align="center"
+                  @click="item.status = 1"
+                >
+                  offline
+                </div>
               </div>
             </div>
-
-            <div class="col-1">
-              <div class="row q-pt-md">
-                <div class="col">
-                  <q-btn
-                    flat
-                    class="far fa-bell"
-                    size="20px"
-                    style="max-height:30px;"
-                  >
-                    <q-badge floating color="red">{{
-                      item.alert
-                    }}</q-badge></q-btn
-                  >
-                </div>
-                <div class="col cursor-pointer" @click="editMovieBtn(item)">
-                  <u>Edit</u>
-                </div>
-              </div>
-              <div
-                v-show="item.movieCodeTh || item.movieCodeEng"
-                class="btnMovie bg-primary"
-                align="center"
-                @click="previewMovie(item)"
-              >
-                <q-icon class="fas fa-play" />
-                movie
-              </div>
-              <div
-                v-show="!(item.movieCodeTh || item.movieCodeEng)"
-                class="btnMovie bg-grey"
-                align="center"
-              >
-                <q-icon class="fas fa-play" />
-                movie
-              </div>
-              <div
-                v-show="item.trailerCode"
-                class="btnMovie bg-primary"
-                align="center"
-                @click="previewtrailer(item)"
-              >
-                <q-icon class="fas fa-play" />
-                trailer
-              </div>
-              <div
-                v-show="!item.trailerCode"
-                class="btnMovie bg-grey"
-                align="center"
-              >
-                <q-icon class="fas fa-play" />
-                trailer
-              </div>
-              <div
-                v-show="item.promotion"
-                class="btnMovie bg-positive"
-                align="center"
-                @click="item.promotion = 0"
-              >
-                Promotion
-              </div>
-              <div
-                v-show="!item.promotion"
-                class="btnMovie bg-grey"
-                align="center"
-                @click="
-                  promotionBTN(
-                    item.id,
-                    item.nameEng,
-                    item.nameTh,
-                    item.promotionMobilePic,
-                    item.promotionTabletPic,
-                    item.promotionPCPic
-                  )
-                "
-              >
-                Promotion
-              </div>
-              <div
-                v-show="item.status"
-                class="btnMovie bg-positive"
-                align="center"
-                @click="item.status = 0"
-              >
-                online
-              </div>
-              <div
-                v-show="!item.status"
-                class="btnMovie bg-negative"
-                align="center"
-                @click="item.status = 1"
-              >
-                offline
-              </div>
-            </div>
+            <div style="height:15px;"></div>
           </div>
-          <div style="height:15px;"></div>
-        </div>
-        <!-- end moviebox  -->
+          <!-- end moviebox  -->
+        </q-scroll-area>
       </div>
       <!-- add movie box  -->
       <q-dialog class="" v-model="dialogAddMovie" persistent>
@@ -235,7 +242,6 @@
                 <q-input
                   class=""
                   style="width:260px;"
-                  placeholder="Plese insert Title"
                   v-model="addmovie.titleEn"
                   dense
                 />
@@ -245,7 +251,6 @@
                 <q-input
                   class=""
                   style="width:260px;"
-                  placeholder="Plese insert Title"
                   v-model="addmovie.titleTh"
                   dense
                 />
@@ -257,7 +262,6 @@
                 <q-input
                   class=""
                   style="width:160px;"
-                  placeholder="Plese insert Year"
                   v-model="addmovie.year"
                   dense
                 />
@@ -282,7 +286,6 @@
                   <q-input
                     class="q-pl-sm"
                     style="width:70px;"
-                    placeholder="0"
                     v-model="addmovie.durationHour"
                     dense
                   />
@@ -292,7 +295,6 @@
                   <q-input
                     class="q-pl-sm"
                     style="width:74px;"
-                    placeholder="0"
                     v-model="addmovie.durationMin"
                     dense
                   />
@@ -364,7 +366,7 @@
                 multiple
                 counter
                 max-values="6"
-                hint="max 6 category"
+                hint="3-6 categories"
                 dense
                 emit-value
                 map-options
@@ -421,6 +423,208 @@
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c"
                 @click="addMovieBtn()"
+                align="center"
+              >
+                Ok
+              </div>
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- edit movie box -->
+      <q-dialog class="" v-model="dialogEditMovie" persistent>
+        <q-card class="diaBox">
+          <div class="q-pt-md" style="font-size:24px;" align="center">
+            Add movie
+          </div>
+          <div class="q-pa-sm q-ml-lg" style="font-size:18px;">
+            <div class="row ">
+              <div class="col row items-end">
+                <div class="col-4">Title name(En)</div>
+                <q-input
+                  class=""
+                  style="width:260px;"
+                  v-model="addmovie.titleEn"
+                  dense
+                />
+              </div>
+              <div class="col row items-end">
+                <div class="col-4 ">Title name(Th)</div>
+                <q-input
+                  class=""
+                  style="width:260px;"
+                  v-model="addmovie.titleTh"
+                  dense
+                />
+              </div>
+            </div>
+            <div class="row ">
+              <div class="col row items-end">
+                <div class="col-4">Year</div>
+                <q-input
+                  class=""
+                  style="width:160px;"
+                  v-model="addmovie.year"
+                  dense
+                />
+              </div>
+              <div class="col row items-end">
+                <div class="col-4">Mpa Rating</div>
+                <q-select
+                  class=""
+                  color="blue"
+                  v-model="addmovie.mpaRating"
+                  :options="mpaOpt"
+                  dense
+                  style="width:80px;font-size:16px;"
+                >
+                </q-select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col row items-end q-py-sm">
+                <div class="col-4">Duration</div>
+                <div class="">
+                  <q-input
+                    class="q-pl-sm"
+                    style="width:70px;"
+                    v-model="addmovie.durationHour"
+                    dense
+                  />
+                </div>
+                <div>h:</div>
+                <div class="">
+                  <q-input
+                    class="q-pl-sm"
+                    style="width:74px;"
+                    v-model="addmovie.durationMin"
+                    dense
+                  />
+                </div>
+                <div>m</div>
+              </div>
+              <div class="col row items-center" style="padding-top:20px;">
+                <div class="row " style="width: 300px;">
+                  <div class="col">Poster file</div>
+                  <div class="col posterFilePos">
+                    <q-file
+                      v-model="addmovie.posterFile"
+                      dense
+                      accept=".jpg"
+                      label="Pick one file"
+                    >
+                    </q-file>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="q-pt-md">Synopsis</div>
+            <div class="q-pt-sm">
+              <q-input
+                class="synBox"
+                borderless
+                type="textarea"
+                style="max-height:450px;"
+                v-model="addmovie.synopsis"
+                dense
+              />
+            </div>
+            <div class="row ">
+              <div class="col row items-end">
+                <div class="col-6">Movie code(Thai sound)</div>
+                <q-input
+                  class=""
+                  style="width:200px;"
+                  v-model="addmovie.movieCodeThaiSound"
+                  dense
+                />
+              </div>
+              <div class="col row items-end">
+                <div class="col-6 ">Movie code(Thai sub)</div>
+                <q-input
+                  class=""
+                  style="width:200px;"
+                  v-model="addmovie.movieCodeThaiSub"
+                  dense
+                />
+              </div>
+            </div>
+            <div class=" row items-end">
+              <div class="col-3">Trailer code</div>
+              <q-input
+                class=""
+                style="width:200px;"
+                v-model="addmovie.trailerCode"
+                dense
+              />
+            </div>
+            <div class="row items-center q-pt-sm">
+              Category
+              <q-select
+                class="q-pl-lg"
+                color="teal"
+                v-model="addmovie.category"
+                :options="movieCatOptWithoutAll"
+                multiple
+                counter
+                max-values="6"
+                hint="3-6 categories"
+                dense
+                emit-value
+                map-options
+                style="width:600px;font-size:16px;"
+              >
+              </q-select>
+            </div>
+            <div class="row q-pt-lg">
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.netflix"
+                label="Netflix"
+                color="positive"
+              />
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.disney"
+                label="Disney"
+                color="positive"
+              />
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.amazon"
+                label="Amazon"
+                color="positive"
+              /><q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.hbo"
+                label="HBO"
+                color="positive"
+              />
+            </div>
+            <q-checkbox
+              :label="labelExpired"
+              class="q-pt-md"
+              dense
+              v-model="addmovie.newArraival"
+              color="positive"
+            />
+
+            <div class="row ynDia">
+              <div
+                class="ynBtn q-ma-sm"
+                @click="closeEditMovieBtn()"
+                align="center"
+              >
+                Cancel
+              </div>
+              <div
+                class="ynBtn q-ma-sm"
+                style="background-color:#ffc24c"
+                @click=""
                 align="center"
               >
                 Ok
@@ -742,7 +946,7 @@
         class="bgDrop fullscreen"
         v-show="
           dialogAddMovie ||
-            editMovie ||
+            dialogEditMovie ||
             promotionMovie ||
             previewMovieBtn ||
             previewtrailerBtn
@@ -771,6 +975,7 @@ export default {
       mposter: null, // ตัว choosen ไฟล์รูป poster ในช่อง add
       // Add movie
       dialogAddMovie: false,
+      dialogEditMovie: false,
       addmovie: {
         titleTh: "",
         titleEn: "",
@@ -792,23 +997,9 @@ export default {
         expiredDate: ""
       },
       labelExpired: "", // คำอธิบาย label สำหรับ New arraival
-      myear: "",
-      mmpaRate: "",
       mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"],
-      mhour: "",
-      mmin: "",
-      msynopsis: "",
-      mmovieCodeTh: "",
-      mmovieCodeEng: "",
       mdayUpload: "",
       mdayExpired: "", // day upload  +15
-      mtrailerCode: "",
-      mNetflix: false,
-      mDisney: false,
-      mAmazon: false,
-      mHBO: false,
-      mnew: false,
-      mtype: null,
 
       editMovie: false,
       previewMovieBtn: false,
@@ -842,6 +1033,28 @@ export default {
     // ปิดปุ่ม add movie
     closeAddMovieBtn() {
       this.dialogAddMovie = false;
+    },
+    // ปิดปุ่ม edit movie
+    closeEditMovieBtn() {
+      this.addmovie.titleTh = "";
+      this.addmovie.titleEn = "";
+      this.addmovie.year = "";
+      this.addmovie.mpaRating = "";
+      this.addmovie.durationHour = "";
+      this.addmovie.durationMin = "";
+      this.addmovie.posterFile = null;
+      this.addmovie.synopsis = "";
+      this.addmovie.movieCodeThaiSound = "";
+      this.addmovie.movieCodeThaiSub = "";
+      this.addmovie.trailerCode = "";
+      this.addmovie.category = null;
+      this.addmovie.netflix = false;
+      this.addmovie.disney = false;
+      this.addmovie.amazon = false;
+      this.addmovie.hbo = false;
+      this.addmovie.newArraival = false;
+
+      this.dialogEditMovie = false;
     },
     //ปุ่ม saves หนัง ใน add movie
     async addMovieBtn() {
@@ -1004,24 +1217,6 @@ export default {
     },
 
     clrmem() {
-      this.mnameEng = "";
-      this.mnameTh = "";
-      this.myear = "";
-      this.mmpaRate = "";
-      this.mhour = "";
-      this.mmin = "";
-      this.msynopsis = "";
-      this.mmovieCodeTh = "";
-      this.mmovieCodeEng = "";
-      this.mtrailerCode = "";
-      this.mtype = null;
-      this.mNetflix = false;
-      this.mDisney = false;
-      this.mAmazon = false;
-      this.mHBO = false;
-      this.mpromotion = false;
-      this.mnew = false;
-      this.mposter = null;
       this.promotionMovie = false;
       this.promotionOn = false;
       this.indexPoster = 1;
@@ -1050,7 +1245,25 @@ export default {
       this.previewtrailerBtn = true;
     },
     editMovieBtn(item) {
-      this.editMovie = true;
+      this.addmovie.titleTh = item.nameTh;
+      this.addmovie.titleEn = item.nameEng;
+      this.addmovie.year = item.year;
+      this.addmovie.mpaRating = item.mparate;
+      this.addmovie.durationHour = item.durationHour;
+      this.addmovie.durationMin = item.durationMin;
+      this.addmovie.posterFile = item.poster;
+      this.addmovie.synopsis = item.synopsis;
+      this.addmovie.movieCodeThaiSound = item.movieCodeTh;
+      this.addmovie.movieCodeThaiSub = item.movieCodeEng;
+      this.addmovie.trailerCode = item.trailerCode;
+      this.addmovie.category = item.type;
+      this.addmovie.netflix = item.netflix == 1 ? true : false;
+      this.addmovie.disney = item.disney == 1 ? true : false;
+      this.addmovie.amazon = item.amazon == 1 ? true : false;
+      this.addmovie.hbo = item.hbo == 1 ? true : false;
+      this.addmovie.newArraival = item.new == 1 ? true : false;
+
+      this.dialogEditMovie = true;
     },
     promotionBTN(
       posterId,
