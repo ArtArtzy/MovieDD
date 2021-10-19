@@ -122,11 +122,15 @@
                       }}</q-badge></q-btn
                     >
                   </div>
-                  <div class="col cursor-pointer" @click="">
+                  <div class="col cursor-pointer" @click="editSeriesBtn(item)">
                     <u>Edit</u>
                   </div>
                 </div>
-                <div class="btnMovie bg-primary" align="center">
+                <div
+                  class="btnMovie bg-primary"
+                  align="center"
+                  @click="gotoEpisode()"
+                >
                   Episode
                 </div>
 
@@ -346,6 +350,167 @@
           </div>
         </q-card>
       </q-dialog>
+      <!-- edit series  -->
+      <q-dialog class="" v-model="dialogEditSeries" persistent>
+        <q-card class="diaBox">
+          <div class="q-pt-md" style="font-size:24px;" align="center">
+            Edit Series
+          </div>
+          <div class="q-pa-sm q-ml-lg q-pl-md">
+            <div class="row ">
+              <div class="col row items-end">
+                <div class="col-4">Title name(En)</div>
+                <q-input
+                  class=""
+                  style="width:260px;"
+                  v-model="addmovie.titleEn"
+                  dense
+                />
+              </div>
+              <div class="col row items-end">
+                <div class="col-4 ">Title name(Th)</div>
+                <q-input
+                  class=""
+                  style="width:260px;"
+                  v-model="addmovie.titleTh"
+                  dense
+                />
+              </div>
+            </div>
+            <div class="row ">
+              <div class="col row items-end">
+                <div class="col-4">Year</div>
+                <q-input
+                  class=""
+                  style="width:160px;"
+                  v-model="addmovie.year"
+                  dense
+                />
+              </div>
+              <div class="col row items-end">
+                <div class="col-4">Mpa Rating</div>
+                <q-select
+                  class=""
+                  color="blue"
+                  v-model="addmovie.mpaRating"
+                  :options="mpaOpt"
+                  dense
+                  style="width:80px;font-size:16px;"
+                >
+                </q-select>
+              </div>
+            </div>
+            <div class="col row items-center" style="padding-top:20px;">
+              <div class="row " style="width: 300px;">
+                <div class="col">Poster file</div>
+                <div class="col posterFilePos">
+                  <q-file
+                    v-model="addmovie.posterFile"
+                    dense
+                    accept=".jpg"
+                    label="Pick one file"
+                  >
+                  </q-file>
+                </div>
+              </div>
+            </div>
+            <div class="q-pt-md">Synopsis</div>
+            <div class="q-pt-sm">
+              <q-input
+                class="synBox"
+                borderless
+                type="textarea"
+                style="max-height:450px;"
+                v-model="addmovie.synopsis"
+                dense
+              />
+            </div>
+            <div class=" row items-end">
+              <div class="col-2">Trailer code</div>
+              <q-input
+                class=""
+                style="width:200px;"
+                v-model="addmovie.trailerCode"
+                dense
+              />
+            </div>
+            <div class="row items-center q-pt-sm">
+              <div class="col-2">
+                Category
+              </div>
+              <q-select
+                class=""
+                color="teal"
+                v-model="addmovie.category"
+                :options="movieCatOptWithoutAll"
+                multiple
+                counter
+                max-values="6"
+                hint="3-6 categories"
+                dense
+                emit-value
+                map-options
+                style="width:600px;font-size:16px;"
+              >
+              </q-select>
+            </div>
+            <div class="row q-pt-lg">
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.netflix"
+                label="Netflix"
+                color="positive"
+              />
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.disney"
+                label="Disney"
+                color="positive"
+              />
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.amazon"
+                label="Amazon"
+                color="positive"
+              /><q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.hbo"
+                label="HBO"
+                color="positive"
+              />
+            </div>
+            <q-checkbox
+              :label="labelExpired"
+              class="q-pt-md"
+              dense
+              v-model="addmovie.newArraival"
+              color="positive"
+            />
+
+            <div class="row ynDia">
+              <div
+                class="ynBtn q-ma-sm"
+                @click="closeEditSeriesBtn()"
+                align="center"
+              >
+                Cancel
+              </div>
+              <div
+                class="ynBtn q-ma-sm"
+                style="background-color:#ffc24c"
+                @click=""
+                align="center"
+              >
+                Ok
+              </div>
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
       <!-- bg drop  -->
       <div class="bgDrop fullscreen" v-show="dialogAddSeries"></div>
     </div>
@@ -426,7 +591,8 @@ export default {
         newArraival: false,
         expiredDate: ""
       },
-      dialogAddSeries: false
+      dialogAddSeries: false,
+      dialogEditSeries: false
     };
   },
   methods: {
@@ -442,6 +608,27 @@ export default {
       this.labelExpired =
         "New arrival (expireed date " + this.addmovie.expiredDate + ")";
       this.dialogAddSeries = true;
+    },
+    editSeriesBtn(item) {
+      this.addmovie.titleTh = item.nameTh;
+      this.addmovie.titleEn = item.nameEng;
+      this.addmovie.year = item.year;
+      this.addmovie.mpaRating = item.mpaRate;
+      this.addmovie.synopsis = item.synopsis;
+      this.addmovie.trailerCode = item.trailerCode;
+      this.addmovie.category = item.type;
+      this.addmovie.netflix = false;
+      this.addmovie.disney = false;
+      this.addmovie.amazon = false;
+      this.addmovie.hbo = false;
+      this.addmovie.newArraival = false;
+      this.addmovie.expiredDate = "New arraival (expired date--/--/--)";
+
+      this.dialogEditSeries = true;
+    },
+    closeEditSeriesBtn() {
+      this.clraddmovie();
+      this.dialogEditSeries = false;
     },
     closeAddSeriesBtn() {
       this.clraddmovie();
@@ -462,6 +649,9 @@ export default {
       this.addmovie.hbo = false;
       this.addmovie.newArraival = false;
       this.addmovie.expiredDate = "";
+    },
+    gotoEpisode() {
+      this.$router.push("episode");
     },
     async loadcatatmovie() {
       //โหลดประเภทหนัง
