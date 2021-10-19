@@ -3,7 +3,7 @@
     <div class="contentDiv">
       <div class="boxWhite ">
         <div class="q-pt-lg row">
-          <div class="col-10 q-pl-xl">
+          <div class="col-3 q-pl-xl">
             <q-btn
               rounded
               class="cursor-pointer q-pa-xs"
@@ -15,6 +15,19 @@
               <div class="q-pl-sm">security code</div>
             </q-btn>
           </div>
+          <div class="col-3">
+            <q-btn
+              rounded
+              class="cursor-pointer q-pa-xs"
+              style="background-color:#FFC24C;font-size:16px;width:200px;"
+              @click="deleteMovieBtn = true"
+              no-caps
+            >
+              <q-icon class="far fa-list-alt" size="21px" />
+              <div class="q-pl-sm">Deleted movie</div>
+            </q-btn>
+          </div>
+          <div class="col"></div>
           <div class="col-2" align="center">
             <q-btn
               rounded
@@ -179,6 +192,24 @@
           </div>
         </q-card>
       </q-dialog>
+      <!-- Delete Movie -->
+      <q-dialog class="" v-model="deleteMovieBtn" persistent>
+        <q-card class="deleteMovieBox" align="center">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="col-1"></div>
+            <div class="col" style="font-size:24px;">Deleted movie</div>
+            <div class="col-1">
+              <q-btn
+                icon="far fa-times-circle"
+                flat
+                round
+                dense
+                v-close-popup
+              />
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
       <!-- Add new admin  -->
       <q-dialog v-model="addAdmin" persistent>
         <q-card class="editBox">
@@ -296,7 +327,6 @@
           </div>
         </q-card>
       </q-dialog>
-      <!-- end add new admin  -->
       <!-- edit user  -->
       <q-dialog v-model="editBtn" persistent>
         <q-card class="editBox">
@@ -470,7 +500,6 @@
           </div>
         </q-card>
       </q-dialog>
-      <!-- end edit user  -->
       <!-- delete Btn  -->
       <q-dialog v-model="delBtn" persistent>
         <q-card>
@@ -497,10 +526,11 @@
           </div>
         </q-card>
       </q-dialog>
+
       <!-- bg drop  -->
       <div
         class="bgDrop fullscreen"
-        v-show="editBtn || addAdmin || delBtn || securityBtn"
+        v-show="editBtn || addAdmin || delBtn || securityBtn || deleteMovieBtn"
       ></div>
     </div>
   </div>
@@ -518,6 +548,7 @@ export default {
       addAdmin: false,
       delBtn: false,
       securityBtn: false,
+      deleteMovieBtn: false,
       data: [
         {
           us_id: 1,
@@ -804,5 +835,11 @@ export default {
 .securityBox {
   width: 460px;
   height: 245px;
+}
+.deleteMovieBox {
+  max-width: 900px;
+  width: 830px;
+  height: 480px;
+  border-radius: 30px;
 }
 </style>
