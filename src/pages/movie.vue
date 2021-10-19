@@ -880,7 +880,7 @@ export default {
       this.addmovie.category.forEach(x => {
         categoryData += "[" + x + "],";
       });
-      categoryData.substring(0, categoryData.length - 1);
+      categoryData.slice(0, -1);
 
       let data = {
         nameEng: this.addmovie.titleEn,
@@ -904,7 +904,6 @@ export default {
       let url = this.serverpath + "bo_movieadddata.php";
       let res = await axios.post(url, JSON.stringify(data));
       let movieid = res.data;
-      console.log(movieid);
       //ทำการ upload  รูปภาพ
       let formData = new FormData();
       formData.append("file", this.addmovie.posterFile);
