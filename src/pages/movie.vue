@@ -46,6 +46,7 @@
               :options="moviePage"
               dense
               style="width:50px;font-size:16px;"
+              @input="loadMovieData()"
             >
             </q-select>
           </div>
@@ -236,7 +237,7 @@
           <div class="q-pt-md" style="font-size:24px;" align="center">
             Add movie
           </div>
-          <div class="q-pa-sm q-ml-lg" style="font-size:18px;">
+          <div class="q-pa-sm q-ml-lg">
             <div class="row ">
               <div class="col row items-end">
                 <div class="col-4">Title name(En)</div>
@@ -438,7 +439,7 @@
           <div class="q-pt-md" style="font-size:24px;" align="center">
             Add movie
           </div>
-          <div class="q-pa-sm q-ml-lg" style="font-size:18px;">
+          <div class="q-pa-sm q-ml-lg">
             <div class="row ">
               <div class="col row items-end">
                 <div class="col-4">Title name(En)</div>
@@ -505,16 +506,25 @@
                 <div>m</div>
               </div>
               <div class="col row items-center" style="padding-top:20px;">
-                <div class="row " style="width: 300px;">
-                  <div class="col">Poster file</div>
-                  <div class="col posterFilePos">
-                    <q-file
-                      v-model="addmovie.posterFile"
-                      dense
-                      accept=".jpg"
-                      label="Pick one file"
+                <div class="row " style="width: 400px;">
+                  <div class="col-4">Poster file</div>
+                  <div class="col " align="left">
+                    <div
+                      v-if="addmovie.posterFile == 1"
+                      class="cursor-pointer q-pl-sm"
+                      @click="deletePosterFileBtn()"
                     >
-                    </q-file>
+                      <u>delete poster file</u>
+                    </div>
+                    <div v-else>
+                      <q-file
+                        v-model="addmovie.posterFile"
+                        dense
+                        accept=".jpg"
+                        label="Pick one file"
+                      >
+                      </q-file>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -625,17 +635,17 @@
               <div
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c"
-                @click=""
+                @click="saveEditMovieBtn()"
                 align="center"
               >
-                Ok
+                OK
               </div>
             </div>
           </div>
         </q-card>
       </q-dialog>
       <!-- promotion -->
-      <q-dialog class="" v-model="promotionMovie" persistent>
+      <!-- <q-dialog class="" v-model="promotionMovie" persistent>
         <q-card class="promotionBox" style="font-size:24px;" align="center">
           <q-card-section class="row items-center q-pb-none">
             <q-space />
@@ -686,7 +696,7 @@
           </div>
           <div class="row items-center" aling="center" style="font-size:14px;">
             <div class="col"></div>
-            <!-- ปุ่มเลือก Mobile / tablet / pc -->
+   
             <div
               v-show="indexPoster == 1"
               class="picPosterBTN q-ma-md cursor-pointer"
@@ -734,7 +744,7 @@
             </div>
             <div class="col"></div>
           </div>
-          <!-- รูป  -->
+      
           <div class="">
             <div
               v-show="indexPoster == 1 && posterM == null"
@@ -746,18 +756,7 @@
                 jpg - 360x445 px
               </div>
               <div>
-                <!-- <q-input
-                  class="q-pl-md"
-                  style="margin-left:50px;"
-                  @input="
-                    val => {
-                      posterM = val[0];
-                    }
-                  "
-                  borderless
-                  type="file"
-                  dense
-                /> -->
+
 
                 <q-file
                   v-model="posterMobileFile"
@@ -854,9 +853,9 @@
             <div class="col"></div>
           </div>
         </q-card>
-      </q-dialog>
+      </q-dialog> -->
       <!-- movie preview  -->
-      <q-dialog v-model="previewMovieBtn" persistent>
+      <!-- <q-dialog v-model="previewMovieBtn" persistent>
         <q-card class="preview">
           <div class="row q-pa-md" align="center">
             <div class="col-1"></div>
@@ -931,7 +930,7 @@
             </div>
           </div>
         </q-card>
-      </q-dialog>
+      </q-dialog> -->
       <!-- trailer preview  -->
       <q-dialog v-model="previewtrailerBtn" persistent>
         <q-card class="preview">
@@ -949,13 +948,12 @@
                 size="xl"
                 dense
                 v-close-popup
-                @click="clrmem()"
               />
             </div>
           </div>
           <div class="q-mt-md">
             <div class="brx" style="width:920px;height:443px;margin:auto;">
-              trailer code : {{ mtrailerCode }}
+              trailer code :
             </div>
           </div>
         </q-card>
@@ -1016,9 +1014,7 @@ export default {
       },
       labelExpired: "", // คำอธิบาย label สำหรับ New arraival
       mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"],
-      mdayUpload: "",
-      mdayExpired: "", // day upload  +15
-
+      editMovieId: "", //id ข้อมูลหนังที่ต้องการแก้ไข
       editMovie: false,
       previewMovieBtn: false,
       previewtrailerBtn: false,
@@ -1044,7 +1040,7 @@ export default {
       this.addmovie.expiredDate =
         a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
       this.labelExpired =
-        "New arrival (expireed date " + this.addmovie.expiredDate + ")";
+        "New arrival (expired date " + this.addmovie.expiredDate + ")";
       this.addmovie.titleTh = "";
       this.dialogAddMovie = true;
     },
@@ -1106,12 +1102,17 @@ export default {
         this.redNotify("Please pick category at least 3");
         return;
       }
+
+      if (this.addmovie.posterFile == null) {
+        this.redNotify("Please pick poster file");
+        return;
+      }
       //ปรับรูปแบบของ category
       let categoryData = "";
       this.addmovie.category.forEach(x => {
         categoryData += "[" + x + "],";
       });
-      categoryData.slice(0, -1);
+      categoryData = categoryData.slice(0, -1);
 
       let data = {
         nameEng: this.addmovie.titleEn,
@@ -1151,12 +1152,13 @@ export default {
       }
       this.dialogAddMovie = false;
     },
+    //เปลี่ยน Category
     refreshCat() {
-      //เปลี่ยน Category
+      this.movieP = 1;
       this.loadMovieData();
     },
+    //หาจำนวนหน้าทั้งหมดและใส่หน้าใน List
     async loadpagenumber() {
-      //หาจำนวนหน้าทั้งหมดและใส่หน้าใน List
       let data = {
         cat: this.movieCat
       };
@@ -1167,9 +1169,8 @@ export default {
         this.moviePage.push(i);
       }
     },
-
+    //โหลดประเภทหนัง
     async loadcatatmovie() {
-      //โหลดประเภทหนัง
       this.movieCatOpt = [];
       this.movieCatOptWithoutAll = [];
       let url = this.serverpath + "bo_loadcategory.php";
@@ -1191,20 +1192,21 @@ export default {
       });
       this.movieCat = this.movieCatOpt[0].value;
     },
-
+    //แสดงชื่อ Category
     catName(id) {
-      //ใช้แสดงชื่อ category
       let temp = this.movieCatOpt.filter(x => x.value == id);
       return temp[0].label;
     },
-
+    //แสดงข้อมูลหนังในหน้าหลัก
     async loadMovieData() {
+      this.loadpagenumber();
       //โหลดข้อมูลหนัง
       this.data = [];
       let data = {
         catName: this.movieCat,
         pagedata: this.movieP
       };
+
       let url = this.serverpath + "bo_movieshowdata.php";
       let res = await axios.post(url, JSON.stringify(data));
       res.data.forEach(x => {
@@ -1225,7 +1227,80 @@ export default {
         this.data.push(x);
       });
     },
+    //เปิดหน้าแก้ไขหนัง
+    editMovieBtn(item) {
+      this.addmovie.titleTh = item.nameTh;
+      this.addmovie.titleEn = item.nameEng;
+      this.addmovie.year = item.year;
+      this.addmovie.mpaRating = item.mparate;
+      this.addmovie.durationHour = item.durationHour;
+      this.addmovie.durationMin = item.durationMin;
+      this.addmovie.posterFile = item.poster;
+      this.addmovie.synopsis = item.synopsis;
+      this.addmovie.movieCodeThaiSound = item.movieCodeTh;
+      this.addmovie.movieCodeThaiSub = item.movieCodeEng;
+      this.addmovie.trailerCode = item.trailerCode;
+      this.addmovie.category = item.type;
+      this.addmovie.netflix = item.netflix == 1 ? true : false;
+      this.addmovie.disney = item.disney == 1 ? true : false;
+      this.addmovie.amazon = item.amazon == 1 ? true : false;
+      this.addmovie.hbo = item.hbo == 1 ? true : false;
+      this.addmovie.newArraival = item.new == 1 ? true : false;
+      this.addmovie.expiredDate = item.expireddate;
+      this.editMovieId = item.id;
+      if (this.addmovie.expiredDate == null) {
+        let today = new Date();
+        let mi = today.getTime() + 1296000000;
+        let a = new Date(mi);
+        this.addmovie.expiredDate =
+          a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+        this.labelExpired =
+          "New arrival (expired date " + this.addmovie.expiredDate + ")";
+      } else {
+        this.labelExpired =
+          "New arrival (expired date " + this.addmovie.expiredDate + ")";
+      }
 
+      this.dialogEditMovie = true;
+    },
+    //บันทึกแก้ไขหนัง
+    saveEditMovieBtn() {
+      //Check input
+      if (this.addmovie.titleEn.length == 0) {
+        this.redNotify("Please input Title name (En)");
+        return;
+      }
+      if (this.addmovie.year.length == 0) {
+        this.redNotify("Please input year");
+        return;
+      }
+      if (
+        this.addmovie.durationHour.length == 0 &&
+        this.addmovie.durationMin.length == 0
+      ) {
+        this.redNotify("Please input duration");
+        return;
+      }
+      if (
+        this.addmovie.movieCodeThaiSub == 0 &&
+        this.addmovie.movieCodeThaiSound == 0
+      ) {
+        this.redNotify("Please input Movie Code");
+        return;
+      }
+      if (this.addmovie.category == null) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      } else if (this.addmovie.category.length < 3) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      }
+
+      if (this.addmovie.posterFile == null) {
+        this.redNotify("Please pick poster file");
+        return;
+      }
+    },
     async uploadFilePosterMobile() {
       let formData = new FormData();
       formData.append("file", this.posterMobileFile);
@@ -1247,42 +1322,22 @@ export default {
       this.posterP = null;
     },
 
-    previewMovie(item) {
-      this.mnameEng = item.nameEng;
-      //      this.mnameTh=item.nameTh;
-      this.mmovieCodeEng = item.movieCodeEng;
-      this.mmovieCodeTh = item.movieCodeTh;
-      this.previewMovieBtn = true;
-      if (this.mmovieCodeTh == "") {
-        this.indexPoster = 2;
-      }
-    },
+    // previewMovie(item) {
+    //   this.mnameEng = item.nameEng;
+    //   //      this.mnameTh=item.nameTh;
+    //   this.mmovieCodeEng = item.movieCodeEng;
+    //   this.mmovieCodeTh = item.movieCodeTh;
+    //   this.previewMovieBtn = true;
+    //   if (this.mmovieCodeTh == "") {
+    //     this.indexPoster = 2;
+    //   }
+    // },
     previewtrailer(item) {
       this.mnameEng = item.nameEng;
       this.mtrailerCode = item.trailerCode;
       this.previewtrailerBtn = true;
     },
-    editMovieBtn(item) {
-      this.addmovie.titleTh = item.nameTh;
-      this.addmovie.titleEn = item.nameEng;
-      this.addmovie.year = item.year;
-      this.addmovie.mpaRating = item.mparate;
-      this.addmovie.durationHour = item.durationHour;
-      this.addmovie.durationMin = item.durationMin;
-      this.addmovie.posterFile = item.poster;
-      this.addmovie.synopsis = item.synopsis;
-      this.addmovie.movieCodeThaiSound = item.movieCodeTh;
-      this.addmovie.movieCodeThaiSub = item.movieCodeEng;
-      this.addmovie.trailerCode = item.trailerCode;
-      this.addmovie.category = item.type;
-      this.addmovie.netflix = item.netflix == 1 ? true : false;
-      this.addmovie.disney = item.disney == 1 ? true : false;
-      this.addmovie.amazon = item.amazon == 1 ? true : false;
-      this.addmovie.hbo = item.hbo == 1 ? true : false;
-      this.addmovie.newArraival = item.new == 1 ? true : false;
 
-      this.dialogEditMovie = true;
-    },
     promotionBTN(
       posterId,
       posterEng,
@@ -1305,21 +1360,6 @@ export default {
       //     this.posterM = "http://localhost/moviedd/promotion/" + posterId + "m.jpg";
       this.posterT = "http://localhost/moviedd/promotion/" + posterId + "t.jpg";
       this.posterP = "http://localhost/moviedd/promotion/" + posterId + "p.jpg";
-    },
-    checkTime() {
-      let today = new Date();
-      let mi = today.getTime() + 1296000000;
-      let a = new Date(mi);
-      this.mdayExpired =
-        a.getDate() + "-" + (a.getMonth() + 1) + "-" + a.getFullYear();
-      this.mdayUpload =
-        today.getDate() +
-        "-" +
-        (today.getMonth() + 1) +
-        "-" +
-        today.getFullYear();
-      // console.log(this.mdayUpload);
-      // console.log(this.mdayExpired);
     }
   },
 
@@ -1327,7 +1367,6 @@ export default {
     this.loadcatatmovie();
     this.loadpagenumber();
     this.loadMovieData();
-    // this.checkTime();
   }
 };
 </script>
