@@ -910,6 +910,14 @@ export default {
       formData.append("id", movieid);
       url = this.serverpath + "bo_uploadmovieposter.php";
       let data2 = await axios.post(url, formData);
+      //update cat ในตาราง category
+      for (let catid of this.addmovie.category) {
+        let data3 = {
+          catid: catid
+        };
+        url = this.serverpath + "bo_movieaddcat.php";
+        let res = await axios.post(url, JSON.stringify(data3));
+      }
       this.dialogAddMovie = false;
     },
     refreshCat() {
