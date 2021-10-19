@@ -229,6 +229,7 @@
           <!-- end moviebox  -->
         </q-scroll-area>
       </div>
+      <!------------------ dialog  ---------------->
       <!-- add movie box  -->
       <q-dialog class="" v-model="dialogAddMovie" persistent>
         <q-card class="diaBox">
@@ -652,9 +653,27 @@
           <div class="row">
             <div class="col-2">
               <q-toggle
+                v-show="
+                  promotionMobilePic == 1 &&
+                    promotionTabletPic == 1 &&
+                    promotionPCPic == 1
+                "
                 v-model="promotionOn"
                 color="green"
                 size="xl"
+                checked-icon="check"
+                unchecked-icon="clear"
+                style="margin-top:-40px;"
+              /><q-toggle
+                v-show="
+                  promotionMobilePic == null ||
+                    promotionTabletPic == null ||
+                    promotionPCPic == null
+                "
+                v-model="promotionOn"
+                color="green"
+                size="xl"
+                disable
                 checked-icon="check"
                 unchecked-icon="clear"
                 style="margin-top:-40px;"
@@ -952,7 +971,6 @@
             previewtrailerBtn
         "
       ></div>
-      <!-- end bgDrop  -->
     </div>
   </div>
 </template>
