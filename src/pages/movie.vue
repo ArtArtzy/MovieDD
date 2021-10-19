@@ -232,7 +232,7 @@
       </div>
       <!------------------ dialog  ---------------->
       <!-- add movie box  -->
-      <q-dialog class="" v-model="dialogAddMovie" persistent>
+      <q-dialog v-model="dialogAddMovie" persistent>
         <q-card class="diaBox">
           <div class="q-pt-md" style="font-size:24px;" align="center">
             Add movie
@@ -434,7 +434,7 @@
         </q-card>
       </q-dialog>
       <!-- edit movie box -->
-      <q-dialog class="" v-model="dialogEditMovie" persistent>
+      <q-dialog v-model="dialogEditMovie" persistent>
         <q-card class="diaBox">
           <div class="q-pt-md" style="font-size:24px;" align="center">
             Add movie
@@ -855,12 +855,12 @@
         </q-card>
       </q-dialog> -->
       <!-- movie preview  -->
-      <!-- <q-dialog v-model="previewMovieBtn" persistent>
+      <q-dialog v-model="dialogPreview" persistent>
         <q-card class="preview">
           <div class="row q-pa-md" align="center">
             <div class="col-1"></div>
             <div class="col" style="font-size:24px;margin-top:30px;">
-              "{{ mnameEng }}"
+              {{ previewTitleEn }}
             </div>
 
             <div class="col-1">
@@ -871,42 +871,65 @@
                 size="xl"
                 dense
                 v-close-popup
-                @click="clrmem()"
               />
             </div>
           </div>
+          <!-- <div class="row justify-center" align="center">
+            <q-btn
+              outline
+              label="TH Sound"
+              no-caps
+              style="width:120px;"
+              class="q-mr-sm"
+              :disable="previewMovieThaiSoundCode == ''"
+            />
+            <q-btn
+              outline
+              label="TH Sub"
+              no-caps
+              style="width:120px;"
+              class="q-ml-sm"
+              :disable="previewMovieThaiSubCode == ''"
+            />
+          </div> -->
           <div class="row" align="center">
             <div class="col"></div>
-            <div class="noMovieCode q-mx-lg" v-show="mmovieCodeTh == ''">
+            <div
+              class="noMovieCode q-mx-lg"
+              v-show="previewMovieThaiSoundCode == ''"
+            >
               TH sound
             </div>
             <div
               class="picPosterBTN cursor-pointer q-mx-lg"
-              v-show="mmovieCodeTh != '' && indexPoster == 1"
+              v-show="previewMovieThaiSoundCode != '' && indexPoster == 1"
               style="background-color:#ffc24c"
             >
               TH sound
             </div>
             <div
               class="picPosterBTN cursor-pointer q-mx-lg"
-              v-show="mmovieCodeTh != '' && indexPoster != 1"
+              v-show="previewMovieThaiSoundCode != '' && indexPoster != 1"
               @click="indexPoster = 1"
             >
               TH sound
             </div>
-            <div class="noMovieCode q-mx-lg" v-show="mmovieCodeEng == ''">
+            <div
+              class="noMovieCode q-mx-lg"
+              v-show="previewMovieThaiSubCode == ''"
+            >
               TH sub
             </div>
             <div
               class="picPosterBTN cursor-pointer q-mx-lg"
-              v-show="mmovieCodeEng != '' && indexPoster == 2"
+              v-show="previewMovieThaiSubCode != '' && indexPoster == 2"
               style="background-color:#ffc24c"
             >
               TH sub
             </div>
             <div
               class="picPosterBTN cursor-pointer q-mx-lg"
-              v-show="mmovieCodeEng != '' && indexPoster != 2"
+              v-show="previewMovieThaiSubCode != '' && indexPoster != 2"
               @click="indexPoster = 2"
             >
               TH sub
@@ -915,24 +938,34 @@
           </div>
           <div class="q-mt-md">
             <div
-              class="brx "
-              style="width:920px;height:443px;margin:auto;"
+              style="width:790px;height:443px;margin:auto;"
               v-show="indexPoster == 1"
             >
-              TH sound {{ mmovieCodeTh }}
+              <iframe
+                :src="previewThaiSoundLink"
+                frameborder="0"
+                scrolling="auto"
+                allowfullscreen
+                style="position:absolute;width:790px;height:443px;"
+              ></iframe>
             </div>
             <div
-              class="brx "
-              style="width:920px;height:443px;margin:auto;"
+              style="width:790px;height:443px;margin:auto;"
               v-show="indexPoster == 2"
             >
-              TH sub {{ mmovieCodeEng }}
+              <iframe
+                :src="previewThaiSubLink"
+                frameborder="0"
+                scrolling="auto"
+                allowfullscreen
+                style="position:absolute;width:790px;height:443px;"
+              ></iframe>
             </div>
           </div>
         </q-card>
-      </q-dialog> -->
+      </q-dialog>
       <!-- trailer preview  -->
-      <q-dialog v-model="previewtrailerBtn" persistent>
+      <q-dialog v-model="dialogtrailer" persistent>
         <q-card class="preview">
           <div class="row q-pa-md" align="center">
             <div class="col-1"></div>
@@ -965,8 +998,8 @@
           dialogAddMovie ||
             dialogEditMovie ||
             promotionMovie ||
-            previewMovieBtn ||
-            previewtrailerBtn
+            dialogPreview ||
+            dialogtrailer
         "
       ></div>
     </div>
@@ -985,10 +1018,6 @@ export default {
       movieP: 1, //หน้าปัจจุบัน
       moviePage: [], // Array ลำดับเลข 1 ถึงหน้าสุดท้าย
       data: [], //ข้อมูลที่โชว์
-
-      mnameEng: "", // type m ตัวจำ ชือ ไว้ใช้ใน dialog
-      mnameTh: "", // จำชื่อ eng
-      mposter: null, // ตัว choosen ไฟล์รูป poster ในช่อง add
       // Add movie
       dialogAddMovie: false,
       dialogEditMovie: false,
@@ -1014,16 +1043,25 @@ export default {
       },
       labelExpired: "", // คำอธิบาย label สำหรับ New arraival
       mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"],
+      // แก้ไขข้อมูล
       editMovieId: "", //id ข้อมูลหนังที่ต้องการแก้ไข
-      editMovie: false,
-      previewMovieBtn: false,
-      previewtrailerBtn: false,
+      // สำหรับ Preview movie
+      dialogPreview: false, //เปิดหน้าต่าง preview
+      previewTitleEn: "", //ชื่อภาษาอังกฤษ
+      previewMovieThaiSoundCode: "", //Code สำหรับ movie thai sound
+      previewMovieThaiSubCode: "", //Code สำหรับ movie thai sub
+      indexPoster: 1, //1 Preview Thai sound, 2 Preview Thai sub
+      previewThaiSoundLink: "", //Link สำหรับ Thaisound
+      previewThaiSubLink: "", //Link สำหรับ ThaiSub
+
+      dialogtrailer: false, // เปิดหน้าต่าง trailer
+
       promotionMovie: false, //เปิดหน้าต่าง Promotion
       promotionMovieNameEng: "", //ชื่อหนังภาษาอังกฤษ
       promotionMovieNameThai: "", //ชื่อหนังภาษาไทย
       promotionMovieId: "", //รหัสโปรโมชั่นหนัง
       promotionOn: false,
-      indexPoster: 1, //ประเภทพของรูป Promotion 1 = mobile / 2 = tablet / 3= PC
+
       posterM: null, //รูปภาพของ Promotion สำหรับ Mobile
       posterT: null, //รูปภาพของ Promotion สำหรับ Tablet
       posterP: null, //รูปภาพของ Promotion สำหรับ PC
@@ -1331,6 +1369,15 @@ export default {
       };
       let url = this.serverpath + "bo_movieeditdata.php";
       let res = await axios.post(url, JSON.stringify(data));
+      //Check file delete
+      if (this.addmovie.posterFile != 1) {
+        //ทำการ upload  รูปภาพ
+        let formData = new FormData();
+        formData.append("file", this.addmovie.posterFile);
+        formData.append("id", this.editMovieId);
+        url = this.serverpath + "bo_uploadmovieposter.php";
+        let data2 = await axios.post(url, formData);
+      }
       this.greenNotify("update movie completely");
       this.dialogEditMovie = false;
       this.loadMovieData();
@@ -1367,7 +1414,7 @@ export default {
       this.data[index].status = sta;
       //this.loadMovieData();
     },
-
+    //ลบ poster file
     async deletePosterFileBtn() {
       let data = {
         id: this.editMovieId
@@ -1382,34 +1429,34 @@ export default {
       const url = this.serverpath + "bo_uploadPromotionMobile.php";
       let data = await axios.post(url, formData);
     },
-
-    clrmem() {
-      this.promotionMovie = false;
-      this.promotionOn = false;
-      this.indexPoster = 1;
-      this.editMovie = false;
-      this.promotionMovie = false;
-      this.previewMovieBtn = false;
-      this.previewtrailerBtn = false;
-      this.posterM = null;
-      this.posterT = null;
-      this.posterP = null;
+    //เปิดหน้า preview movie
+    async previewMovie(item) {
+      this.previewTitleEn = item.nameEng;
+      this.previewMovieThaiSoundCode = item.movieCodeTh;
+      if (item.movieCodeTh != "") {
+        let data = {
+          movieCode: item.movieCodeTh
+        };
+        let url = this.serverpath + "bo_encodemovie.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        this.previewThaiSoundLink = res.data;
+      }
+      this.previewMovieThaiSubCode = item.movieCodeEng;
+      if (item.movieCodeEng != "") {
+        let data = {
+          movieCode: item.movieCodeEng
+        };
+        let url = this.serverpath + "bo_encodemovie.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        this.previewThaiSubLink = res.data;
+      }
+      this.dialogPreview = true;
     },
-
-    // previewMovie(item) {
-    //   this.mnameEng = item.nameEng;
-    //   //      this.mnameTh=item.nameTh;
-    //   this.mmovieCodeEng = item.movieCodeEng;
-    //   this.mmovieCodeTh = item.movieCodeTh;
-    //   this.previewMovieBtn = true;
-    //   if (this.mmovieCodeTh == "") {
-    //     this.indexPoster = 2;
-    //   }
-    // },
     previewtrailer(item) {
-      this.mnameEng = item.nameEng;
-      this.mtrailerCode = item.trailerCode;
-      this.previewtrailerBtn = true;
+      this.dialogtrailer = true;
+      // this.mnameEng = item.nameEng;
+      // this.mtrailerCode = item.trailerCode;
+      // this.previewtrailerBtn = true;
     },
 
     promotionBTN(
