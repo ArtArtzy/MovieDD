@@ -192,7 +192,7 @@
           </div>
         </q-card>
       </q-dialog>
-      <!-- Delete Movie -->
+      <!-- Deleted Movie -->
       <q-dialog class="" v-model="deleteMovieBtn" persistent>
         <q-card class="deleteMovieBox" align="center">
           <q-card-section class="row items-center q-pb-none">

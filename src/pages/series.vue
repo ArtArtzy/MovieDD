@@ -52,149 +52,319 @@
               rounded
               class="cursor-pointer "
               style="background-color:#FFC24C;font-size:18px;width:160px;"
-              label="+ Movie"
+              label="+ Series"
               no-caps
-              @click=""
+              @click="addSeriesBtn()"
             />
           </div>
         </div>
         <!-- end header  -->
-        <div class="q-pt-lg"></div>
-        <!-- movie box  -->
-        <div v-for="(item, index) in data" :key="index">
-          <div class="movieBox row " style="margin:10px;">
-            <div class="q-ma-md">
-              <img class="shadow-4" :src="urlPoster(item.id)" alt="" />
-            </div>
-            <div class="col q-pt-md">
-              <div class="row" style="line-height:30px;">
-                <div style="font-size:24px;">
-                  {{ item.nameEng }}
-                </div>
-                <div class="q-pl-md" style="font-size:14px;color:blue">
-                  <u>{{ item.dayUpload }} days | {{ item.view }} views</u>
-                </div>
+        <!-- series Box  -->
+        <q-scroll-area class="" style="height:88vh; max-width: 90vw;">
+          <div class="q-pt-md"></div>
+          <div v-for="(item, index) in data" :key="index">
+            <div class="seriesBox row ">
+              <div class="q-ma-md">
+                <img class="shadow-4" :src="urlPoster(item.id)" alt="" />
               </div>
-              <div style="font-size:18px;">{{ item.nameTh }}</div>
-              <div class="row" style="font-size:14px;">
-                <div class="col-1">{{ item.year }}</div>
-                <div class="col-1">{{ item.mpaRate }}</div>
-                <div class="col-2">
-                  {{ item.hour }} ชั่วโมง {{ item.min }} นาที
-                </div>
-                <div class="col-3 row">
-                  <div>{{ item.type[0] }}&nbsp;</div>
-                  <div
-                    v-for="i in item.type.length - 1"
-                    :key="i"
-                    v-show="item.type[i]"
-                  >
-                    | {{ item.type[i] }}&nbsp;
+              <div class="col q-pt-md">
+                <div class="row" style="line-height:30px;">
+                  <div style="font-size:24px;">
+                    {{ item.nameEng }}
+                  </div>
+                  <div class="q-pl-md" style="font-size:14px;color:blue">
+                    <u>{{ item.dayUpload }} days | {{ item.view }} views</u>
                   </div>
                 </div>
-              </div>
-              <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
-                {{ item.synopsis }}
-              </div>
-              <div v-show="item.episode.length > 0">
-                <div class="row">
-                  <div v-for="(item2, index2) in item.episode" :key="index2">
-                    <div class="epBox">
-                      ซีซั่น {{ index2 + 1 }} - {{ item2 }} ตอน
+                <div style="font-size:18px;">{{ item.nameTh }}</div>
+                <div class="row" style="font-size:14px;">
+                  <div class="col-1">{{ item.year }}</div>
+                  <div class="col-1">{{ item.mpaRate }}</div>
+                  <div class="col-2">
+                    {{ item.hour }} ชั่วโมง {{ item.min }} นาที
+                  </div>
+                  <div class="col-3 row">
+                    <div>{{ item.type[0] }}&nbsp;</div>
+                    <div
+                      v-for="i in item.type.length - 1"
+                      :key="i"
+                      v-show="item.type[i]"
+                    >
+                      | {{ item.type[i] }}&nbsp;
+                    </div>
+                  </div>
+                </div>
+                <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
+                  {{ item.synopsis }}
+                </div>
+                <div v-show="item.episode.length > 0">
+                  <div class="row">
+                    <div v-for="(item2, index2) in item.episode" :key="index2">
+                      <div class="epBox">
+                        ซีซั่น {{ index2 + 1 }} - {{ item2 }} ตอน
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <div class="col-1">
+                <div class="row q-pt-md">
+                  <div class="col">
+                    <q-btn
+                      flat
+                      class="far fa-bell"
+                      size="20px"
+                      style="max-height:30px;"
+                    >
+                      <q-badge v-show="item.alert != 0" floating color="red">{{
+                        item.alert
+                      }}</q-badge></q-btn
+                    >
+                  </div>
+                  <div class="col cursor-pointer" @click="">
+                    <u>Edit</u>
+                  </div>
+                </div>
+                <div class="btnMovie bg-primary" align="center">
+                  Episode
+                </div>
+
+                <div
+                  v-show="item.trilerCode"
+                  class="btnMovie bg-primary"
+                  align="center"
+                >
+                  <q-icon class="fas fa-play" />
+                  trailer
+                </div>
+                <div
+                  v-show="!item.trilerCode"
+                  class="btnMovie bg-grey"
+                  align="center"
+                >
+                  <q-icon class="fas fa-play" />
+                  trailer
+                </div>
+                <div
+                  v-show="item.promotion"
+                  class="btnMovie bg-positive"
+                  align="center"
+                  @click="item.promotion = 0"
+                >
+                  Promotion
+                </div>
+                <div
+                  v-show="!item.promotion"
+                  class="btnMovie bg-grey"
+                  align="center"
+                  @click="item.promotion = 1"
+                >
+                  Promotion
+                </div>
+                <div
+                  v-show="item.status"
+                  class="btnMovie bg-positive"
+                  align="center"
+                  @click="item.status = 0"
+                >
+                  online
+                </div>
+                <div
+                  v-show="!item.status"
+                  class="btnMovie bg-negative"
+                  align="center"
+                  @click="item.status = 1"
+                >
+                  offline
+                </div>
+              </div>
             </div>
-
-            <div class="col-1">
-              <div class="row q-pt-md">
-                <div class="col">
-                  <q-btn
-                    flat
-                    class="far fa-bell"
-                    size="20px"
-                    style="max-height:30px;"
+            <div class="q-pt-md"></div>
+          </div>
+        </q-scroll-area>
+        <!-- end series Box  -->
+      </div>
+      <!-- add series  -->
+      <q-dialog class="" v-model="dialogAddSeries" persistent>
+        <q-card class="diaBox">
+          <div class="q-pt-md" style="font-size:24px;" align="center">
+            Add Series
+          </div>
+          <div class="q-pa-sm q-ml-lg q-pl-md">
+            <div class="row ">
+              <div class="col row items-end">
+                <div class="col-4">Title name(En)</div>
+                <q-input
+                  class=""
+                  style="width:260px;"
+                  v-model="addmovie.titleEn"
+                  dense
+                />
+              </div>
+              <div class="col row items-end">
+                <div class="col-4 ">Title name(Th)</div>
+                <q-input
+                  class=""
+                  style="width:260px;"
+                  v-model="addmovie.titleTh"
+                  dense
+                />
+              </div>
+            </div>
+            <div class="row ">
+              <div class="col row items-end">
+                <div class="col-4">Year</div>
+                <q-input
+                  class=""
+                  style="width:160px;"
+                  v-model="addmovie.year"
+                  dense
+                />
+              </div>
+              <div class="col row items-end">
+                <div class="col-4">Mpa Rating</div>
+                <q-select
+                  class=""
+                  color="blue"
+                  v-model="addmovie.mpaRating"
+                  :options="mpaOpt"
+                  dense
+                  style="width:80px;font-size:16px;"
+                >
+                </q-select>
+              </div>
+            </div>
+            <div class="col row items-center" style="padding-top:20px;">
+              <div class="row " style="width: 300px;">
+                <div class="col">Poster file</div>
+                <div class="col posterFilePos">
+                  <q-file
+                    v-model="addmovie.posterFile"
+                    dense
+                    accept=".jpg"
+                    label="Pick one file"
                   >
-                    <q-badge v-show="item.alert != 0" floating color="red">{{
-                      item.alert
-                    }}</q-badge></q-btn
-                  >
-                </div>
-                <div class="col cursor-pointer" @click="">
-                  <u>Edit</u>
+                  </q-file>
                 </div>
               </div>
-              <div class="btnMovie bg-primary" align="center">
-                Episode
+            </div>
+            <div class="q-pt-md">Synopsis</div>
+            <div class="q-pt-sm">
+              <q-input
+                class="synBox"
+                borderless
+                type="textarea"
+                style="max-height:450px;"
+                v-model="addmovie.synopsis"
+                dense
+              />
+            </div>
+            <div class=" row items-end">
+              <div class="col-2">Trailer code</div>
+              <q-input
+                class=""
+                style="width:200px;"
+                v-model="addmovie.trailerCode"
+                dense
+              />
+            </div>
+            <div class="row items-center q-pt-sm">
+              <div class="col-2">
+                Category
               </div>
+              <q-select
+                class=""
+                color="teal"
+                v-model="addmovie.category"
+                :options="movieCatOptWithoutAll"
+                multiple
+                counter
+                max-values="6"
+                hint="3-6 categories"
+                dense
+                emit-value
+                map-options
+                style="width:600px;font-size:16px;"
+              >
+              </q-select>
+            </div>
+            <div class="row q-pt-lg">
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.netflix"
+                label="Netflix"
+                color="positive"
+              />
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.disney"
+                label="Disney"
+                color="positive"
+              />
+              <q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.amazon"
+                label="Amazon"
+                color="positive"
+              /><q-checkbox
+                class="col-2"
+                dense
+                v-model="addmovie.hbo"
+                label="HBO"
+                color="positive"
+              />
+            </div>
+            <q-checkbox
+              :label="labelExpired"
+              class="q-pt-md"
+              dense
+              v-model="addmovie.newArraival"
+              color="positive"
+            />
 
+            <div class="row ynDia">
               <div
-                v-show="item.trilerCode"
-                class="btnMovie bg-primary"
+                class="ynBtn q-ma-sm"
+                @click="closeAddSeriesBtn()"
                 align="center"
               >
-                <q-icon class="fas fa-play" />
-                trailer
+                Cancel
               </div>
               <div
-                v-show="!item.trilerCode"
-                class="btnMovie bg-grey"
+                class="ynBtn q-ma-sm"
+                style="background-color:#ffc24c"
+                @click=""
                 align="center"
               >
-                <q-icon class="fas fa-play" />
-                trailer
-              </div>
-              <div
-                v-show="item.promotion"
-                class="btnMovie bg-positive"
-                align="center"
-                @click="item.promotion = 0"
-              >
-                Promotion
-              </div>
-              <div
-                v-show="!item.promotion"
-                class="btnMovie bg-grey"
-                align="center"
-                @click="item.promotion = 1"
-              >
-                Promotion
-              </div>
-              <div
-                v-show="item.status"
-                class="btnMovie bg-positive"
-                align="center"
-                @click="item.status = 0"
-              >
-                online
-              </div>
-              <div
-                v-show="!item.status"
-                class="btnMovie bg-negative"
-                align="center"
-                @click="item.status = 1"
-              >
-                offline
+                Ok
               </div>
             </div>
           </div>
-        </div>
-        <!-- end moviebox  -->
-      </div>
+        </q-card>
+      </q-dialog>
+      <!-- bg drop  -->
+      <div class="bgDrop fullscreen" v-show="dialogAddSeries"></div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       searchMovie: "",
-      movieCat: "แอคชัน",
-      movieCatOpt: [],
+      movieCat: 0, //ประเภทหนังที่ filter
+      movieCatOpt: [], //รายชื่อประเภทของหนัง
+      movieCatOptWithoutAll: [], //รายชื่อประเภทของหนังที่ไม่รวมทั้งหมด
+      mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"],
       movieP: 1,
       moviePage: [1, 2, 3, 4],
+      labelExpired: "", // คำอธิบาย label สำหรับ New arraival
       data: [
         {
           id: 1,
@@ -239,13 +409,86 @@ export default {
           status: 1,
           episode: []
         }
-      ]
+      ],
+      addmovie: {
+        titleTh: "",
+        titleEn: "",
+        year: "",
+        mpaRating: "G",
+        posterFile: null,
+        synopsis: "",
+        trailerCode: "",
+        category: null,
+        netflix: false,
+        disney: false,
+        amazon: false,
+        hbo: false,
+        newArraival: false,
+        expiredDate: ""
+      },
+      dialogAddSeries: false
     };
   },
   methods: {
     urlPoster(id) {
       return this.serverpath + "/poster/series/" + id + ".jpg";
+    },
+    addSeriesBtn() {
+      let today = new Date();
+      let mi = today.getTime() + 1296000000;
+      let a = new Date(mi);
+      this.addmovie.expiredDate =
+        a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+      this.labelExpired =
+        "New arrival (expireed date " + this.addmovie.expiredDate + ")";
+      this.dialogAddSeries = true;
+    },
+    closeAddSeriesBtn() {
+      this.clraddmovie();
+      this.dialogAddSeries = false;
+    },
+    clraddmovie() {
+      this.addmovie.titleTh = "";
+      this.addmovie.titleEn = "";
+      this.addmovie.year = "";
+      this.addmovie.mpaRating = "G";
+      this.addmovie.posterFile = null;
+      this.addmovie.synopsis = "";
+      this.addmovie.trailerCode = "";
+      this.addmovie.category = null;
+      this.addmovie.netflix = false;
+      this.addmovie.disney = false;
+      this.addmovie.amazon = false;
+      this.addmovie.hbo = false;
+      this.addmovie.newArraival = false;
+      this.addmovie.expiredDate = "";
+    },
+    async loadcatatmovie() {
+      //โหลดประเภทหนัง
+      this.movieCatOpt = [];
+      this.movieCatOptWithoutAll = [];
+      let url = this.serverpath + "bo_loadcategory.php";
+      let res = await axios.get(url);
+      let temp2 = {
+        label: "ทั้งหมด",
+        value: 0
+      };
+      this.movieCatOpt.push(temp2);
+      let dataTemp = res.data;
+      dataTemp = dataTemp.sort((a, b) => a.orderid - b.orderid);
+      dataTemp.forEach(x => {
+        let temp = {
+          label: x.catname,
+          value: x.id
+        };
+        this.movieCatOpt.push(temp);
+        this.movieCatOptWithoutAll.push(temp);
+      });
+      this.movieCat = this.movieCatOpt[0].value;
     }
+  },
+  mounted() {
+    this.loadcatatmovie();
   }
 };
 </script>
@@ -257,20 +500,24 @@ export default {
   background-position: center;
   padding: 10px;
 }
-.movieBox {
+.bgDrop {
+  background-color: rgba($color: #000000, $alpha: 0.6);
+}
+.seriesBox {
   margin: auto;
   background-color: #c6d6ff;
   border-radius: 5px;
-  max-width: 1230px;
-  // width: calc(100vw - 390px);
-  height: 180px;
+  max-width: 1220px;
+  width: calc(100vw - 380px);
+  height: 200px;
 }
 .btnMovie {
+  line-height: 30px;
   cursor: pointer;
   color: white;
   font-size: 14px;
   margin-top: 5px;
-  height: 25px;
+  height: 30px;
   width: 87px;
   border-radius: 5px;
 }
@@ -279,5 +526,37 @@ export default {
   width: 130px;
   border: 1px solid black;
   margin-right: 15px;
+}
+.diaBox {
+  height: 720px;
+  max-width: 1200px;
+  width: 900px;
+  border-radius: 30px;
+  background-color: #edf2fe;
+  border: 2px solid white;
+}
+.synBox {
+  margin-left: 10px;
+  background-color: white;
+  height: 149px;
+  width: 800px;
+  border: 1px solid black;
+}
+.ynBtn {
+  margin: auto;
+  width: 120px;
+  height: 45px;
+  border-radius: 5px;
+  border: 1px solid #ffc24c;
+  cursor: pointer;
+  line-height: 45px;
+}
+.ynDia {
+  margin: auto;
+  position: absolute;
+  bottom: 30px;
+  margin-left: 200px;
+  width: 400px;
+  height: 45px;
 }
 </style>
