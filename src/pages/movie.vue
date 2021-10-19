@@ -211,7 +211,7 @@
                   v-show="item.status == 1"
                   class="btnMovie bg-positive"
                   align="center"
-                  @click="changeStatus(item)"
+                  @click="changeStatus(item, index)"
                 >
                   online
                 </div>
@@ -219,7 +219,7 @@
                   v-show="item.status == 0"
                   class="btnMovie bg-negative"
                   align="center"
-                  @click="changeStatus(item)"
+                  @click="changeStatus(item, index)"
                 >
                   offline
                 </div>
@@ -1302,7 +1302,7 @@ export default {
       }
     },
     //เปลี่ยน status online/offline ของหนัง
-    async changeStatus(item) {
+    async changeStatus(item, index) {
       let sta = 0;
       if (item.status == 0) sta = 1;
       else sta = 0;
@@ -1330,7 +1330,8 @@ export default {
           icon: "fas fa-check"
         });
       }
-      this.loadMovieData();
+      this.data[index].status = sta;
+      //this.loadMovieData();
     },
     async uploadFilePosterMobile() {
       let formData = new FormData();

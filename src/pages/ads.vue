@@ -89,14 +89,14 @@
                   <div
                     v-show="item.status == 1"
                     class="onBox cursor-pointer"
-                    @click="changeStatus(item)"
+                    @click="changeStatus(item, index)"
                   >
                     online
                   </div>
                   <div
                     v-show="item.status == 0"
-                    class="offBox"
-                    @click="changeStatus(item)"
+                    class="offBox cursor-pointer"
+                    @click="changeStatus(item, index)"
                   >
                     offline
                   </div>
@@ -399,7 +399,7 @@ export default {
         this.dataShowPage.push(this.dataShow[i]);
       }
     },
-    async changeStatus(item) {
+    async changeStatus(item, index) {
       let sta = 0;
       if (item.status == 0) sta = 1;
       else sta = 0;
@@ -427,7 +427,7 @@ export default {
           icon: "fas fa-check"
         });
       }
-      this.loadData();
+      this.data[index].status = sta;
     },
     async addOk() {
       if (
