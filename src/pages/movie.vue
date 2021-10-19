@@ -70,7 +70,10 @@
               class="picMovie q-ma-md q-mt-lg shadow-2"
               v-if="item.poster == 1"
             >
-              <img :src="serverpath + 'poster/movie/' + item.id + '.jpg'" />
+              <img
+                :src="serverpath + 'poster/movie/' + item.id + '.jpg'"
+                style="width:100px;"
+              />
             </div>
             <div
               class="picMovie q-ma-md q-mt-lg shadow-2"
@@ -357,7 +360,7 @@
                 class="q-pl-lg"
                 color="teal"
                 v-model="addmovie.category"
-                :options="movieCatOpt"
+                :options="movieCatOptWithoutAll"
                 multiple
                 counter
                 max-values="6"
@@ -758,6 +761,7 @@ export default {
       searchMovie: "",
       movieCat: 0, //ประเภทหนังที่ filter
       movieCatOpt: [], //รายชื่อประเภทของหนัง
+      movieCatOptWithoutAll: [], //รายชื่อประเภทของหนังที่ไม่รวมทั้งหมด
       movieP: 1, //หน้าปัจจุบัน
       moviePage: [], // Array ลำดับเลข 1 ถึงหน้าสุดท้าย
       data: [], //ข้อมูลที่โชว์
@@ -871,6 +875,12 @@ export default {
         this.redNotify("Please pick category at least 3");
         return;
       }
+      //ปรับรูปแบบของ category
+      let categoryData = "";
+      this.addmovie.category.forEach(x => {
+        categoryData += "[" + x + "],";
+      });
+      categoryData.substring(0, categoryData.length - 1);
 
       let data = {
         nameEng: this.addmovie.titleEn,
@@ -879,7 +889,7 @@ export default {
         mparate: this.addmovie.mpaRating,
         durationHour: this.addmovie.durationHour,
         durationMin: this.addmovie.durationMin,
-        type: this.addmovie.category,
+        type: categoryData,
         synopsis: this.addmovie.synopsis,
         movieCodeEng: this.addmovie.movieCodeThaiSub,
         movieCodeTh: this.addmovie.movieCodeThaiSound,
@@ -893,9 +903,15 @@ export default {
       };
       let url = this.serverpath + "bo_movieadddata.php";
       let res = await axios.post(url, JSON.stringify(data));
-      if (res.data == "finish") {
-        this.dialogAddMovie = false;
-      }
+      let movieid = res.data;
+      console.log(movieid);
+      //ทำการ upload  รูปภาพ
+      let formData = new FormData();
+      formData.append("file", this.addmovie.posterFile);
+      formData.append("id", movieid);
+      url = this.serverpath + "bo_uploadmovieposter.php";
+      let data2 = await axios.post(url, formData);
+      this.dialogAddMovie = false;
     },
     refreshCat() {
       //เปลี่ยน Category
@@ -917,6 +933,7 @@ export default {
     async loadcatatmovie() {
       //โหลดประเภทหนัง
       this.movieCatOpt = [];
+      this.movieCatOptWithoutAll = [];
       let url = this.serverpath + "bo_loadcategory.php";
       let res = await axios.get(url);
       let temp2 = {
@@ -932,6 +949,7 @@ export default {
           value: x.id
         };
         this.movieCatOpt.push(temp);
+        this.movieCatOptWithoutAll.push(temp);
       });
       this.movieCat = this.movieCatOpt[0].value;
     },
