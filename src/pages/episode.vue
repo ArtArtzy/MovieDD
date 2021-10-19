@@ -4,61 +4,36 @@
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg">
-          <div class="col-5 q-pl-xl">
-            <q-input
-              outlined
-              rounded
-              clearable
-              clear-icon="close"
-              v-model="searchMovie"
-              placeholder="Search : film title"
-              dense
-              style="width:400px;"
-            >
-              <template v-slot:prepend>
-                <q-icon class="fas fa-search" />
-              </template>
-            </q-input>
-          </div>
-          <div class="col-1" align="right">
-            Category
-          </div>
-          <div class="q-pl-sm">
+          <q-btn
+            class="q-ml-md"
+            rounded
+            to="/series"
+            icon="fas fa-long-arrow-alt-left"
+            style="width:100px;"
+          />
+          <div class="col"></div>
+          <div class="col-2" align="right">
             <q-select
               color="orange-13"
-              v-model="movieCat"
-              :options="movieCatOpt"
+              v-model="selectSeason"
+              :options="allSeason"
               dense
-              style="width:120px;font-size:16px;"
+              style="width:180px;font-size:16px;"
+              @input="loadMovieData()"
             >
             </q-select>
           </div>
-          <div class="col-1" align="right">
-            Page
-          </div>
-          <div class="q-pl-sm">
-            <q-select
-              color="orange-13"
-              v-model="movieP"
-              :options="moviePage"
-              dense
-              style="width:50px;font-size:16px;"
-            >
-            </q-select>
-          </div>
-          <div class="col" align="left">of {{ moviePage.length }}</div>
           <div class="col-2" align="center">
             <q-btn
               rounded
               class="cursor-pointer "
               style="background-color:#FFC24C;font-size:18px;width:160px;"
-              label="+ Series"
+              label="Season"
               no-caps
               @click="addSeriesBtn()"
             />
           </div>
         </div>
-        <!-- end header  -->
       </div>
     </div>
   </div>
@@ -67,7 +42,10 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      allSeason: ["season 1", "season 2", "season 3"],
+      selectSeason: "season 1"
+    };
   }
 };
 </script>
@@ -78,5 +56,31 @@ export default {
   background-size: cover;
   background-position: center;
   padding: 10px;
+}
+.bgDrop {
+  background-color: rgba($color: #000000, $alpha: 0.6);
+}
+.diaBox {
+  max-width: 900px;
+  width: 750px;
+  height: 400px;
+  border-radius: 30px;
+}
+.ynBtn {
+  margin: auto;
+  width: 120px;
+  height: 45px;
+  border-radius: 5px;
+  border: 1px solid #ffc24c;
+  cursor: pointer;
+  line-height: 45px;
+}
+.ynDia {
+  margin: auto;
+  position: absolute;
+  bottom: 30px;
+  margin-left: 200px;
+  width: 400px;
+  height: 45px;
 }
 </style>
