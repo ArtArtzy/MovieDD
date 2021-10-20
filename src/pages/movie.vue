@@ -129,14 +129,15 @@
 
               <div class="col-1">
                 <div class="row q-pt-md">
-                  <div class="col">
+                  <div class="col" align="left">
                     <q-btn
+                      dense
+                      round
                       flat
-                      class="far fa-bell"
-                      size="20px"
-                      style="max-height:30px;"
+                      icon="far fa-bell"
+                      @click="reportBtn(item.id)"
                     >
-                      <q-badge v-show="item.alert != 0" floating color="red">{{
+                      <q-badge v-show="item.alert != 0" color="red" floating>{{
                         item.alert
                       }}</q-badge>
                     </q-btn>
@@ -1036,6 +1037,76 @@
           </div>
         </q-card>
       </q-dialog>
+      <!-- Report  -->
+      <q-dialog v-model="dialogReport" persistent>
+        <q-card class="reportDialog">
+          <div class="row q-pa-md" align="center">
+            <div class="col-1"></div>
+            <div class="col" style="font-size:24px;">Report</div>
+            <div class="col-1">
+              <q-btn
+                icon="far fa-times-circle"
+                flat
+                round
+                size="md"
+                dense
+                v-close-popup
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-1"></div>
+            <div class="col">
+              <div class="row items-end">
+                <div class="col" style="font-size:20px;">Movie qualitiy</div>
+                <div class="cursor-pointer">
+                  <u>solved</u>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">หนังดูไม่ได้</div>
+                <div class="col-3" align="right">x คน</div>
+              </div>
+              <div class="row">
+                <div class="col">ไม่มีเสียง / เสียงไม่ตรง</div>
+                <div class="col-3" align="right">x คน</div>
+              </div>
+              <div class="row">
+                <div class="col">ภาพกระตุก</div>
+                <div class="col-3" align="right">x คน</div>
+              </div>
+              <hr />
+              <div style="font-size:20px;">Etc</div>
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <q-scroll-area style="height:240px;">
+            <div
+              class="row"
+              style="height:40px;"
+              v-for="(item, index) in testReport"
+              :key="index"
+            >
+              <div class="col-1"></div>
+              <div
+                class="col q-pl-sm"
+                :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+                style="height:40px;line-height: 40px;"
+              >
+                {{ item }}
+              </div>
+              <div
+                class="cursor-pointer q-pr-sm"
+                :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+                style="height:40px;line-height: 40px;"
+              >
+                <u>solved</u>
+              </div>
+              <div class="col-1"></div>
+            </div>
+          </q-scroll-area>
+        </q-card>
+      </q-dialog>
       <!-- bg drop  -->
       <div
         class="bgDrop fullscreen"
@@ -1044,7 +1115,8 @@
             dialogEditMovie ||
             dialogPromotion ||
             dialogPreview ||
-            dialogtrailer
+            dialogtrailer ||
+            dialogReport
         "
       ></div>
     </div>
@@ -1056,6 +1128,35 @@ import axios from "axios";
 export default {
   data() {
     return {
+      testReport: [
+        "ชื่อเรื่องสะกดผิด",
+        "เรื่องย่อไม่ตรงกับเรื่องจริง",
+        "ภาพปกคนละภาพ",
+        "เสียงเบา",
+        "s",
+        "sdsa",
+        "dsag",
+        "dsgg",
+        "ghsd",
+        "ชื่อเรื่องสะกดผิด",
+        "เรื่องย่อไม่ตรงกับเรื่องจริง",
+        "ภาพปกคนละภาพ",
+        "เสียงเบา",
+        "s",
+        "sdsa",
+        "dsag",
+        "dsgg",
+        "ghsd",
+        "ชื่อเรื่องสะกดผิด",
+        "เรื่องย่อไม่ตรงกับเรื่องจริง",
+        "ภาพปกคนละภาพ",
+        "เสียงเบา",
+        "s",
+        "sdsa",
+        "dsag",
+        "dsgg",
+        "ghsd"
+      ],
       searchMovie: "",
       movieCat: 0, //ประเภทหนังที่ filter
       movieCatOpt: [], //รายชื่อประเภทของหนัง
@@ -1067,6 +1168,7 @@ export default {
       dialogAddMovie: false,
       dialogEditMovie: false,
       deleteMovieAlert: false,
+      dialogReport: false,
       addmovie: {
         titleTh: "",
         titleEn: "",
@@ -1118,6 +1220,10 @@ export default {
     };
   },
   methods: {
+    // ปุ่ม Report
+    reportBtn(id) {
+      this.dialogReport = true;
+    },
     //ปุ่มเพิ่ม Movie
     showAddMovieBtn() {
       // expired date
@@ -1770,5 +1876,10 @@ export default {
   border-radius: 30px;
   width: 455px;
   height: 288px;
+}
+.reportDialog {
+  border-radius: 30px;
+  width: 530px;
+  height: 500px;
 }
 </style>
