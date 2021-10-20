@@ -100,7 +100,7 @@
                   <div class="col-2">
                     {{ item.durationHour }} ชั่วโมง {{ item.durationMin }} นาที
                   </div>
-                  <div class="col-4 row">
+                  <div class="col row">
                     <div>{{ catName(item.type[0]) }}&nbsp;</div>
                     <div
                       v-for="i in item.type.length - 1"
@@ -330,12 +330,16 @@
             <div class="q-pt-md">Synopsis</div>
             <div class="q-pt-sm">
               <q-input
+                counter
+                hint="Max 300 characters"
                 class="synBox"
                 borderless
                 type="textarea"
                 style="max-height:450px;"
                 v-model="addmovie.synopsis"
                 dense
+                error-message="Please use maximum 300 characters"
+                :error="!isValid"
               />
             </div>
             <div class="row ">
@@ -445,8 +449,18 @@
       <!-- edit movie box -->
       <q-dialog v-model="dialogEditMovie" persistent>
         <q-card class="diaBox">
-          <div class="q-pt-md" style="font-size:24px;" align="center">
-            Add movie
+          <div class="row q-pt-md" align="center">
+            <div class="col-1"></div>
+            <div class="col" style="font-size:24px;">
+              Edit movie
+            </div>
+            <div class="col-1">
+              <q-icon
+                class="fas fa-trash-alt cursor-pointer"
+                size="sm"
+                @click="deleteMovieAlert = true"
+              />
+            </div>
           </div>
           <div class="q-pa-sm q-ml-lg">
             <div class="row ">
@@ -541,12 +555,16 @@
             <div class="q-pt-md">Synopsis</div>
             <div class="q-pt-sm">
               <q-input
+                counter
+                hint="Max 300 characters"
                 class="synBox"
                 borderless
                 type="textarea"
                 style="max-height:450px;"
                 v-model="addmovie.synopsis"
                 dense
+                error-message="Please use maximum 300 characters"
+                :error="!isValid"
               />
             </div>
             <div class="row ">
@@ -650,6 +668,32 @@
                 OK
               </div>
             </div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- delete movie alert  -->
+      <q-dialog v-model="deleteMovieAlert" persistent>
+        <q-card class="alertDialog" align="center">
+          <q-icon
+            class="fas fa-exclamation-triangle q-pt-lg"
+            style="font-size:100px;color:#FFC24C"
+          />
+          <div class="q-py-lg">Do you want to delete this movie?</div>
+          <div class="row q-pt-md">
+            <div class="col"></div>
+            <div class="ynBtn q-ma-sm" @click="closeAlertBtn()" align="center">
+              Cancel
+            </div>
+            <div class="col-1"></div>
+            <div
+              class="ynBtn q-ma-sm"
+              style="background-color:#ffc24c"
+              @click=""
+              align="center"
+            >
+              Ok
+            </div>
+            <div class="col"></div>
           </div>
         </q-card>
       </q-dialog>
@@ -1025,6 +1069,7 @@ export default {
       // Add movie
       dialogAddMovie: false,
       dialogEditMovie: false,
+      deleteMovieAlert: false,
       addmovie: {
         titleTh: "",
         titleEn: "",
@@ -1150,6 +1195,10 @@ export default {
 
       if (this.addmovie.posterFile == null) {
         this.redNotify("Please pick poster file");
+        return;
+      }
+      if (this.addmovie.synopsis.length >= 300) {
+        this.redNotify("Maximum synopsis 300 characters");
         return;
       }
       //ปรับรูปแบบของ category
@@ -1347,6 +1396,10 @@ export default {
         this.redNotify("Please pick poster file");
         return;
       }
+      if (this.addmovie.synopsis.length >= 300) {
+        this.redNotify("Maximum synopsis 300 characters");
+        return;
+      }
       //ปรับรูปแบบของ category
       let categoryData = "";
       this.addmovie.category.forEach(x => {
@@ -1441,6 +1494,8 @@ export default {
         let url = this.serverpath + "bo_encodemovie.php";
         let res = await axios.post(url, JSON.stringify(data));
         this.previewThaiSoundLink = res.data;
+      } else {
+        this.indexPoster = 2;
       }
       this.previewMovieThaiSubCode = item.movieCodeEng;
       if (item.movieCodeEng != "") {
@@ -1450,6 +1505,8 @@ export default {
         let url = this.serverpath + "bo_encodemovie.php";
         let res = await axios.post(url, JSON.stringify(data));
         this.previewThaiSubLink = res.data;
+      } else {
+        this.indexPoster = 1;
       }
       this.dialogPreview = true;
     },
@@ -1583,9 +1640,17 @@ export default {
     closePromotion() {
       this.loadMovieData();
       this.dialogPromotion = false;
+    },
+    //ปิด alert ลบหนัง
+    closeAlertBtn() {
+      this.deleteMovieAlert = false;
     }
   },
-
+  computed: {
+    isValid() {
+      return this.addmovie.synopsis.length <= 300;
+    }
+  },
   mounted() {
     this.loadcatatmovie();
     this.loadpagenumber();
@@ -1626,6 +1691,7 @@ export default {
 .testMovie {
   margin-right: 10px;
   width: 77px;
+  max-height: 26px;
   height: 26 px;
   border: 1px solid black;
   border-radius: 5px;
@@ -1696,5 +1762,10 @@ export default {
 .posterFilePos {
   position: relative;
   top: -10px;
+}
+.alertDialog {
+  border-radius: 30px;
+  width: 455px;
+  height: 288px;
 }
 </style>

@@ -355,8 +355,14 @@
       <!-- edit series  -->
       <q-dialog class="" v-model="dialogEditSeries" persistent>
         <q-card class="diaBox">
-          <div class="q-pt-md" style="font-size:24px;" align="center">
-            Edit Series
+          <div class="row" align="center">
+            <div class="col-1"></div>
+            <div class="col q-pt-md" style="font-size:24px;">
+              Edit Series
+            </div>
+            <div class="col-1 q-ma-sm">
+              <q-btn rounded push icon="fas fa-trash-alt" />
+            </div>
           </div>
           <div class="q-pa-sm q-ml-lg q-pl-md">
             <div class="row ">
