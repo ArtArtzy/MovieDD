@@ -69,20 +69,17 @@
 
           <div v-for="(item, index) in data" :key="index">
             <div class="movieBox row">
-              <div
-                class="picMovie q-ma-md q-mt-lg shadow-2"
-                v-if="item.poster == 1"
-              >
+              <div class=" q-ma-md q-mt-lg" v-if="item.poster == 1">
                 <img
+                  class="picMovie shadow-2"
                   :src="serverpath + 'poster/movie/' + item.id + '.jpg'"
-                  style="width:100px;"
                 />
               </div>
-              <div
-                class="picMovie q-ma-md q-mt-lg shadow-2"
-                v-if="item.poster == 0"
-              >
-                <img :src="serverpath + 'poster/movie/nophoto.jpg'" />
+              <div class="q-ma-md q-mt-lg" v-if="item.poster == 0">
+                <img
+                  class="picMovie shadow-2"
+                  :src="serverpath + 'poster/movie/nophoto.jpg'"
+                />
               </div>
               <div class="col q-pt-md">
                 <div class="row" style="line-height:30px;">
@@ -700,24 +697,24 @@
       <!-- promotion -->
       <q-dialog class="" v-model="dialogPromotion" persistent>
         <q-card class="promotionBox" style="font-size:24px;" align="center">
-          <q-card-section class="row items-center q-pb-none">
-            <q-space />
-            <q-btn
-              icon="far fa-times-circle"
-              flat
-              round
-              dense
-              @click="closePromotion()"
-            />
-          </q-card-section>
-          <div class="row">
+          <div class="row q-pt-md">
             <div class="col-2">
               Promotion
             </div>
             <div class="col" align="center" style="font-size:36px;">
               {{ promotionMovieNameEng }}
             </div>
-            <div class="col-2"></div>
+            <div class="col-2" align="right">
+              <q-btn
+                class="q-pr-md"
+                icon="far fa-times-circle"
+                flat
+                round
+                size="lg"
+                dense
+                @click="closePromotion()"
+              />
+            </div>
           </div>
           <div class="row">
             <div class="col-2">
@@ -927,7 +924,7 @@
                 icon="far fa-times-circle"
                 flat
                 round
-                size="xl"
+                size="lg"
                 dense
                 v-close-popup
               />
@@ -1020,7 +1017,7 @@
                 icon="far fa-times-circle"
                 flat
                 round
-                size="xl"
+                size="lg"
                 dense
                 v-close-popup
               />
@@ -1481,6 +1478,9 @@ export default {
       };
       let url = this.serverpath + "bo_deleteposterfile.php";
       let res = await axios.post(url, JSON.stringify(data));
+
+      this.addmovie.posterFile = 0;
+      this.greenNotify("deleted poster complete");
     },
 
     //เปิดหน้า preview movie
@@ -1515,7 +1515,7 @@ export default {
       this.dialogtrailer = true;
       this.trailerTitle = item.nameEng;
       let data = {
-        movieCode: item.movieCodeEng
+        movieCode: item.trailerCode
       };
       let url = this.serverpath + "bo_encodemovie.php";
       let res = await axios.post(url, JSON.stringify(data));
@@ -1639,6 +1639,7 @@ export default {
     //ปิดหน้า Promotion
     closePromotion() {
       this.loadMovieData();
+      this.indexPoster = 1;
       this.dialogPromotion = false;
     },
     //ปิด alert ลบหนัง
@@ -1685,7 +1686,9 @@ export default {
   border-radius: 5px;
 }
 .picMovie {
+  max-width: 98px;
   width: 98px;
+  max-height: 151px;
   height: 151px;
 }
 .testMovie {
