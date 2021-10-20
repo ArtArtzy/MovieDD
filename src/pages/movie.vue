@@ -820,8 +820,10 @@
               style="margin-top:100px;"
               align="center"
             >
-              <img :src="posterT" alt="" />
-              <div><u>delete poster</u></div>
+              <img :src="posterT" alt="" style="width:770px;" />
+              <div @click="deletePosterTablet()" class="cursor-pointer">
+                <u>delete poster</u>
+              </div>
             </div>
             <div
               v-show="indexPoster == 3 && posterP == null"
@@ -832,18 +834,25 @@
               <div class="q-py-xl col" style="padding-top:180px;">
                 jpg - 1200x670 px
               </div>
-              <q-input
-                @input="
-                  val => {
-                    posterP = val[0];
-                  }
-                "
-                style="width:300px;margin-left:100px;"
-                borderless
-                align="center"
-                type="file"
+              <q-file
+                v-model="promotionPCFile"
                 dense
-              />
+                style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
+                borderless
+                accept=".jpg"
+                class="bg-white q-mt-lg"
+                @input="uploadFilePosterPC()"
+              >
+                <template v-slot:prepend>
+                  <div class="absolute-center fit" align="center">
+                    <span class="text-black" style="font-size:12px;"
+                      >upload poster file</span
+                    >
+                  </div>
+                </template>
+
+                <template v-slot:file></template>
+              </q-file>
             </div>
             <div
               v-show="indexPoster == 3 && posterP != null"
@@ -851,8 +860,10 @@
               style=""
               align="center"
             >
-              <img :src="posterP" alt="" />
-              <div><u>delete poster</u></div>
+              <img :src="posterP" alt="" style="width:1200px;" />
+              <div @click="deletePosterPC()" class="cursor-pointer">
+                <u>delete poster</u>
+              </div>
             </div>
             <div class="col"></div>
           </div>
@@ -1057,13 +1068,11 @@ export default {
       promotionMovieId: "", //รหัสโปรโมชั่นหนัง
       promotionMobileFile: [], //ไฟล์รูป promotion Mobile
       promotionTabletFile: [], //ไฟล์รูป promotion Tablet
-
-      promotionOn: false,
-
+      promotionPCFile: [], //ไฟล์รูป promotion PC
+      promotionOn: false, //ตัวเปิดปิด Promotion
       posterM: null, //รูปภาพของ Promotion สำหรับ Mobile
       posterT: null, //รูปภาพของ Promotion สำหรับ Tablet
-      posterP: null, //รูปภาพของ Promotion สำหรับ PC
-      posterMobileFile: "" //
+      posterP: null //รูปภาพของ Promotion สำหรับ PC
     };
   },
   methods: {
@@ -1468,8 +1477,23 @@ export default {
       this.promotionMovieNameEng = posterEng;
       this.promotionMovieNameThai = posterThai;
       this.promotionMovieId = posterId;
-      promotionPCPic == 1 ? (this.posterP = 1) : (this.posterP = null);
-      promotionTabletPic == 1 ? (this.posterT = 1) : (this.posterT = null);
+      console.log(promotionTabletPic);
+      promotionPCPic == 1
+        ? (this.posterP =
+            this.serverpath +
+            "/promotion/movie/" +
+            this.promotionMovieId +
+            "p.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.posterP = null);
+      promotionTabletPic == 1
+        ? (this.posterT =
+            this.serverpath +
+            "/promotion/movie/" +
+            this.promotionMovieId +
+            "t.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.posterT = null);
       promotionMobilePic == 1
         ? (this.posterM =
             this.serverpath +
@@ -1508,6 +1532,20 @@ export default {
         "t.jpg?" +
         Math.floor(Math.random() * (999 - 100 + 1) + 100);
     },
+    //อัพโหลด  promotion poster PC file
+    async uploadFilePosterPC() {
+      let formData = new FormData();
+      formData.append("file", this.promotionPCFile);
+      formData.append("id", this.promotionMovieId);
+      const url = this.serverpath + "bo_uploadPromotionPC.php";
+      let data = await axios.post(url, formData);
+      this.posterP =
+        this.serverpath +
+        "/promotion/movie/" +
+        this.promotionMovieId +
+        "p.jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    },
     //ลบไฟล์ promotion poster mobile file
     async deletePosterMobile() {
       let data = {
@@ -1518,6 +1556,28 @@ export default {
       let res = await axios.post(url, data);
       this.greenNotify("Delete completely");
       this.posterM = null;
+    },
+    //ลบไฟล์ promotion poster tablet file
+    async deletePosterTablet() {
+      let data = {
+        id: this.promotionMovieId,
+        type: "t"
+      };
+      const url = this.serverpath + "bo_deletePromotionFile.php";
+      let res = await axios.post(url, data);
+      this.greenNotify("Delete completely");
+      this.posterT = null;
+    },
+    //ลบไฟล์ promotion poster tablet file
+    async deletePosterPC() {
+      let data = {
+        id: this.promotionMovieId,
+        type: "p"
+      };
+      const url = this.serverpath + "bo_deletePromotionFile.php";
+      let res = await axios.post(url, data);
+      this.greenNotify("Delete completely");
+      this.posterP = null;
     },
     //ปิดหน้า Promotion
     closePromotion() {
