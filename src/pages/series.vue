@@ -67,7 +67,12 @@
           <div v-for="(item, index) in data" :key="index">
             <div class="seriesBox row ">
               <div class="q-ma-md">
-                <img class="shadow-4" :src="urlPoster(item.id)" alt="" />
+                <img
+                  class="shadow-4"
+                  :src="urlPoster(item.id)"
+                  alt=""
+                  style="width:100px;"
+                />
               </div>
               <div class="col q-pt-md">
                 <div class="row" style="line-height:30px;">
@@ -75,31 +80,29 @@
                     {{ item.nameEng }}
                   </div>
                   <div class="q-pl-md" style="font-size:14px;color:blue">
-                    <u>{{ item.dayUpload }} days | {{ item.view }} views</u>
+                    <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
                   </div>
                 </div>
                 <div style="font-size:18px;">{{ item.nameTh }}</div>
                 <div class="row" style="font-size:14px;">
                   <div class="col-1">{{ item.year }}</div>
-                  <div class="col-1">{{ item.mpaRate }}</div>
-                  <div class="col-2">
-                    {{ item.hour }} ชั่วโมง {{ item.min }} นาที
-                  </div>
+                  <div class="col-1">{{ item.mparate }}</div>
+
                   <div class="col-3 row">
-                    <div>{{ item.type[0] }}&nbsp;</div>
+                    <div>{{ catName(item.type[0]) }}&nbsp;</div>
                     <div
                       v-for="i in item.type.length - 1"
                       :key="i"
                       v-show="item.type[i]"
                     >
-                      | {{ item.type[i] }}&nbsp;
+                      | {{ catName(item.type[i]) }}&nbsp;
                     </div>
                   </div>
                 </div>
                 <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
                   {{ item.synopsis }}
                 </div>
-                <div v-show="item.episode.length > 0">
+                <div v-show="item.episode != null">
                   <div class="row">
                     <div v-for="(item2, index2) in item.episode" :key="index2">
                       <div class="epBox">
@@ -538,51 +541,7 @@ export default {
       movieP: 1,
       moviePage: [1, 2, 3, 4],
       labelExpired: "", // คำอธิบาย label สำหรับ New arraival
-      data: [
-        {
-          id: 1,
-          nameEng: "A man who defies The World of BL",
-          nameTh: "เรื่องรักวายๆ ผมขอบายได้ไหมครับ",
-          year: "2021",
-          dayUpload: 10,
-          view: 321,
-          mpaRate: "PG",
-          hour: "1",
-          min: "27",
-          type: ["แอคชัน", "ดราม่า", "ตลก"],
-          synopsis:
-            "เมื่อ Luke Hobbs ถูกส่งจากอังกฤษเพื่อไป หยุด ผู้ก่อการร้าย ที่มุ่งหวังจะทำลายโลก เขาต้องร่วมมือกับ Shaw นักปราบมือดีจาก USA แต่ทุกอย่างไม่ได้ง่ายอย่างที่คิด",
-
-          alert: 5,
-
-          trailerCode: "",
-          promotion: 1,
-          new: 1,
-          status: 0,
-          episode: [12, 12, 4]
-        },
-        {
-          id: 2,
-          nameEng: "The hill",
-          nameTh: "เนินมรณะ สังหารโหด",
-          year: "2017",
-          dayUpload: 8,
-          view: 450,
-          mpaRate: "13+",
-          hour: "1",
-          min: "27",
-          type: ["แอคชัน", "ดราม่า", "ผจญภัย"],
-          synopsis:
-            "เนินเขามรณะที่ใครๆ เดินผ่านก็ตาย นักปราบมือดีจาก USA แต่ทุกอย่างไม่ได้ง่ายอย่างที่คิด",
-
-          alert: 0,
-          trailerCode: "",
-          promotion: 1,
-          new: 1,
-          status: 1,
-          episode: []
-        }
-      ],
+      data: [],
       addmovie: {
         titleTh: "",
         titleEn: "",
@@ -694,6 +653,48 @@ export default {
       this.greenNotify("Add new series completely");
       this.dialogAddSeries = false;
     },
+    //หาจำนวนหน้า
+    async loadpagenumber() {
+      let data = {
+        cat: this.movieCat
+      };
+      let url = this.serverpath + "bo_seriespagenumber.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.moviePage = [];
+      for (let i = 1; i <= res.data; i++) {
+        this.moviePage.push(i);
+      }
+    },
+    //ข้อมูลโชว์หน้าแรก
+    async loadseriesdata() {
+      this.loadpagenumber();
+      //โหลดข้อมูลหนัง
+      this.data = [];
+      let data = {
+        catName: this.movieCat,
+        pagedata: this.movieP
+      };
+
+      let url = this.serverpath + "bo_seriesshowdata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      res.data.forEach(x => {
+        //หาวันที่ upload ไป
+
+        let dateUploadTime = x.timestamp * 1000;
+        let dateCurrent = new Date();
+        let dateCurrentTime = dateCurrent.getTime();
+        let dateDiff = dateCurrentTime - dateUploadTime;
+        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
+
+        let movieType = x.type.split(",");
+        movieType = movieType.map(x => {
+          return x.replace("[", "").replace("]", "");
+        });
+        x.type = movieType;
+
+        this.data.push(x);
+      });
+    },
     urlPoster(id) {
       return this.serverpath + "/poster/series/" + id + ".jpg";
     },
@@ -774,10 +775,17 @@ export default {
         this.movieCatOptWithoutAll.push(temp);
       });
       this.movieCat = this.movieCatOpt[0].value;
+    },
+    //แสดงชื่อ Category
+    catName(id) {
+      let temp = this.movieCatOpt.filter(x => x.value == id);
+      return temp[0].label;
     }
   },
   mounted() {
     this.loadcatatmovie();
+    this.loadpagenumber();
+    this.loadseriesdata();
   }
 };
 </script>
