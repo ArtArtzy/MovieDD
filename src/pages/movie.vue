@@ -790,7 +790,7 @@
             <div
               v-show="indexPoster == 1 && posterM == null"
               class="q-pa-md col"
-              style="width:360px;height:445px;border-style:dashed;margin-top:100px;"
+              style="width:360px;height:445px;border-style:dashed;margin-top:40px;"
               align="center"
             >
               <div class="q-py-xl col" style="padding-top:120px;">
@@ -820,8 +820,8 @@
             </div>
             <div
               v-show="indexPoster == 1 && posterM != null"
-              class="q-pa-md col"
-              style="margin-top:80px;"
+              class=" col"
+              style="margin-top:40px;"
               align="center"
             >
               <img :src="posterM" alt="" style="width:360px" />
@@ -832,7 +832,7 @@
             <div
               v-show="indexPoster == 2 && posterT == null"
               class="q-pa-md col"
-              style="width:770px;height:430px;border-style:dashed;margin-top:80px;"
+              style="width:770px;height:430px;border-style:dashed;margin-top:60px;"
               align="center"
             >
               <div class="q-py-xl col" style="padding-top:120px;">
@@ -860,8 +860,8 @@
             </div>
             <div
               v-show="indexPoster == 2 && posterT != null"
-              class="q-pa-md col"
-              style="margin-top:100px;"
+              class="col"
+              style="margin-top:60px;"
               align="center"
             >
               <img :src="posterT" alt="" style="width:770px;" />
