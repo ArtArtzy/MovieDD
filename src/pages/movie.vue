@@ -183,15 +183,24 @@
                   trailer
                 </div>
                 <div
-                  v-show="item.promotion"
+                  v-show="item.promotion == 1"
                   class="btnMovie bg-positive"
                   align="center"
-                  @click="item.promotion = 0"
+                  @click="
+                    promotionBTN(
+                      item.id,
+                      item.nameEng,
+                      item.nameTh,
+                      item.promotionMobilePic,
+                      item.promotionTabletPic,
+                      item.promotionPCPic
+                    )
+                  "
                 >
-                  Promotion
+                  promotion
                 </div>
                 <div
-                  v-show="!item.promotion"
+                  v-show="item.promotion == 0"
                   class="btnMovie bg-grey"
                   align="center"
                   @click="
@@ -205,7 +214,7 @@
                     )
                   "
                 >
-                  Promotion
+                  promotion
                 </div>
                 <div
                   v-show="item.status == 1"
@@ -645,11 +654,17 @@
         </q-card>
       </q-dialog>
       <!-- promotion -->
-      <!-- <q-dialog class="" v-model="promotionMovie" persistent>
+      <q-dialog class="" v-model="dialogPromotion" persistent>
         <q-card class="promotionBox" style="font-size:24px;" align="center">
           <q-card-section class="row items-center q-pb-none">
             <q-space />
-            <q-btn icon="far fa-times-circle" flat round dense v-close-popup />
+            <q-btn
+              icon="far fa-times-circle"
+              flat
+              round
+              dense
+              @click="closePromotion()"
+            />
           </q-card-section>
           <div class="row">
             <div class="col-2">
@@ -663,27 +678,9 @@
           <div class="row">
             <div class="col-2">
               <q-toggle
-                v-show="
-                  promotionMobilePic == 1 &&
-                    promotionTabletPic == 1 &&
-                    promotionPCPic == 1
-                "
                 v-model="promotionOn"
                 color="green"
                 size="xl"
-                checked-icon="check"
-                unchecked-icon="clear"
-                style="margin-top:-40px;"
-              /><q-toggle
-                v-show="
-                  promotionMobilePic == null ||
-                    promotionTabletPic == null ||
-                    promotionPCPic == null
-                "
-                v-model="promotionOn"
-                color="green"
-                size="xl"
-                disable
                 checked-icon="check"
                 unchecked-icon="clear"
                 style="margin-top:-40px;"
@@ -696,7 +693,7 @@
           </div>
           <div class="row items-center" aling="center" style="font-size:14px;">
             <div class="col"></div>
-   
+
             <div
               v-show="indexPoster == 1"
               class="picPosterBTN q-ma-md cursor-pointer"
@@ -744,7 +741,7 @@
             </div>
             <div class="col"></div>
           </div>
-      
+
           <div class="">
             <div
               v-show="indexPoster == 1 && posterM == null"
@@ -756,10 +753,8 @@
                 jpg - 360x445 px
               </div>
               <div>
-
-
                 <q-file
-                  v-model="posterMobileFile"
+                  v-model="promotionMobileFile"
                   dense
                   style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
                   borderless
@@ -785,8 +780,10 @@
               style="margin-top:80px;"
               align="center"
             >
-              <img :src="posterM" alt="" />
-              <div><u>delete poster</u></div>
+              <img :src="posterM" alt="" style="width:360px" />
+              <div @click="deletePosterMobile()" class="cursor-pointer">
+                <u>delete poster</u>
+              </div>
             </div>
             <div
               v-show="indexPoster == 2 && posterT == null"
@@ -797,18 +794,25 @@
               <div class="q-py-xl col" style="padding-top:120px;">
                 jpg - 770x430 px
               </div>
-              <q-input
-                @input="
-                  val => {
-                    posterT = val[0];
-                  }
-                "
-                style="width:300px;margin-left:100px;"
-                borderless
-                align="center"
-                type="file"
+              <q-file
+                v-model="promotionTabletFile"
                 dense
-              />
+                style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
+                borderless
+                accept=".jpg"
+                class="bg-white q-mt-lg"
+                @input="uploadFilePosterTablet()"
+              >
+                <template v-slot:prepend>
+                  <div class="absolute-center fit" align="center">
+                    <span class="text-black" style="font-size:12px;"
+                      >upload poster file</span
+                    >
+                  </div>
+                </template>
+
+                <template v-slot:file></template>
+              </q-file>
             </div>
             <div
               v-show="indexPoster == 2 && posterT != null"
@@ -853,7 +857,7 @@
             <div class="col"></div>
           </div>
         </q-card>
-      </q-dialog> -->
+      </q-dialog>
       <!-- movie preview  -->
       <q-dialog v-model="dialogPreview" persistent>
         <q-card class="preview">
@@ -874,24 +878,7 @@
               />
             </div>
           </div>
-          <!-- <div class="row justify-center" align="center">
-            <q-btn
-              outline
-              label="TH Sound"
-              no-caps
-              style="width:120px;"
-              class="q-mr-sm"
-              :disable="previewMovieThaiSoundCode == ''"
-            />
-            <q-btn
-              outline
-              label="TH Sub"
-              no-caps
-              style="width:120px;"
-              class="q-ml-sm"
-              :disable="previewMovieThaiSubCode == ''"
-            />
-          </div> -->
+
           <div class="row" align="center">
             <div class="col"></div>
             <div
@@ -970,7 +957,7 @@
           <div class="row q-pa-md" align="center">
             <div class="col-1"></div>
             <div class="col" style="font-size:24px;margin-top:30px;">
-              "{{ mnameEng }}"
+              {{ trailerTitle }}
             </div>
 
             <div class="col-1">
@@ -985,8 +972,14 @@
             </div>
           </div>
           <div class="q-mt-md">
-            <div class="brx" style="width:920px;height:443px;margin:auto;">
-              trailer code :
+            <div style="width:790px;height:443px;margin:auto;">
+              <iframe
+                :src="trailerLink"
+                frameborder="0"
+                scrolling="auto"
+                allowfullscreen
+                style="position:absolute;width:790px;height:443px;"
+              ></iframe>
             </div>
           </div>
         </q-card>
@@ -997,7 +990,7 @@
         v-show="
           dialogAddMovie ||
             dialogEditMovie ||
-            promotionMovie ||
+            dialogPromotion ||
             dialogPreview ||
             dialogtrailer
         "
@@ -1055,11 +1048,16 @@ export default {
       previewThaiSubLink: "", //Link สำหรับ ThaiSub
 
       dialogtrailer: false, // เปิดหน้าต่าง trailer
+      trailerTitle: "", //ชื่อเรื่อง trailer
+      trailerLink: "", //Link trailer
 
-      promotionMovie: false, //เปิดหน้าต่าง Promotion
+      dialogPromotion: false, //เปิดหน้าต่าง Promotion
       promotionMovieNameEng: "", //ชื่อหนังภาษาอังกฤษ
       promotionMovieNameThai: "", //ชื่อหนังภาษาไทย
       promotionMovieId: "", //รหัสโปรโมชั่นหนัง
+      promotionMobileFile: [], //ไฟล์รูป promotion Mobile
+      promotionTabletFile: [], //ไฟล์รูป promotion Tablet
+
       promotionOn: false,
 
       posterM: null, //รูปภาพของ Promotion สำหรับ Mobile
@@ -1422,13 +1420,7 @@ export default {
       let url = this.serverpath + "bo_deleteposterfile.php";
       let res = await axios.post(url, JSON.stringify(data));
     },
-    async uploadFilePosterMobile() {
-      let formData = new FormData();
-      formData.append("file", this.posterMobileFile);
-      formData.append("id", this.promotionMovieId);
-      const url = this.serverpath + "bo_uploadPromotionMobile.php";
-      let data = await axios.post(url, formData);
-    },
+
     //เปิดหน้า preview movie
     async previewMovie(item) {
       this.previewTitleEn = item.nameEng;
@@ -1452,13 +1444,18 @@ export default {
       }
       this.dialogPreview = true;
     },
-    previewtrailer(item) {
+    // เปิด dialog trailer
+    async previewtrailer(item) {
       this.dialogtrailer = true;
-      // this.mnameEng = item.nameEng;
-      // this.mtrailerCode = item.trailerCode;
-      // this.previewtrailerBtn = true;
+      this.trailerTitle = item.nameEng;
+      let data = {
+        movieCode: item.movieCodeEng
+      };
+      let url = this.serverpath + "bo_encodemovie.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.trailerLink = res.data;
     },
-
+    //เปิด promotion
     promotionBTN(
       posterId,
       posterEng,
@@ -1473,14 +1470,59 @@ export default {
       this.promotionMovieId = posterId;
       promotionPCPic == 1 ? (this.posterP = 1) : (this.posterP = null);
       promotionTabletPic == 1 ? (this.posterT = 1) : (this.posterT = null);
-      promotionMobilePic == 1 ? (this.posterM = 1) : (this.posterM = null);
-      this.promotionMovie = true;
-      // this.checkPoster(posterId);
+      promotionMobilePic == 1
+        ? (this.posterM =
+            this.serverpath +
+            "/promotion/movie/" +
+            this.promotionMovieId +
+            "m.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.posterM = null);
+      this.dialogPromotion = true;
     },
-    checkPoster(posterId) {
-      //     this.posterM = "http://localhost/moviedd/promotion/" + posterId + "m.jpg";
-      this.posterT = "http://localhost/moviedd/promotion/" + posterId + "t.jpg";
-      this.posterP = "http://localhost/moviedd/promotion/" + posterId + "p.jpg";
+    //อัพโหลด  promotion poster mobile file
+    async uploadFilePosterMobile() {
+      let formData = new FormData();
+      formData.append("file", this.promotionMobileFile);
+      formData.append("id", this.promotionMovieId);
+      const url = this.serverpath + "bo_uploadPromotionMobile.php";
+      let data = await axios.post(url, formData);
+      this.posterM =
+        this.serverpath +
+        "/promotion/movie/" +
+        this.promotionMovieId +
+        "m.jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    },
+    //อัพโหลด  promotion poster Tablet file
+    async uploadFilePosterTablet() {
+      let formData = new FormData();
+      formData.append("file", this.promotionTabletFile);
+      formData.append("id", this.promotionMovieId);
+      const url = this.serverpath + "bo_uploadPromotionTablet.php";
+      let data = await axios.post(url, formData);
+      this.posterT =
+        this.serverpath +
+        "/promotion/movie/" +
+        this.promotionMovieId +
+        "t.jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    },
+    //ลบไฟล์ promotion poster mobile file
+    async deletePosterMobile() {
+      let data = {
+        id: this.promotionMovieId,
+        type: "m"
+      };
+      const url = this.serverpath + "bo_deletePromotionFile.php";
+      let res = await axios.post(url, data);
+      this.greenNotify("Delete completely");
+      this.posterM = null;
+    },
+    //ปิดหน้า Promotion
+    closePromotion() {
+      this.loadMovieData();
+      this.dialogPromotion = false;
     }
   },
 
