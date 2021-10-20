@@ -6,7 +6,9 @@
         <div class="row items-center q-pt-lg">
           <q-btn
             class="q-ml-md"
+            dense
             rounded
+            flat
             to="/series"
             icon="fas fa-long-arrow-alt-left"
             style="width:100px;"

@@ -88,7 +88,7 @@
                   <div class="col-1">{{ item.year }}</div>
                   <div class="col-1">{{ item.mparate }}</div>
 
-                  <div class="col-3 row">
+                  <div class="col row">
                     <div>{{ catName(item.type[0]) }}&nbsp;</div>
                     <div
                       v-for="i in item.type.length - 1"
@@ -115,18 +115,20 @@
 
               <div class="col-1">
                 <div class="row q-pt-md">
-                  <div class="col">
+                  <div class="col" align="left">
                     <q-btn
+                      dense
+                      round
                       flat
-                      class="far fa-bell"
-                      size="20px"
-                      style="max-height:30px;"
+                      icon="far fa-bell"
+                      @click="reportBtn(item.id)"
                     >
-                      <q-badge v-show="item.alert != 0" floating color="red">{{
+                      <q-badge v-show="item.alert != 0" color="red" floating>{{
                         item.alert
-                      }}</q-badge></q-btn
-                    >
+                      }}</q-badge>
+                    </q-btn>
                   </div>
+
                   <div class="col cursor-pointer" @click="editSeriesBtn(item)">
                     <u>Edit</u>
                   </div>
@@ -364,7 +366,7 @@
               Edit Series
             </div>
             <div class="col-1 q-ma-sm">
-              <q-btn rounded push icon="fas fa-trash-alt" />
+              <q-btn dense rounded flat icon="fas fa-trash-alt" />
             </div>
           </div>
           <div class="q-pa-sm q-ml-lg q-pl-md">
@@ -522,6 +524,76 @@
           </div>
         </q-card>
       </q-dialog>
+      <!-- Report  -->
+      <q-dialog v-model="dialogReport" persistent>
+        <q-card class="reportDialog">
+          <div class="row q-pa-md" align="center">
+            <div class="col-1"></div>
+            <div class="col" style="font-size:24px;">Report</div>
+            <div class="col-1">
+              <q-btn
+                icon="far fa-times-circle"
+                flat
+                round
+                size="md"
+                dense
+                v-close-popup
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-1"></div>
+            <div class="col">
+              <div class="row items-end">
+                <div class="col" style="font-size:20px;">Movie qualitiy</div>
+                <div class="cursor-pointer">
+                  <u>solved</u>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">หนังดูไม่ได้</div>
+                <div class="col-3" align="right">x คน</div>
+              </div>
+              <div class="row">
+                <div class="col">ไม่มีเสียง / เสียงไม่ตรง</div>
+                <div class="col-3" align="right">x คน</div>
+              </div>
+              <div class="row">
+                <div class="col">ภาพกระตุก</div>
+                <div class="col-3" align="right">x คน</div>
+              </div>
+              <hr />
+              <div style="font-size:20px;">Etc</div>
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <q-scroll-area style="height:240px;">
+            <div
+              class="row"
+              style="height:40px;"
+              v-for="(item, index) in testReport"
+              :key="index"
+            >
+              <div class="col-1"></div>
+              <div
+                class="col q-pl-sm"
+                :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+                style="height:40px;line-height: 40px;"
+              >
+                {{ item }}
+              </div>
+              <div
+                class="cursor-pointer q-pr-sm"
+                :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+                style="height:40px;line-height: 40px;"
+              >
+                <u>solved</u>
+              </div>
+              <div class="col-1"></div>
+            </div>
+          </q-scroll-area>
+        </q-card>
+      </q-dialog>
       <!-- bg drop  -->
       <div class="bgDrop fullscreen" v-show="dialogAddSeries"></div>
     </div>
@@ -533,6 +605,35 @@ import axios from "axios";
 export default {
   data() {
     return {
+      testReport: [
+        "ชื่อเรื่องสะกดผิด",
+        "เรื่องย่อไม่ตรงกับเรื่องจริง",
+        "ภาพปกคนละภาพ",
+        "เสียงเบา",
+        "s",
+        "sdsa",
+        "dsag",
+        "dsgg",
+        "ghsd",
+        "ชื่อเรื่องสะกดผิด",
+        "เรื่องย่อไม่ตรงกับเรื่องจริง",
+        "ภาพปกคนละภาพ",
+        "เสียงเบา",
+        "s",
+        "sdsa",
+        "dsag",
+        "dsgg",
+        "ghsd",
+        "ชื่อเรื่องสะกดผิด",
+        "เรื่องย่อไม่ตรงกับเรื่องจริง",
+        "ภาพปกคนละภาพ",
+        "เสียงเบา",
+        "s",
+        "sdsa",
+        "dsag",
+        "dsgg",
+        "ghsd"
+      ],
       searchMovie: "",
       movieCat: 0, //ประเภทหนังที่ filter
       movieCatOpt: [], //รายชื่อประเภทของหนัง
@@ -559,7 +660,8 @@ export default {
         expiredDate: ""
       },
       dialogAddSeries: false,
-      dialogEditSeries: false
+      dialogEditSeries: false,
+      dialogReport: false
     };
   },
   methods: {
@@ -579,7 +681,10 @@ export default {
       this.addmovie.hbo = false;
       this.addmovie.newArraival = false;
     },
-
+    // ปุ่ม Report
+    reportBtn(id) {
+      this.dialogReport = true;
+    },
     //ปุ่ม ok ใน add series
     async addMainSeriesBtn() {
       //Check input
@@ -855,5 +960,10 @@ export default {
   margin-left: 200px;
   width: 400px;
   height: 45px;
+}
+.reportDialog {
+  border-radius: 30px;
+  width: 530px;
+  height: 500px;
 }
 </style>
