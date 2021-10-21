@@ -1,6 +1,7 @@
 <template>
   <div style="max-width:1600px; width:100%; margin:auto;" class="bgmain">
     <div class="contentDiv">
+      <!-- Season -->
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg">
@@ -32,11 +33,28 @@
               style="background-color:#FFC24C;font-size:18px;width:160px;"
               label="Season"
               no-caps
-              @click="addSeriesBtn()"
+              @click="addSeasonBtn()"
             />
           </div>
         </div>
+        <div>
+          {{ id }}
+        </div>
       </div>
+      <!-- Season management -->
+      <q-dialog class="" v-model="dialogSeries" persistent>
+        <q-card class="diaBox">
+          <div class="q-pt-md" style="font-size:24px;" align="center">
+            Season management
+          </div>
+          <div class="row q-pt-md">
+            <div class="col-6 q-pl-md" align="left">Name</div>
+            <div class="col-3" align="center">Edit</div>
+            <div class="col-3" align="center">Delete</div>
+          </div>
+          <div class="q-px-md"><hr /></div>
+        </q-card>
+      </q-dialog>
     </div>
   </div>
 </template>
@@ -45,9 +63,16 @@
 export default {
   data() {
     return {
+      id: this.$route.params.id,
       allSeason: ["season 1", "season 2", "season 3"],
-      selectSeason: "season 1"
+      selectSeason: "season 1",
+      dialogSeries: false
     };
+  },
+  methods: {
+    addSeasonBtn() {
+      this.dialogSeries = true;
+    }
   }
 };
 </script>
@@ -64,8 +89,8 @@ export default {
 }
 .diaBox {
   max-width: 900px;
-  width: 750px;
-  height: 400px;
+  width: 450px;
+  height: 250px;
   border-radius: 30px;
 }
 .ynBtn {

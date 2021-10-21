@@ -24,7 +24,7 @@ const routes = [
         name: "series"
       },
       {
-        path: "/episode",
+        path: "/episode/:id",
         component: () => import("pages/episode.vue"),
         name: "episode"
       },

@@ -67,10 +67,18 @@
           <div class="q-pt-md"></div>
           <div v-for="(item, index) in data" :key="index">
             <div class="seriesBox row ">
-              <div class="q-ma-md">
+              <div class="q-ma-md" v-if="item.poster == 1">
                 <img
                   class="shadow-4"
                   :src="urlPoster(item.id)"
+                  alt=""
+                  style="width:100px;"
+                />
+              </div>
+              <div v-else class="q-ma-md">
+                <img
+                  class="shadow-4"
+                  :src="serverpath + 'poster/movie/nophoto.jpg'"
                   alt=""
                   style="width:100px;"
                 />
@@ -137,7 +145,7 @@
                 <div
                   class="btnMovie bg-primary"
                   align="center"
-                  @click="gotoEpisode()"
+                  @click="gotoEpisode(item.id)"
                 >
                   Episode
                 </div>
@@ -415,16 +423,25 @@
               </div>
             </div>
             <div class="col row items-center" style="padding-top:20px;">
-              <div class="row " style="width: 300px;">
-                <div class="col">Poster file</div>
-                <div class="col posterFilePos">
-                  <q-file
-                    v-model="addmovie.posterFile"
-                    dense
-                    accept=".jpg"
-                    label="Pick one file"
+              <div class="row " style="width: 400px;">
+                <div class="col-4">Poster file</div>
+                <div class="col " align="left">
+                  <div
+                    v-if="addmovie.posterFile == 1"
+                    class="cursor-pointer q-pl-sm"
+                    @click="deletePosterFileBtn()"
                   >
-                  </q-file>
+                    <u>delete poster file</u>
+                  </div>
+                  <div v-else>
+                    <q-file
+                      v-model="addmovie.posterFile"
+                      dense
+                      accept=".jpg"
+                      label="Pick one file"
+                    >
+                    </q-file>
+                  </div>
                 </div>
               </div>
             </div>
@@ -516,7 +533,7 @@
               <div
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c"
-                @click="addMainSeriesBtn()"
+                @click="editMainSeriesBtn()"
                 align="center"
               >
                 Ok
@@ -660,6 +677,7 @@ export default {
         newArraival: false,
         expiredDate: ""
       },
+      editMovieId: "",
       dialogAddSeries: false,
       dialogEditSeries: false,
       dialogReport: false
@@ -671,7 +689,7 @@ export default {
       this.addmovie.titleTh = "";
       this.addmovie.titleEn = "";
       this.addmovie.year = "";
-      this.addmovie.mpaRating = "";
+      this.addmovie.mpaRating = "G";
       this.addmovie.posterFile = null;
       this.addmovie.synopsis = "";
       this.addmovie.trailerCode = "";
@@ -736,9 +754,10 @@ export default {
         amazon: this.addmovie.amazon ? 1 : 0,
         hbo: this.addmovie.hbo ? 1 : 0,
         new: this.addmovie.newArraival ? 1 : 0,
-        expiredDate: this.addmovie.newArraival ? this.addmovie.expiredDate : 0
+        expiredDate: this.addmovie.newArraival
+          ? this.addmovie.expiredDate
+          : null
       };
-      console.log(data);
       let url = this.serverpath + "bo_seriesmainadddata.php";
       let res = await axios.post(url, JSON.stringify(data));
       let movieid = res.data;
@@ -758,6 +777,7 @@ export default {
       }
       this.greenNotify("Add new series completely");
       this.dialogAddSeries = false;
+      this.loadseriesdata();
     },
     //หาจำนวนหน้า
     async loadpagenumber() {
@@ -806,8 +826,96 @@ export default {
         this.data.push(x);
       });
     },
+    //ปุ่ม ok ใน edit series
+    async editMainSeriesBtn() {
+      //Check input
+      if (this.addmovie.titleEn.length == 0) {
+        this.redNotify("Please input Title name (En)");
+        return;
+      }
+      if (this.addmovie.year.length == 0) {
+        this.redNotify("Please input year");
+        return;
+      }
+
+      if (
+        this.addmovie.movieCodeThaiSub == 0 &&
+        this.addmovie.movieCodeThaiSound == 0
+      ) {
+        this.redNotify("Please input Movie Code");
+        return;
+      }
+      if (this.addmovie.category == null) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      } else if (this.addmovie.category.length < 3) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      }
+
+      if (this.addmovie.posterFile == null) {
+        this.redNotify("Please pick poster file");
+        return;
+      }
+      //ปรับรูปแบบของ category
+      let categoryData = "";
+      this.addmovie.category.forEach(x => {
+        categoryData += "[" + x + "],";
+      });
+      categoryData = categoryData.slice(0, -1);
+      let data = {
+        nameEng: this.addmovie.titleEn,
+        nameTh: this.addmovie.titleTh,
+        year: this.addmovie.year,
+        mparate: this.addmovie.mpaRating,
+        type: categoryData,
+        synopsis: this.addmovie.synopsis,
+        trailerCode: this.addmovie.trailerCode,
+        netflix: this.addmovie.netflix ? 1 : 0,
+        disney: this.addmovie.disney ? 1 : 0,
+        amazon: this.addmovie.amazon ? 1 : 0,
+        hbo: this.addmovie.hbo ? 1 : 0,
+        new: this.addmovie.newArraival ? 1 : 0,
+        expiredDate: this.addmovie.newArraival
+          ? this.addmovie.expiredDate
+          : null,
+        id: this.editMovieId
+      };
+      let url = this.serverpath + "bo_serieseditdata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      //Check file delete
+      if (this.addmovie.posterFile != 1) {
+        //ทำการ upload  รูปภาพ
+        let formData = new FormData();
+        formData.append("file", this.addmovie.posterFile);
+        formData.append("id", this.editMovieId);
+        url = this.serverpath + "bo_uploadseriesmainposter.php";
+        let data2 = await axios.post(url, formData);
+      }
+      this.greenNotify("update movie completely");
+      this.dialogEditSeries = false;
+      this.loadseriesdata();
+    },
+    //Delete poster edit mode
+    async deletePosterFileBtn() {
+      let data = {
+        id: this.editMovieId
+      };
+
+      let url = this.serverpath + "bo_deleteposterseriesfile.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      this.addmovie.posterFile = 0;
+      this.greenNotify("deleted poster complete");
+    },
     urlPoster(id) {
-      return this.serverpath + "/poster/series/" + id + ".jpg";
+      return (
+        this.serverpath +
+        "/poster/series/" +
+        id +
+        ".jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100)
+      );
     },
     addSeriesBtn() {
       let today = new Date();
@@ -824,16 +932,30 @@ export default {
       this.addmovie.titleTh = item.nameTh;
       this.addmovie.titleEn = item.nameEng;
       this.addmovie.year = item.year;
-      this.addmovie.mpaRating = item.mpaRate;
+      this.addmovie.posterFile = item.poster;
+      this.addmovie.mpaRating = item.mparate;
       this.addmovie.synopsis = item.synopsis;
       this.addmovie.trailerCode = item.trailerCode;
       this.addmovie.category = item.type;
-      this.addmovie.netflix = false;
-      this.addmovie.disney = false;
-      this.addmovie.amazon = false;
-      this.addmovie.hbo = false;
-      this.addmovie.newArraival = false;
-      this.addmovie.expiredDate = "New arraival (expired date--/--/--)";
+      this.addmovie.netflix = item.netflix == 1 ? true : false;
+      this.addmovie.disney = item.disney == 1 ? true : false;
+      this.addmovie.amazon = item.amazon == 1 ? true : false;
+      this.addmovie.hbo = item.hbo == 1 ? true : false;
+      this.addmovie.newArraival = item.new == 1 ? true : false;
+      this.addmovie.expiredDate = item.expireddate;
+      if (this.addmovie.expiredDate == null) {
+        let today = new Date();
+        let mi = today.getTime() + 1296000000;
+        let a = new Date(mi);
+        this.addmovie.expiredDate =
+          a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+        this.labelExpired =
+          "New arrival (expired date " + this.addmovie.expiredDate + ")";
+      } else {
+        this.labelExpired =
+          "New arrival (expired date " + this.addmovie.expiredDate + ")";
+      }
+      this.editMovieId = item.id;
 
       this.dialogEditSeries = true;
     },
@@ -861,8 +983,8 @@ export default {
       this.addmovie.newArraival = false;
       this.addmovie.expiredDate = "";
     },
-    gotoEpisode() {
-      this.$router.push("episode");
+    gotoEpisode(id) {
+      this.$router.push("episode/" + id);
     },
     async loadcatatmovie() {
       //โหลดประเภทหนัง
