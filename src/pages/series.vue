@@ -1,6 +1,7 @@
 <template>
   <div style="max-width:1600px; width:100%; margin:auto;" class="bgmain">
     <div class="contentDiv">
+      <!-- Main page -->
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg">
@@ -790,6 +791,11 @@ export default {
         let dateCurrentTime = dateCurrent.getTime();
         let dateDiff = dateCurrentTime - dateUploadTime;
         x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
+
+        //จัดการเรื่อง episode
+        if (x.episode != null) {
+          x.episode = x.episode.split(",");
+        }
 
         let movieType = x.type.split(",");
         movieType = movieType.map(x => {
