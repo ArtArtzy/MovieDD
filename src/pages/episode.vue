@@ -53,6 +53,14 @@
             <div class="col-3" align="center">Delete</div>
           </div>
           <div class="q-px-md"><hr /></div>
+          <div class="row" v-for="(item, index) in managementSeason">
+            <div class="col-6 q-pl-md">{{ item.name }}</div>
+            <div class="col-3" align="center"><u>Edit</u></div>
+            <div class="col-3" align="center"><u>Delete</u></div>
+          </div>
+          <div class="addNewSeasonDiv cursor-pointer" @click="addNewSeason(id)">
+            <u>+New Season</u>
+          </div>
         </q-card>
       </q-dialog>
     </div>
@@ -60,19 +68,39 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       id: this.$route.params.id,
       allSeason: ["season 1", "season 2", "season 3"],
       selectSeason: "season 1",
-      dialogSeries: false
+      dialogSeries: false,
+      managementSeason: []
     };
   },
   methods: {
-    addSeasonBtn() {
+    async addSeasonBtn() {
+      let data = {
+        id: this.id
+      };
+
+      let url = this.serverpath + "bo_load_season.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      if (res.data != 0) {
+        res.data.forEach(x => {
+          this.managementSeason.push(x);
+        });
+        this.managementSeason.sort((a, b) => a.orderid - b.orderid);
+      }
       this.dialogSeries = true;
+    },
+    async addNewSeason(id){
+      
     }
+  },
+  mounted() {
+    this.id = this.$route.params.id;
   }
 };
 </script>
@@ -109,5 +137,13 @@ export default {
   margin-left: 200px;
   width: 400px;
   height: 45px;
+}
+.addNewSeasonDiv {
+  background-color: #dce6ff;
+  border-radius: 0px !important;
+  text-align: center;
+  margin-top: 10px;
+  height: 40px;
+  line-height: 40px;
 }
 </style>
