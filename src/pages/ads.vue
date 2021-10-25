@@ -427,7 +427,7 @@ export default {
           icon: "fas fa-check"
         });
       }
-      this.data[index].status = sta;
+      this.dataShowPage[index].status = sta;
     },
     async addOk() {
       if (
