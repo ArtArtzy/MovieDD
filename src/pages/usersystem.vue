@@ -571,14 +571,14 @@ import axios from "axios";
 export default {
   data() {
     return {
-      userStr: "",
-      passwordStr: "",
-      memUs: 0,
-      editBtn: false,
-      addAdmin: false,
-      delBtn: false,
-      securityBtn: false,
-      deleteMovieBtn: false,
+      userStr: "", // temp data
+      passwordStr: "", // temp data
+      memUs: 0, // temp data
+      editBtn: false, // เปิด dialog Edit Admin
+      addAdmin: false, // เปิด dialog เพิ่ม Admin
+      delBtn: false, // เปิดเตือน ลบ y/n
+      securityBtn: false, // เปิด dialog sercurity
+      deleteMovieBtn: false, // เปิด list ข้อมูลหนังที่ลบแล้ว
       data: [],
       check: [false, false, false, false, false, false, false],
       //
@@ -626,16 +626,19 @@ export default {
     };
   },
   methods: {
+    // ปุ่ม cancel ใน security code
     cancelSec() {
       this.passwordStr = "";
       this.securityBtn = false;
     },
+    //เปิด dialog security และเรียก security code
     async securityEdit() {
       let url = this.serverpath + "bo_loadsecuritycode.php";
       let res = await axios.get(url);
       this.passwordStr = res.data;
       this.securityBtn = true;
     },
+    // update security code
     async securitySave() {
       let data = {
         code: this.passwordStr
@@ -646,6 +649,7 @@ export default {
       this.passwordStr = "";
       this.securityBtn = false;
     },
+    // ปุ่ม cancel ใน Add Admin
     cancelAdmin() {
       this.memUs = 0;
       this.userStr = "";
@@ -653,6 +657,7 @@ export default {
       this.check = [false, false, false, false, false, false, false];
       this.addAdmin = false;
     },
+    // ปุ่ม save ใน Add Admin
     async addAdminOk() {
       if (this.userStr.length == 0 || this.passwordStr.length == 0) {
         this.$q.notify({
@@ -716,11 +721,13 @@ export default {
         this.check = [false, false, false, false, false, false, false];
       }
     },
+    // เปิด dailog ลบ Admin
     deleteUser(item) {
       this.delBtn = true;
       this.userStr = item.username;
       this.memUs = item.us_id;
     },
+    // ปุ่ม cancel ใน dialog ลบ Admin
     cancelDelete() {
       this.memUs = 0;
       this.userStr = "";
@@ -728,6 +735,7 @@ export default {
       this.check = [false, false, false, false, false, false, false];
       this.delBtn = false;
     },
+    // ปุ่ม save ใน ลบ Admin
     async deleteOk(item) {
       let data = {
         us_id: this.memUs
@@ -746,6 +754,7 @@ export default {
       this.delUs = 0;
       this.loadData();
     },
+    // เปิด dialog Edit Admin
     editUser(item) {
       this.editBtn = true;
       this.memUs = item.us_id;
@@ -759,6 +768,7 @@ export default {
       if (item.us_user == 1) this.check[5] = true;
       if (item.us_admin == 1) this.check[6] = true;
     },
+    // ปุ่ม cancel ใน dialog Edit Admin
     cancelEdit() {
       this.memUs = 0;
       this.userStr = "";
@@ -766,6 +776,7 @@ export default {
       this.check = [false, false, false, false, false, false, false];
       this.editBtn = false;
     },
+    // ปุ่ม save ใน Edit Admin
     async editOk() {
       let data = {
         us_id: this.memUs,
