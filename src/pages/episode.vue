@@ -15,11 +15,16 @@
             style="width:100px;"
           />
           <div class="col"></div>
-          <div class="col-2" align="right">
+          <div class="col-2" v-show="managementSeason == 0">
+            Please add season first ->
+          </div>
+          <div class="col-2" align="right" v-show="managementSeason != 0">
             <q-select
               color="orange-13"
               v-model="selectSeason"
               :options="allSeason"
+              emit-value
+              map-options
               dense
               style="width:180px;font-size:16px;"
               @input="loadMovieData()"
@@ -37,7 +42,8 @@
             />
           </div>
         </div>
-        <div></div>
+        <div style="padding-left:50px; font-size:24px;">{{ seriesName }}</div>
+        <div v-show="managementSeason != 0">ตาราง</div>
       </div>
       <!-- Season management -->
       <q-dialog class="" v-model="dialogMainSeason" persistent>
@@ -197,8 +203,8 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
-      allSeason: ["season 1", "season 2", "season 3"],
-      selectSeason: "season 1",
+      allSeason: [], //ตัวเลือก Season
+      selectSeason: "", //Season ที่เลือกอยู่
       dialogMainSeason: false, //หน้าต่าง season
       dialogAddSeason: false, //หน้าต่างเพิ่ม season ใหม่
       dialogEditSeason: false, //หน้าต่างแก้ไข season
@@ -209,11 +215,23 @@ export default {
         name: ""
       }, //เพิ่มและแก้ไข season ใหม่
       editSeasonId: "", //แก้ไข Season
-      delSeasonId: "" //ลบ Season
+      delSeasonId: "", //ลบ Season
+      seriesName: "" //ชื่อ Series
     };
   },
   methods: {
-    //ลบ Season
+    //ดึงข้อมูลชื่อหนัง series
+
+    async loadSeriesName() {
+      let data = {
+        id: this.id
+      };
+      let url = this.serverpath + "bo_loadseriesname.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.seriesName = res.data[0].nameEng;
+      console.log(res.data);
+    },
+    //ปุ่มลบ Season
     async delSeasonBtn() {
       let data = {
         id: this.delSeasonId
@@ -229,7 +247,7 @@ export default {
       this.dialogConfirmDelSeason = false;
       this.dialogMainSeason = true;
     },
-    //ลบ season
+    //เปิดหน้าต่างลบ season
     delSeason(item) {
       this.delSeasonId = item.id;
       this.dialogMainSeason = false;
@@ -342,6 +360,7 @@ export default {
   mounted() {
     this.loadSeason();
     this.id = this.$route.params.id;
+    this.loadSeriesName();
   }
 };
 </script>
