@@ -43,7 +43,7 @@
           </div>
         </div>
         <div style="padding-left:50px; font-size:24px;">{{ seriesName }}</div>
-        <div v-show="managementSeason != 0">ตาราง</div>
+        <div v-show="managementSeason != 0">ตาราง {{ selectSeason }}</div>
         <div class="newepdiv cursor-pointer">
           <u><span @click="addNewEpisodeBtn()">+New episode</span></u>
         </div>
@@ -207,7 +207,7 @@ export default {
     return {
       id: this.$route.params.id,
       allSeason: [], //ตัวเลือก Season
-      selectSeason: "", //Season ที่เลือกอยู่
+      selectSeason: 0, //Season ที่เลือกอยู่
       dialogMainSeason: false, //หน้าต่าง season
       dialogAddSeason: false, //หน้าต่างเพิ่ม season ใหม่
       dialogEditSeason: false, //หน้าต่างแก้ไข season
@@ -235,7 +235,6 @@ export default {
       let url = this.serverpath + "bo_loadseriesname.php";
       let res = await axios.post(url, JSON.stringify(data));
       this.seriesName = res.data[0].nameEng;
-      console.log(res.data);
     },
     //ปุ่มลบ Season
     async delSeasonBtn() {
@@ -310,6 +309,7 @@ export default {
     //โหลด Season เพื่อใช้แสดงผล
     async loadSeason() {
       this.managementSeason = [];
+      this.allSeason = [];
       let data = {
         id: this.id
       };
@@ -320,7 +320,16 @@ export default {
         res.data.forEach(x => {
           this.managementSeason.push(x);
         });
+
         this.managementSeason.sort((a, b) => a.orderid - b.orderid);
+        this.managementSeason.forEach(x => {
+          let data = {
+            value: x.id,
+            label: x.name
+          };
+          this.allSeason.push(data);
+        });
+        this.selectSeason = this.allSeason[0].value;
       } else {
         this.managementSeason = 0;
       }
