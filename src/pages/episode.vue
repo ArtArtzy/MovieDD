@@ -214,11 +214,15 @@ export default {
   },
   methods: {
     //ลบ Season
-    delSeasonBtn() {
+    async delSeasonBtn() {
       let data = {
         id: this.delSeasonId
       };
-      console.log(data);
+      let url = this.serverpath + "bo_deleteseason.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.greenNotify("Delete completely");
+      this.loadSeason();
+      this.closeDelSeason();
     },
     //ปิดหน้าต่าง ลบ Season
     closeDelSeason() {
@@ -336,6 +340,7 @@ export default {
     }
   },
   mounted() {
+    this.loadSeason();
     this.id = this.$route.params.id;
   }
 };
