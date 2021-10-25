@@ -44,6 +44,9 @@
         </div>
         <div style="padding-left:50px; font-size:24px;">{{ seriesName }}</div>
         <div v-show="managementSeason != 0">ตาราง</div>
+        <div class="newepdiv cursor-pointer">
+          <u><span @click="addNewEpisodeBtn()">+New episode</span></u>
+        </div>
       </div>
       <!-- Season management -->
       <q-dialog class="" v-model="dialogMainSeason" persistent>
@@ -220,8 +223,11 @@ export default {
     };
   },
   methods: {
+    //Add new ep
+    addNewEpisodeBtn() {
+      console.log("hello add new ep");
+    },
     //ดึงข้อมูลชื่อหนัง series
-
     async loadSeriesName() {
       let data = {
         id: this.id
@@ -366,6 +372,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.newepdiv {
+  background-color: rgba($color: #7291ff, $alpha: 0.15);
+  height: 72px;
+  font-size: 24px;
+  text-align: center;
+  line-height: 72px;
+}
 .seasonDiv {
   height: 130px;
   overflow-y: scroll;
