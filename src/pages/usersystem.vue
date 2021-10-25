@@ -8,7 +8,7 @@
               rounded
               class="cursor-pointer q-pa-xs"
               style="background-color:#FFC24C;font-size:16px;width:200px;"
-              @click="securityBtn = true"
+              @click="securityEdit()"
               no-caps
             >
               <q-icon class="fas fa-key" size="21px" />
@@ -184,7 +184,7 @@
               <div
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c"
-                @click="securityOk()"
+                @click="securitySave()"
               >
                 Ok
               </div>
@@ -208,6 +208,36 @@
               />
             </div>
           </q-card-section>
+          <div class="row">
+            <div class="col"></div>
+            <q-select v-model="mmL" :options="mL" />
+            <div class="col-2"></div>
+            <q-select v-model="mmY" :options="mY" />
+            <div class="col"></div>
+          </div>
+          <div class="row">
+            <div class="col-2 q-pl-md">Movie Code</div>
+            <div class="col">Movie title</div>
+            <div class="col-2">Delete date</div>
+            <div class="col-2">JW deleted</div>
+          </div>
+          <div class="delList q-mt-md">
+            <div
+              v-for="(item, index) in delMovie"
+              style="height:40px;line-height: 40px;"
+              class="row"
+              :key="index"
+              :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+              align="center"
+            >
+              <div class="col-2 q-pl-md">{{ item.moviecode }}</div>
+              <div class="col">{{ item.title }}</div>
+              <div class="col-2 q-pl-sm">Delete date</div>
+              <div class="col-2 q-pl-xl">
+                <q-checkbox v-model="item.check" color="teal" />
+              </div>
+            </div>
+          </div>
         </q-card>
       </q-dialog>
       <!-- Add new admin  -->
@@ -541,59 +571,85 @@ import axios from "axios";
 export default {
   data() {
     return {
-      userStr: "",
-      passwordStr: "",
-      memUs: 0,
-      editBtn: false,
-      addAdmin: false,
-      delBtn: false,
-      securityBtn: false,
-      deleteMovieBtn: false,
-      data: [
-        {
-          us_id: 1,
-          username: "art",
-          password: "1234",
-          us_category: 1,
-          us_movie: 1,
-          us_series: 1,
-          us_ads: 1,
-          us_analytic: 1,
-          us_user: 1,
-          us_admin: 1
-        },
-        {
-          us_id: 2,
-          username: "ohm",
-          password: "12345",
-          us_category: 0,
-          us_movie: 1,
-          us_series: 1,
-          us_ads: 1,
-          us_analytic: 1,
-          us_user: 1,
-          us_admin: 1
-        }
+      userStr: "", // temp data
+      passwordStr: "", // temp data
+      memUs: 0, // temp data
+      editBtn: false, // เปิด dialog Edit Admin
+      addAdmin: false, // เปิด dialog เพิ่ม Admin
+      delBtn: false, // เปิดเตือน ลบ y/n
+      securityBtn: false, // เปิด dialog sercurity
+      deleteMovieBtn: false, // เปิด list ข้อมูลหนังที่ลบแล้ว
+      data: [],
+      check: [false, false, false, false, false, false, false],
+      //
+      mL: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
       ],
-      check: [false, false, false, false, false, false, false]
+      mmL: "January",
+      mY: ["2021", "2022", "2023", "20"],
+      mmY: "2021",
+      delMovie: [
+        { title: "x man", moviecode: "afxUan", check: false },
+        { title: "x man2", moviecode: "fsxxzn", check: false },
+        { title: "x man3", moviecode: "i3mad", check: false },
+        { title: "Harrypotter 1", moviecode: "04hasn", check: false },
+        { title: "Harrypotter 2", moviecode: "d9xy3b", check: false },
+        { title: "Harrypotter 3", moviecode: "71bhav", check: false },
+        { title: "Harrypotter 4", moviecode: "bvyp41", check: false },
+        { title: "Harrypotter 5", moviecode: "96dbahoi", check: false },
+        { title: "Harrypotter 6", moviecode: "12khs6", check: false },
+        { title: "Harrypotter 7.1", moviecode: "p2kauf", check: false },
+        { title: "Harrypotter 7.2", moviecode: "u37smz", check: false },
+        {
+          title: "CAPTAIN AMERICA: THE FIRST AVENGER ",
+          moviecode: "Afnu31",
+          check: false
+        },
+        { title: "CAPTAIN MARVEL", moviecode: "pasfn1", check: false },
+        { title: "IRON MAN", moviecode: "88cg3n", check: false },
+        { title: "IRON MAN 2", moviecode: "397sab", check: false },
+        { title: "THE INCREDIBLE HULK", moviecode: "31n321", check: false },
+        { title: "THOR", moviecode: "saf313", check: false },
+        { title: "MARVEL'S THE AVENGERS ", moviecode: "fsa18s", check: false }
+      ]
     };
   },
   methods: {
+    // ปุ่ม cancel ใน security code
     cancelSec() {
       this.passwordStr = "";
       this.securityBtn = false;
     },
-    securityOk() {
-      this.$q.notify({
-        progress: true,
-        message: "Update security key",
-        color: "positive",
-        position: "top",
-        icon: "fas fa-check"
-      });
+    //เปิด dialog security และเรียก security code
+    async securityEdit() {
+      let url = this.serverpath + "bo_loadsecuritycode.php";
+      let res = await axios.get(url);
+      this.passwordStr = res.data;
+      this.securityBtn = true;
+    },
+    // update security code
+    async securitySave() {
+      let data = {
+        code: this.passwordStr
+      };
+      let url = this.serverpath + "bo_editsecuritycode.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.greenNotify("Update security key");
       this.passwordStr = "";
       this.securityBtn = false;
     },
+    // ปุ่ม cancel ใน Add Admin
     cancelAdmin() {
       this.memUs = 0;
       this.userStr = "";
@@ -601,10 +657,10 @@ export default {
       this.check = [false, false, false, false, false, false, false];
       this.addAdmin = false;
     },
+    // ปุ่ม save ใน Add Admin
     async addAdminOk() {
       if (this.userStr.length == 0 || this.passwordStr.length == 0) {
         this.$q.notify({
-          progress: true,
           message: "Please input User name & Password",
           color: "negative",
           position: "top",
@@ -624,7 +680,6 @@ export default {
         )
       ) {
         this.$q.notify({
-          progress: true,
           message: "Please select page",
           color: "negative",
           position: "top",
@@ -647,7 +702,6 @@ export default {
       let res = await axios.post(url, JSON.stringify(data));
       if (res.data == "NR") {
         this.$q.notify({
-          progress: true,
           message: "This User name exist",
           color: "negative",
           position: "top",
@@ -657,9 +711,8 @@ export default {
         this.loadData();
         this.addAdmin = false;
         this.$q.notify({
-          progress: true,
           message: "Add new admin complete",
-          color: "positive",
+          color: "secondary",
           position: "top",
           icon: "fas fa-check"
         });
@@ -668,11 +721,13 @@ export default {
         this.check = [false, false, false, false, false, false, false];
       }
     },
+    // เปิด dailog ลบ Admin
     deleteUser(item) {
       this.delBtn = true;
       this.userStr = item.username;
       this.memUs = item.us_id;
     },
+    // ปุ่ม cancel ใน dialog ลบ Admin
     cancelDelete() {
       this.memUs = 0;
       this.userStr = "";
@@ -680,6 +735,7 @@ export default {
       this.check = [false, false, false, false, false, false, false];
       this.delBtn = false;
     },
+    // ปุ่ม save ใน ลบ Admin
     async deleteOk(item) {
       let data = {
         us_id: this.memUs
@@ -689,9 +745,8 @@ export default {
 
       this.delBtn = false;
       this.$q.notify({
-        progress: true,
         message: "Delete " + this.userStr.toUpperCase() + " complete",
-        color: "positive",
+        color: "secondary",
         position: "top",
         icon: "fas fa-check"
       });
@@ -699,6 +754,7 @@ export default {
       this.delUs = 0;
       this.loadData();
     },
+    // เปิด dialog Edit Admin
     editUser(item) {
       this.editBtn = true;
       this.memUs = item.us_id;
@@ -712,6 +768,7 @@ export default {
       if (item.us_user == 1) this.check[5] = true;
       if (item.us_admin == 1) this.check[6] = true;
     },
+    // ปุ่ม cancel ใน dialog Edit Admin
     cancelEdit() {
       this.memUs = 0;
       this.userStr = "";
@@ -719,6 +776,7 @@ export default {
       this.check = [false, false, false, false, false, false, false];
       this.editBtn = false;
     },
+    // ปุ่ม save ใน Edit Admin
     async editOk() {
       let data = {
         us_id: this.memUs,
@@ -734,18 +792,13 @@ export default {
       };
       let url = this.serverpath + "bo_editusersystem.php";
       let res = await axios.post(url, JSON.stringify(data));
+
+      this.greenNotify("Edit Admin " + this.userStr + " complete");
       this.memUs = 0;
       this.userStr = "";
       this.passwordStr = "";
       this.check = [false, false, false, false, false, false, false];
       this.editBtn = false;
-      this.$q.notify({
-        progress: true,
-        message: "Edit admin complete",
-        color: "positive",
-        position: "top",
-        icon: "fas fa-check"
-      });
       this.loadData();
     },
     async loadData() {
@@ -841,5 +894,10 @@ export default {
   width: 830px;
   height: 480px;
   border-radius: 30px;
+}
+.delList {
+  border-radius: 0px !important;
+  height: 300px;
+  overflow-y: scroll;
 }
 </style>
