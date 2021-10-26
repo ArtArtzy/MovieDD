@@ -686,7 +686,7 @@
             <div
               class="ynBtn q-ma-sm"
               style="background-color:#ffc24c"
-              @click=""
+              @click="delMovieBtn()"
               align="center"
             >
               Ok
@@ -1167,7 +1167,7 @@ export default {
       // Add movie
       dialogAddMovie: false,
       dialogEditMovie: false,
-      deleteMovieAlert: false,
+      deleteMovieAlert: false, //เปิดหน้าต่างยืนยันการลบ Movie
       dialogReport: false,
       addmovie: {
         titleTh: "",
@@ -1220,6 +1220,25 @@ export default {
     };
   },
   methods: {
+    //ปุ่ม OK ยืนยันการลบ
+    async delMovieBtn() {
+      //ลบข้อมูลออกจาก category
+      let data = {
+        cat: this.addmovie.category
+      };
+      let url = this.serverpath + "bo_moviedelcat.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      //ลบข้อมูลออกจาก movie และทำการลบรูป
+      data = {
+        id: this.editMovieId
+      };
+      url = this.serverpath + "bo_moviedeldata.php";
+      res = await axios.post(url, JSON.stringify(data));
+      this.loadMovieData();
+      this.deleteMovieAlert = false;
+      this.dialogEditMovie = false;
+    },
     // ปุ่ม Report
     reportBtn(id) {
       this.dialogReport = true;
