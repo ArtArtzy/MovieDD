@@ -34,6 +34,11 @@ const routes = [
         name: "stat"
       },
       {
+        path: "/forgetpass",
+        component: () => import("pages/forgetpassword.vue"),
+        name: "user"
+      },
+      {
         path: "/user",
         component: () => import("pages/user.vue"),
         name: "user"

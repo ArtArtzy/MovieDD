@@ -1,12 +1,12 @@
 <template>
   <div class="bgmain fullscreen">
     <div class="bigBox shadow-4 fixed-center" align="center">
-      <div class="q-pt-md">
+      <div class="q-pt-sm">
         <img src="../../public/images/logo.png" alt="" />
       </div>
       <!-- กรณี login ครั้งแรก -->
       <div v-show="loginTime">
-        <div class="inputText q-mt-sm">
+        <div class="inputText">
           <q-input
             outlined
             v-model="userName"
@@ -14,7 +14,7 @@
             ref="usernameBlock"
           />
         </div>
-        <div class="inputText q-ma-md">
+        <div class="inputText q-ma-sm">
           <q-input
             v-model="password"
             outlined
@@ -31,11 +31,22 @@
             </template>
           </q-input>
         </div>
-        <div class="q-px-md q-pt-sm">
+
+        <q-btn
+          class=" q-my-md"
+          flat
+          no-caps
+          to="/forgetpass"
+          style="text-decoration-line: underline;"
+        >
+          Forget username / password
+        </q-btn>
+
+        <div class="q-px-md">
           <q-btn
             style="background: #FFc24c;width:120px;height:45px;"
             label="Sign in"
-            no-caps=""
+            no-caps
             @click="loginBtn"
           />
         </div>
@@ -146,7 +157,7 @@ export default {
   background-color: white;
   border-radius: 30px;
   width: 600px;
-  height: 450px;
+  height: 464px;
 }
 
 .inputText {
