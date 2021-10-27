@@ -1,11 +1,11 @@
 <template>
   <div class="bgmain fullscreen">
-    <div class="bigBox shadow-4 fixed-center" align="center">
+    <div class="bigBox shadow-4 fixed-center" align="center" v-show="loginTime">
       <div class="q-pt-sm">
         <img src="../../public/images/logo.png" alt="" />
       </div>
       <!-- กรณี login ครั้งแรก -->
-      <div v-show="loginTime">
+      <div>
         <div class="inputText">
           <q-input
             outlined
@@ -49,9 +49,16 @@
           />
         </div>
       </div>
-      <!-- กรณีเคย login มาแล้ว -->
-      <div v-show="!loginTime">
-        <div class="text-black">Welcome back .... {{ userNameBack }}</div>
+    </div>
+    <div class="row" v-show="!loginTime">
+      <div>
+        <img class="bigCow" src="../../public/images/bigcow2.png" alt="" />
+      </div>
+      <div class="logInAgain" align="center">
+        <div class="text-black q-pt-xl" style="font-size:32px;">Moooo...</div>
+        <div class="text-black" style="font-size:32px;">
+          Welcome back .... {{ userNameBack }}
+        </div>
         <div class="q-px-md q-pt-md">
           <q-btn
             style="background: #FFc24c;width:120px;height:45px;"
@@ -165,5 +172,18 @@ export default {
 .inputText {
   width: 330px;
   height: 55px;
+}
+.logInAgain {
+  position: absolute;
+  left: 550px;
+  bottom: 421px;
+  background-image: url("../../public/images/ballon.png");
+  width: 550px;
+  height: 354px;
+  border-radius: 30px;
+}
+.bigCow {
+  position: absolute;
+  bottom: 0px;
 }
 </style>
