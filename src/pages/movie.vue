@@ -686,7 +686,7 @@
             <div
               class="ynBtn q-ma-sm"
               style="background-color:#ffc24c"
-              @click=""
+              @click="delMovieBtn()"
               align="center"
             >
               Ok
@@ -1063,20 +1063,17 @@
                   <u>solved</u>
                 </div>
               </div>
-              <div class="row">
-                <div class="col">หนังดูไม่ได้</div>
-                <div class="col-3" align="right">x คน</div>
+              <div
+                class="row"
+                v-for="(item, index) in problemList"
+                :key="index"
+              >
+                <div class="col">{{ item.problem }}</div>
+                <div class="col-3" align="right">{{ item.noproblem }} คน</div>
               </div>
-              <div class="row">
-                <div class="col">ไม่มีเสียง / เสียงไม่ตรง</div>
-                <div class="col-3" align="right">x คน</div>
-              </div>
-              <div class="row">
-                <div class="col">ภาพกระตุก</div>
-                <div class="col-3" align="right">x คน</div>
-              </div>
+
               <hr />
-              <div style="font-size:20px;">Etc</div>
+              <div style="font-size:20px;">Other problems</div>
             </div>
             <div class="col-1"></div>
           </div>
@@ -1084,7 +1081,7 @@
             <div
               class="row"
               style="height:40px;"
-              v-for="(item, index) in testReport"
+              v-for="(item, index) in problemListetc"
               :key="index"
             >
               <div class="col-1"></div>
@@ -1093,7 +1090,7 @@
                 :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
                 style="height:40px;line-height: 40px;"
               >
-                {{ item }}
+                {{ item.topic }}
               </div>
               <div
                 class="cursor-pointer q-pr-sm"
@@ -1167,7 +1164,7 @@ export default {
       // Add movie
       dialogAddMovie: false,
       dialogEditMovie: false,
-      deleteMovieAlert: false,
+      deleteMovieAlert: false, //เปิดหน้าต่างยืนยันการลบ Movie
       dialogReport: false,
       addmovie: {
         titleTh: "",
@@ -1216,12 +1213,45 @@ export default {
       promotionOn: false, //ตัวเปิดปิด Promotion
       posterM: null, //รูปภาพของ Promotion สำหรับ Mobile
       posterT: null, //รูปภาพของ Promotion สำหรับ Tablet
-      posterP: null //รูปภาพของ Promotion สำหรับ PC
+      posterP: null, //รูปภาพของ Promotion สำหรับ PC
+
+      problemList: [], //List ของปัญหา
+      problemListetc: [] //List ของปัญหา etc
     };
   },
   methods: {
+    //ปุ่ม OK ยืนยันการลบ
+    async delMovieBtn() {
+      //ลบข้อมูลออกจาก category
+      let data = {
+        cat: this.addmovie.category
+      };
+      let url = this.serverpath + "bo_moviedelcat.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      //ลบข้อมูลออกจาก movie และทำการลบรูป
+      data = {
+        id: this.editMovieId
+      };
+      url = this.serverpath + "bo_moviedeldata.php";
+      res = await axios.post(url, JSON.stringify(data));
+      this.loadMovieData();
+      this.deleteMovieAlert = false;
+      this.dialogEditMovie = false;
+    },
     // ปุ่ม Report
-    reportBtn(id) {
+    async reportBtn(id) {
+      this.problemList = [];
+      this.problemListetc = [];
+      let data = {
+        id: id
+      };
+      let url = this.serverpath + "bo_moviereportproblem.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.problemList = res.data;
+      url = this.serverpath + "bo_moviereportproblemetc.php";
+      res = await axios.post(url, JSON.stringify(data));
+      this.problemListetc = res.data;
       this.dialogReport = true;
     },
     //ปุ่มเพิ่ม Movie
