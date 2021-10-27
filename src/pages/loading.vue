@@ -32,15 +32,13 @@
           </q-input>
         </div>
 
-        <q-btn
-          class=" q-my-md"
-          flat
-          no-caps
-          to="/forgetpass"
+        <div
+          class=" q-my-md cursor-pointer"
           style="text-decoration-line: underline;"
+          @click="goToForget()"
         >
           Forget username / password
-        </q-btn>
+        </div>
 
         <div class="q-px-md">
           <q-btn
@@ -87,6 +85,10 @@ export default {
     backToSigIn() {
       this.loginTime = true;
       localStorage.clear();
+    },
+    // ไปหน้า forget password
+    goToForget() {
+      this.$router.push("forgetpass");
     },
     //เมื่อกด login ในหน้า welcome back
     loginBtnPass() {
