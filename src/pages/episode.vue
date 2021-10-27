@@ -27,7 +27,7 @@
               map-options
               dense
               style="width:180px;font-size:16px;"
-              @input="loadMovieData()"
+              @input="loadEpisodeList()"
             >
             </q-select>
           </div>
@@ -43,9 +43,71 @@
           </div>
         </div>
         <div style="padding-left:50px; font-size:24px;">{{ seriesName }}</div>
-        <div v-show="managementSeason != 0">ตาราง {{ selectSeason }}</div>
-        <div class="newepdiv cursor-pointer">
-          <u><span @click="addNewEpisodeBtn()">+New episode</span></u>
+
+        <div v-show="managementSeason != 0"></div>
+        <div class="q-pt-md" style="width:96%;margin:auto;" align="center">
+          <div class="row ">
+            <div class="" style="width:30px;">No.</div>
+            <div class="col-1">Order ID</div>
+            <div class="col " align="left">Episode</div>
+            <div class="col-2">Duration</div>
+            <div class="col-1">TH Sound</div>
+            <div class="col-1">TH Sub</div>
+            <div class="col-1">Preview</div>
+            <div class="col-1">Delete</div>
+            <div class="col-1">Edit</div>
+          </div>
+          <hr />
+          <div
+            class="row epList items-center"
+            v-for="(item, index) in episodeList"
+            :key="index"
+            :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+            align="center"
+            style="height:50px;line-height: 50px;"
+          >
+            <div class="" style="width:30px;">{{ index + 1 }}</div>
+            <div class="col-1">{{ item.orderid }}</div>
+            <div class="col q-pl-md" align="left">{{ item.name }}</div>
+            <div class="col-2 " align="center">
+              <span v-show="item.durationHour != 0">
+                {{ item.durationHour }} h
+              </span>
+              {{ item.durationMin }} min
+            </div>
+            <div class="col-1 " v-show="item.movieCodeTh.length == 0">
+              <div
+                class="movieCodeBorder"
+                style="border-color:#C4C4C4;color:#C4C4C4;"
+              >
+                TH Sound
+              </div>
+            </div>
+            <div class="col-1 " v-show="item.movieCodeTh.length > 0">
+              <div class="movieCodeBorder cursor-pointer">TH Sound</div>
+            </div>
+            <div class="col-1 " v-show="item.movieCodeEng.length == 0">
+              <div
+                class="movieCodeBorder"
+                style="border-color:#C4C4C4;color:#C4C4C4;"
+              >
+                TH Sub
+              </div>
+            </div>
+            <div class="col-1 " v-show="item.movieCodeEng.length > 0">
+              <div class="movieCodeBorder cursor-pointer">TH Sub</div>
+            </div>
+            <div class="col-1 cursor-pointer" @click="previewMovie(item)">
+              <u>Preview</u>
+            </div>
+            <div class="col-1 cursor-pointer"><u>Delete</u></div>
+            <div class="col-1 cursor-pointer" @click="editEpisodeBtn(item)">
+              <u>Edit</u>
+            </div>
+          </div>
+          <div class="newepdiv cursor-pointer q-mt-md">
+            <u><span @click="addNewEpisodeBtn()">+New episode</span></u>
+          </div>
         </div>
       </div>
       <!-- Season management -->
@@ -196,6 +258,253 @@
           </div>
         </q-card>
       </q-dialog>
+      <!-- Add New Episode  -->
+      <q-dialog class="" v-model="dialogAddEpisode" persistent>
+        <q-card class="newEpisode">
+          <div class="q-pt-md" style="font-size:24px" align="center">
+            New episode -
+          </div>
+          <div class="row textInput">
+            <div class="col-1"></div>
+            <div class="col-2">Title name</div>
+            <div class="col q-pl-md" style="">
+              <q-input dense v-model="addEpisode.name" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row textInput">
+            <div class="col-1"></div>
+            <div class="col-2">Order ID</div>
+            <div class="col q-pl-md" style="">
+              <q-input dense v-model="addEpisode.orderid" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row  textInput">
+            <div class="col-1"></div>
+            <div class="col-2">Duration</div>
+            <div class="col-3 q-pl-md">
+              <q-input dense v-model="addEpisode.durationHour" />
+            </div>
+            <div>hour</div>
+            <div class="col-3 q-pl-md">
+              <q-input dense v-model="addEpisode.durationMin" />
+            </div>
+            <div>minute</div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row  textInput">
+            <div class="col-1"></div>
+            <div class="col-5">Movie code (Thai sound)</div>
+            <div class="col" style="">
+              <q-input dense v-model="addEpisode.movieCodeTh" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row  textInput">
+            <div class="col-1"></div>
+            <div class="col-5">Movie code (Thai sub)</div>
+            <div class="col" style="">
+              <q-input dense v-model="addEpisode.movieCodeEng" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row ynDia">
+            <div
+              class="ynBtn q-ma-sm"
+              @click="cancelAddEpisodeBtn()"
+              align="center"
+            >
+              Cancel
+            </div>
+            <div
+              class="ynBtn q-ma-sm"
+              style="background-color:#ffc24c"
+              @click="addNewEpisodeSave()"
+              align="center"
+            >
+              Ok
+            </div>
+            <div style="width:30px;"></div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- Edit Episode  -->
+      <q-dialog class="" v-model="dialogEditEpisode" persistent>
+        <q-card class="newEpisode">
+          <div class="q-pt-md" style="font-size:24px" align="center">
+            New episode -
+          </div>
+          <div class="row textInput">
+            <div class="col-1"></div>
+            <div class="col-2">Title name</div>
+            <div class="col q-pl-md" style="">
+              <q-input dense v-model="addEpisode.name" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row textInput">
+            <div class="col-1"></div>
+            <div class="col-2">Order ID</div>
+            <div class="col q-pl-md" style="">
+              <q-input dense v-model="addEpisode.orderid" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row  textInput">
+            <div class="col-1"></div>
+            <div class="col-2">Duration</div>
+            <div class="col-3 q-pl-md">
+              <q-input dense v-model="addEpisode.durationHour" />
+            </div>
+            <div>hour</div>
+            <div class="col-3 q-pl-md">
+              <q-input dense v-model="addEpisode.durationMin" />
+            </div>
+            <div>minute</div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row  textInput">
+            <div class="col-1"></div>
+            <div class="col-5">Movie code (Thai sound)</div>
+            <div class="col" style="">
+              <q-input dense v-model="addEpisode.movieCodeTh" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row  textInput">
+            <div class="col-1"></div>
+            <div class="col-5">Movie code (Thai sub)</div>
+            <div class="col" style="">
+              <q-input dense v-model="addEpisode.movieCodeEng" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+          <div class="row ynDia">
+            <div
+              class="ynBtn q-ma-sm"
+              @click="cancelEditEpisodeBtn()"
+              align="center"
+            >
+              Cancel
+            </div>
+            <div
+              class="ynBtn q-ma-sm"
+              style="background-color:#ffc24c"
+              @click="saveEditEpisodeBtn()"
+              align="center"
+            >
+              Ok
+            </div>
+            <div style="width:30px;"></div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- Preview  -->
+      <q-dialog v-model="dialogPreview" persistent>
+        <q-card class="preview">
+          <div class="row q-pa-md" align="center">
+            <div class="col-1"></div>
+            <div class="col" style="font-size:24px;margin-top:30px;">
+              {{ seriesName }}
+            </div>
+
+            <div class="col-1">
+              <q-btn
+                icon="far fa-times-circle"
+                flat
+                round
+                size="lg"
+                dense
+                v-close-popup
+              />
+            </div>
+          </div>
+
+          <div class="row" align="center">
+            <div class="col"></div>
+            <div
+              class="noMovieCode q-mx-lg"
+              v-show="previewMovieThaiSoundCode == ''"
+            >
+              TH sound
+            </div>
+            <div
+              class="borderMovieCodePreview cursor-pointer q-mx-lg"
+              v-show="previewMovieThaiSoundCode != '' && indexPreview == 1"
+              style="background-color:#ffc24c"
+            >
+              TH sound
+            </div>
+            <div
+              class="borderMovieCodePreview cursor-pointer q-mx-lg"
+              v-show="previewMovieThaiSoundCode != '' && indexPreview != 1"
+              @click="indexPreview = 1"
+            >
+              TH sound
+            </div>
+            <div
+              class="noMovieCode q-mx-lg"
+              v-show="previewMovieThaiSubCode == ''"
+            >
+              TH sub
+            </div>
+            <div
+              class="borderMovieCodePreview cursor-pointer q-mx-lg"
+              v-show="previewMovieThaiSubCode != '' && indexPreview == 2"
+              style="background-color:#ffc24c"
+            >
+              TH sub
+            </div>
+            <div
+              class="borderMovieCodePreview cursor-pointer q-mx-lg"
+              v-show="previewMovieThaiSubCode != '' && indexPreview != 2"
+              @click="indexPreview = 2"
+            >
+              TH sub
+            </div>
+            <div class="col"></div>
+          </div>
+          <div class="q-mt-md">
+            <div
+              style="width:790px;height:443px;margin:auto;"
+              v-show="indexPreview == 1"
+            >
+              <iframe
+                :src="previewThaiSoundLink"
+                frameborder="0"
+                scrolling="auto"
+                allowfullscreen
+                style="position:absolute;width:790px;height:443px;"
+              ></iframe>
+            </div>
+            <div
+              style="width:790px;height:443px;margin:auto;"
+              v-show="indexPreview == 2"
+            >
+              <iframe
+                :src="previewThaiSubLink"
+                frameborder="0"
+                scrolling="auto"
+                allowfullscreen
+                style="position:absolute;width:790px;height:443px;"
+              ></iframe>
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- bg drop  -->
+      <div
+        class="bgDrop fullscreen"
+        v-show="
+          dialogMainSeason ||
+            dialogAddSeason ||
+            dialogEditSeason ||
+            dialogAddEpisode ||
+            dialogEditEpisode ||
+            dialogPreview
+        "
+      ></div>
     </div>
   </div>
 </template>
@@ -211,21 +520,156 @@ export default {
       dialogMainSeason: false, //หน้าต่าง season
       dialogAddSeason: false, //หน้าต่างเพิ่ม season ใหม่
       dialogEditSeason: false, //หน้าต่างแก้ไข season
+      dialogAddEpisode: false, // หน้าต่างเพิ่ม Episode ใหม่่
+      dialogEditEpisode: false, // หน้าต่างแก้ไข Episode
       dialogConfirmDelSeason: false, //หน้าต่าง confirm delete
+      dialogPreview: false, // หน้าต่าง preview
       managementSeason: [], //ข้อมูล season
       addSeason: {
         orderid: "",
         name: ""
       }, //เพิ่มและแก้ไข season ใหม่
+      episodeList: [], // ข้อมูล episode ย่อยใน season
+      addEpisode: {
+        name: "",
+        seriesid: "",
+        sersonid: "",
+        orderid: "",
+        durationHour: "",
+        durationMin: "",
+        movieCodeEng: "",
+        movieCodeTh: ""
+      },
+      indexPreview: 1, // index สำหรับ dialog preview
+      previewMovieThaiSoundCode: "", //Code สำหรับ movie thai sound
+      previewMovieThaiSubCode: "", //Code สำหรับ movie thai sub
       editSeasonId: "", //แก้ไข Season
       delSeasonId: "", //ลบ Season
-      seriesName: "" //ชื่อ Series
+      seriesName: "", //ชื่อ Series
+
+      editEpisodeId: "" // สำหรับเก็บ id ตัวแก้ไข Episode
     };
   },
   methods: {
+    // ล้างค่าตัวแปร temp เก็บข้อมูล addEpisode
+    clraddEpisode() {
+      this.addEpisode.name = "";
+      this.addEpisode.seriesid = "";
+      this.addEpisode.sersonid = "";
+      this.addEpisode.orderid = "";
+      this.addEpisode.durationHour = "";
+      this.addEpisode.durationMin = "";
+      this.addEpisode.movieCodeEng = "";
+      this.addEpisode.movieCodeTh = "";
+    },
+    // กด cancel ใน dialog Aad new Ep
+    cancelAddEpisodeBtn() {
+      this.clraddEpisode();
+      this.dialogAddEpisode = false;
+    },
+    // กด OK ใน dailog Add new Ep
+    async addNewEpisodeSave() {
+      let data = {
+        seriesid: this.id,
+        seasonid: this.selectSeason,
+        orderid: this.addEpisode.orderid,
+        name: this.addEpisode.name,
+        durationHour: this.addEpisode.durationHour,
+        durationMin: this.addEpisode.durationMin,
+        movieCodeEng: this.addEpisode.movieCodeEng,
+        movieCodeTh: this.addEpisode.movieCodeTh
+      };
+      let url = this.serverpath + "bo_addserriessub.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.greenNotify("Add " + this.addEpisode.name + " Complete");
+
+      this.loadEpisodeList();
+      this.dialogAddEpisode = false;
+    },
     //Add new ep
     addNewEpisodeBtn() {
-      console.log("hello add new ep");
+      this.clraddEpisode();
+      this.dialogAddEpisode = true;
+    },
+    //เปิดหน้า preview movie
+    async previewMovie(item) {
+      this.previewTitleEn = item.nameEng;
+      this.previewMovieThaiSoundCode = item.movieCodeTh;
+      if (item.movieCodeTh != "") {
+        let data = {
+          movieCode: item.movieCodeTh
+        };
+        let url = this.serverpath + "bo_encodemovie.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        this.previewThaiSoundLink = res.data;
+      } else {
+        this.indexPreview = 2;
+      }
+      this.previewMovieThaiSubCode = item.movieCodeEng;
+      if (item.movieCodeEng != "") {
+        let data = {
+          movieCode: item.movieCodeEng
+        };
+        let url = this.serverpath + "bo_encodemovie.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        this.previewThaiSubLink = res.data;
+      } else {
+        this.indexPreview = 1;
+      }
+      this.dialogPreview = true;
+    },
+    // กดปุ่ม Edit ของ Episode
+    editEpisodeBtn(item) {
+      this.editEpisodeId = item.id;
+      this.addEpisode.name = item.name;
+      this.addEpisode.orderid = item.orderid;
+      this.addEpisode.durationHour = item.durationHour;
+      this.addEpisode.durationMin = item.durationMin;
+      this.addEpisode.movieCodeEng = item.movieCodeEng;
+      this.addEpisode.movieCodeTh = item.movieCodeTh;
+
+      this.dialogEditEpisode = true;
+    },
+    // save การแก้ไขค่าของ Edit Episode
+    async saveEditEpisodeBtn() {
+      let data = {
+        orderid: this.addEpisode.orderid,
+        name: this.addEpisode.name,
+        durationHour: this.addEpisode.durationHour,
+        durationMin: this.addEpisode.durationMin,
+        movieCodeEng: this.addEpisode.movieCodeEng,
+        movieCodeTh: this.addEpisode.movieCodeTh,
+        id: this.editEpisodeId
+      };
+      let url = this.serverpath + "bo_editepisode.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.loadEpisodeList();
+      this.greenNotify("Edit " + data.name + " complete");
+      this.dialogEditEpisode = false;
+    },
+    // กด cancel ใน dialog Edit Episode
+    cancelEditEpisodeBtn() {
+      this.dialogEditEpisode = false;
+    },
+    // โหลดรายละเอียด Episode ย่อยของ series>season
+    async loadEpisodeList() {
+      this.episodeList = [];
+      let data = {
+        seriesid: this.id,
+        seasonid: this.selectSeason
+      };
+      console.log(data);
+      let url = this.serverpath + "bo_loadseriessub.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      if (res.data != 0) {
+        res.data.forEach(x => {
+          this.episodeList.push(x);
+        });
+
+        this.episodeList.sort((a, b) => a.orderid - b.orderid);
+      } else {
+        this.episodeList = [];
+      }
     },
     //ดึงข้อมูลชื่อหนัง series
     async loadSeriesName() {
@@ -372,17 +816,22 @@ export default {
       this.dialogMainSeason = true;
     }
   },
-  mounted() {
-    this.loadSeason();
+  async mounted() {
+    await this.loadSeason();
     this.id = this.$route.params.id;
     this.loadSeriesName();
+    this.loadEpisodeList();
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.bgDrop {
+  background-color: rgba($color: #000000, $alpha: 0.6);
+}
 .newepdiv {
-  background-color: rgba($color: #7291ff, $alpha: 0.15);
+  background-color: rgba($color: #7291ff, $alpha: 0.5);
+  border-radius: 10px;
   height: 72px;
   font-size: 24px;
   text-align: center;
@@ -429,11 +878,10 @@ export default {
   line-height: 45px;
 }
 .ynDia {
-  margin: auto;
   position: absolute;
+  margin-inline: 120px;
   bottom: 30px;
-  margin-left: 200px;
-  width: 400px;
+  width: 300px;
   height: 45px;
 }
 .addNewSeasonDiv {
@@ -443,5 +891,46 @@ export default {
   margin-top: 10px;
   height: 40px;
   line-height: 40px;
+}
+.newEpisode {
+  border-radius: 30px;
+  width: 500px;
+  height: 350px;
+}
+.textInput {
+  // margin-top: 10px;
+  height: 40px;
+  line-height: 40px;
+}
+.movieCodeBorder {
+  height: 35px;
+  line-height: 35px;
+  width: 90px;
+  border-radius: 5px;
+  border: 1px solid #313131;
+}
+.borderMovieCodePreview {
+  width: 100px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+.noMovieCode {
+  width: 100px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  color: #c4c4c4;
+  border: 1px solid #c4c4c4;
+}
+.preview {
+  max-width: 1000px;
+  width: 975px;
+  height: 620px;
+  border-radius: 30px;
+}
+.epList {
+  border-radius: 10px;
 }
 </style>
