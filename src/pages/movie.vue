@@ -5,6 +5,7 @@
         <!-- header  -->
         <div class="row items-center q-pt-lg">
           <div class="col-5 q-pl-xl">
+            <q-btn label="test" @click="test()" />
             <q-input
               outlined
               rounded
@@ -20,9 +21,11 @@
               </template>
             </q-input>
           </div>
+
           <div class="col-1" align="right">
             Category
           </div>
+
           <div class="q-pl-sm">
             <q-select
               color="orange-13"
@@ -64,24 +67,34 @@
         </div>
         <div class="q-pt-md"></div>
         <!-- end header  -->
-        <q-scroll-area class="" style="height:88vh; max-width: 90vw;">
+        <q-scroll-area
+          class="newarrivaldiv"
+          style="height:88vh; max-width: 90vw;"
+        >
           <!-- movie box  -->
 
           <div v-for="(item, index) in data" :key="index">
-            <div class="movieBox row">
-              <div class=" q-ma-md q-mt-lg" v-if="item.poster == 1">
+            <div class="boxdiv row">
+              <div v-show="item.new == 1" class="newarrivaldiv">
+                <img
+                  src="../../public/images/new.png"
+                  style="width:88px; height:88px"
+                  alt=""
+                />
+              </div>
+              <div class=" q-ma-md q-mt-lg pospic" v-if="item.poster == 1">
                 <img
                   class="picMovie shadow-2"
                   :src="serverpath + 'poster/movie/' + item.id + '.jpg'"
                 />
               </div>
-              <div class="q-ma-md q-mt-lg" v-if="item.poster == 0">
+              <div class="q-ma-md q-mt-lg pospic" v-if="item.poster == 0">
                 <img
                   class="picMovie shadow-2"
                   :src="serverpath + 'poster/movie/nophoto.jpg'"
                 />
               </div>
-              <div class="col q-pt-md">
+              <div class="col q-pt-md contentdiv">
                 <div class="row" style="line-height:30px;">
                   <div style="font-size:24px;">
                     {{ item.nameEng }}
@@ -126,8 +139,7 @@
                   {{ item.synopsis }}
                 </div>
               </div>
-
-              <div class="col-1">
+              <div class="col-1 btndiv">
                 <div class="row q-pt-md">
                   <div class="col" align="left">
                     <q-btn
@@ -232,6 +244,8 @@
                 </div>
               </div>
             </div>
+            <div class="tempdiv"></div>
+
             <div style="height:15px;"></div>
           </div>
           <!-- end moviebox  -->
@@ -1125,35 +1139,6 @@ import axios from "axios";
 export default {
   data() {
     return {
-      testReport: [
-        "ชื่อเรื่องสะกดผิด",
-        "เรื่องย่อไม่ตรงกับเรื่องจริง",
-        "ภาพปกคนละภาพ",
-        "เสียงเบา",
-        "s",
-        "sdsa",
-        "dsag",
-        "dsgg",
-        "ghsd",
-        "ชื่อเรื่องสะกดผิด",
-        "เรื่องย่อไม่ตรงกับเรื่องจริง",
-        "ภาพปกคนละภาพ",
-        "เสียงเบา",
-        "s",
-        "sdsa",
-        "dsag",
-        "dsgg",
-        "ghsd",
-        "ชื่อเรื่องสะกดผิด",
-        "เรื่องย่อไม่ตรงกับเรื่องจริง",
-        "ภาพปกคนละภาพ",
-        "เสียงเบา",
-        "s",
-        "sdsa",
-        "dsag",
-        "dsgg",
-        "ghsd"
-      ],
       searchMovie: "",
       movieCat: 0, //ประเภทหนังที่ filter
       movieCatOpt: [], //รายชื่อประเภทของหนัง
@@ -1220,6 +1205,11 @@ export default {
     };
   },
   methods: {
+    test() {
+      console.log(new Date("2021-11-21").getTime());
+    },
+    //Remove new expired
+    removeNewERxpired() {},
     //ปุ่ม OK ยืนยันการลบ
     async delMovieBtn() {
       //ลบข้อมูลออกจาก category
@@ -1340,6 +1330,15 @@ export default {
         categoryData += "[" + x + "],";
       });
       categoryData = categoryData.slice(0, -1);
+      let tempDate;
+      //Convert expirteddate เป็น microtime
+      if (this.addmovie.newArraival == 1) {
+        tempDate = this.addmovie.newArraival;
+        tempdate = tempDate.split("/");
+        tempDate = tempDate[3] + "-" + tempDate[2] + "-" + tempDate[1];
+        tempDate = new Date(tempDate).getTime();
+        console.log(tempDate);
+      }
 
       let data = {
         nameEng: this.addmovie.titleEn,
@@ -1360,6 +1359,7 @@ export default {
         new: this.addmovie.newArraival ? 1 : 0,
         expiredDate: this.addmovie.newArraival ? this.addmovie.expiredDate : 0
       };
+
       let url = this.serverpath + "bo_movieadddata.php";
       let res = await axios.post(url, JSON.stringify(data));
       let movieid = res.data;
@@ -1539,7 +1539,14 @@ export default {
         categoryData += "[" + x + "],";
       });
       categoryData = categoryData.slice(0, -1);
-
+      //Convert ExpiredDate to timestamp
+      if (this.addmovie.newArraival == 1) {
+        tempDate = this.addmovie.newArraival;
+        tempdate = tempDate.split("/");
+        tempDate = tempDate[3] + "-" + tempDate[2] + "-" + tempDate[1];
+        tempDate = new Date(tempDate).getTime();
+        console.log(tempDate);
+      }
       let data = {
         nameEng: this.addmovie.titleEn,
         nameTh: this.addmovie.titleTh,
@@ -1560,6 +1567,7 @@ export default {
         expiredDate: this.addmovie.newArraival ? this.addmovie.expiredDate : 0,
         id: this.editMovieId
       };
+      console.log(data);
       let url = this.serverpath + "bo_movieeditdata.php";
       let res = await axios.post(url, JSON.stringify(data));
       //Check file delete
@@ -1788,6 +1796,7 @@ export default {
       return this.addmovie.synopsis.length <= 300;
     }
   },
+
   mounted() {
     this.loadcatatmovie();
     this.loadpagenumber();
@@ -1797,6 +1806,38 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.btndiv {
+  position: absolute;
+  left: calc(100% - 100px);
+}
+.contentdiv {
+  position: absolute;
+  left: 150px;
+  width: calc(100% - 300px);
+}
+.pospic {
+  position: absolute;
+  left: 10px;
+}
+.boxdiv {
+  position: relative;
+  overflow: hidden;
+  width: 95%;
+  margin-left: 2.5%;
+  height: 200px !important;
+  background-color: #c6d6ff;
+  border-radius: 5px;
+}
+.tempdiv {
+  position: relative;
+  height: 1px;
+  width: 100%;
+  background-color: white;
+}
+.newarrivaldiv {
+  position: relative;
+  z-index: 100;
+}
 .bgmain {
   background-image: url("../../public/images/bg.jpg");
   background-size: cover;
