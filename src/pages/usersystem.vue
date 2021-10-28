@@ -6,25 +6,13 @@
           <div class="col-3 q-pl-xl">
             <q-btn
               rounded
-              class="cursor-pointer q-pa-xs"
+              class=" q-pa-xs"
               style="background-color:#FFC24C;font-size:16px;width:200px;"
               @click="securityEdit()"
               no-caps
             >
               <q-icon class="fas fa-key" size="21px" />
               <div class="q-pl-sm">security code</div>
-            </q-btn>
-          </div>
-          <div class="col-3">
-            <q-btn
-              rounded
-              class="cursor-pointer q-pa-xs"
-              style="background-color:#FFC24C;font-size:16px;width:200px;"
-              @click="deleteMovieBtn = true"
-              no-caps
-            >
-              <q-icon class="far fa-list-alt" size="21px" />
-              <div class="q-pl-sm">Deleted movie</div>
             </q-btn>
           </div>
           <div class="col"></div>
@@ -160,81 +148,36 @@
       <!---------------------------------------- end table  ---------------------------------------------------------->
       <!-- security code -->
       <q-dialog v-model="securityBtn" persistent>
-        <q-card>
-          <div class="securityBox" align="center">
+        <q-card class="securityBox">
+          <div align="center">
             <div class="q-pt-sm" style="font-size:24px;">Security key</div>
             <div class="row items-center">
-              <div class="q-pa-sm" style="padding-left:50px;margin-top:10px;">
+              <div
+                class="q-pa-sm"
+                style="padding-left:50px;margin-top:10px;font-size:18px;"
+              >
                 key
               </div>
               <div class="q-pa-xs" style="width:300px;">
-                <q-input v-model="passwordStr" />
+                <q-input dense v-model="passwordStr" />
               </div>
             </div>
-            <div class="row">
+            <div class="row q-pt-sm">
               <div class="col"></div>
-              <div class="q-pa-sm col-10" style="font-size:12px;">
+              <div class="col-11" style="font-size:14px;">
                 This code used to prevent unauthorized use of the movie must be
                 the same as the JW player backend system.
               </div>
               <div class="col"></div>
             </div>
-            <div class="row q-pt-md" style="width:280px;margin:auto;">
-              <div class="ynBtn q-ma-sm" @click="cancelSec()">Cancel</div>
+            <div class="row q-pt-md" style="width:370px;margin:auto;">
+              <div class="ynBtn" @click="cancelSec()">Cancel</div>
               <div
-                class="ynBtn q-ma-sm"
+                class="ynBtn"
                 style="background-color:#ffc24c"
                 @click="securitySave()"
               >
                 Ok
-              </div>
-            </div>
-          </div>
-        </q-card>
-      </q-dialog>
-      <!-- Deleted Movie -->
-      <q-dialog class="" v-model="deleteMovieBtn" persistent>
-        <q-card class="deleteMovieBox" align="center">
-          <q-card-section class="row items-center q-pb-none">
-            <div class="col-1"></div>
-            <div class="col" style="font-size:24px;">Deleted movie</div>
-            <div class="col-1">
-              <q-btn
-                icon="far fa-times-circle"
-                flat
-                round
-                dense
-                v-close-popup
-              />
-            </div>
-          </q-card-section>
-          <div class="row">
-            <div class="col"></div>
-            <q-select v-model="mmL" :options="mL" />
-            <div class="col-2"></div>
-            <q-select v-model="mmY" :options="mY" />
-            <div class="col"></div>
-          </div>
-          <div class="row">
-            <div class="col-2 q-pl-md">Movie Code</div>
-            <div class="col">Movie title</div>
-            <div class="col-2">Delete date</div>
-            <div class="col-2">JW deleted</div>
-          </div>
-          <div class="delList q-mt-md">
-            <div
-              v-for="(item, index) in delMovie"
-              style="height:40px;line-height: 40px;"
-              class="row"
-              :key="index"
-              :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
-              align="center"
-            >
-              <div class="col-2 q-pl-md">{{ item.moviecode }}</div>
-              <div class="col">{{ item.title }}</div>
-              <div class="col-2 q-pl-sm">Delete date</div>
-              <div class="col-2 q-pl-xl">
-                <q-checkbox v-model="item.check" color="teal" />
               </div>
             </div>
           </div>
@@ -247,11 +190,11 @@
             Add new admin user
           </div>
           <div class="row q-pl-md">
-            <div class="typeEdit">
+            <div class="col-2">
               Username
             </div>
             <div style="width:250px;">
-              <q-input v-model="userStr" />
+              <q-input dense v-model="userStr" />
             </div>
           </div>
           <div class="row q-pl-md">
@@ -272,8 +215,6 @@
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[0]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconCategory.svg"
-                    class="q-pl-xs" style= />
                     <div class="q-pl-md">Category</div>
                   </div>
                 </q-checkbox>
@@ -281,8 +222,6 @@
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[4]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconAnalytic.svg"
-                    class="q-pl-xs" style= />
                     <div class="q-pl-md">Analytic</div>
                   </div>
                 </q-checkbox>
@@ -292,8 +231,6 @@
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[1]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconMovie.svg" class="q-pl-xs"
-                    style= />
                     <div class="q-pl-md">Movie</div>
                   </div>
                 </q-checkbox>
@@ -301,8 +238,6 @@
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[5]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconUser.svg" class="q-pl-xs"
-                    style= />
                     <div class="q-pl-md">User</div>
                   </div>
                 </q-checkbox>
@@ -312,8 +247,6 @@
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[2]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconSeries.svg"
-                    class="q-pl-xs" style= />
                     <div class="q-pl-md">Series</div>
                   </div>
                 </q-checkbox>
@@ -321,8 +254,6 @@
               <div class="col-5 q-pt-sm">
                 <q-checkbox color="green" v-model="check[6]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconAdmin.svg" class="q-pl-xs"
-                    style= />
                     <div class="q-pl-md">Admin</div>
                   </div>
                 </q-checkbox>
@@ -331,8 +262,6 @@
             <div class="col-5">
               <q-checkbox color="green" v-model="check[3]">
                 <div class="row items-center">
-                  <img src="../../public/images/iconAds.svg" class="q-pl-xs"
-                  style= />
                   <div class="q-pl-md">Ads</div>
                 </div>
               </q-checkbox>
@@ -340,7 +269,7 @@
           </div>
           <!-- end checkbox  -->
           <div class="">
-            <div class="row q-pt-md" style="width:350px;margin:auto;">
+            <div class="row q-pt-md" style="width:370px;margin:auto;">
               <div class="ynBtn q-ma-sm" align="center" @click="cancelAdmin()">
                 Cancel
               </div>
@@ -560,7 +489,7 @@
       <!-- bg drop  -->
       <div
         class="bgDrop fullscreen"
-        v-show="editBtn || addAdmin || delBtn || securityBtn || deleteMovieBtn"
+        v-show="editBtn || addAdmin || delBtn || securityBtn"
       ></div>
     </div>
   </div>
@@ -578,51 +507,9 @@ export default {
       addAdmin: false, // เปิด dialog เพิ่ม Admin
       delBtn: false, // เปิดเตือน ลบ y/n
       securityBtn: false, // เปิด dialog sercurity
-      deleteMovieBtn: false, // เปิด list ข้อมูลหนังที่ลบแล้ว
       data: [],
-      check: [false, false, false, false, false, false, false],
+      check: [false, false, false, false, false, false, false]
       //
-      mL: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-      ],
-      mmL: "January",
-      mY: ["2021", "2022", "2023", "20"],
-      mmY: "2021",
-      delMovie: [
-        { title: "x man", moviecode: "afxUan", check: false },
-        { title: "x man2", moviecode: "fsxxzn", check: false },
-        { title: "x man3", moviecode: "i3mad", check: false },
-        { title: "Harrypotter 1", moviecode: "04hasn", check: false },
-        { title: "Harrypotter 2", moviecode: "d9xy3b", check: false },
-        { title: "Harrypotter 3", moviecode: "71bhav", check: false },
-        { title: "Harrypotter 4", moviecode: "bvyp41", check: false },
-        { title: "Harrypotter 5", moviecode: "96dbahoi", check: false },
-        { title: "Harrypotter 6", moviecode: "12khs6", check: false },
-        { title: "Harrypotter 7.1", moviecode: "p2kauf", check: false },
-        { title: "Harrypotter 7.2", moviecode: "u37smz", check: false },
-        {
-          title: "CAPTAIN AMERICA: THE FIRST AVENGER ",
-          moviecode: "Afnu31",
-          check: false
-        },
-        { title: "CAPTAIN MARVEL", moviecode: "pasfn1", check: false },
-        { title: "IRON MAN", moviecode: "88cg3n", check: false },
-        { title: "IRON MAN 2", moviecode: "397sab", check: false },
-        { title: "THE INCREDIBLE HULK", moviecode: "31n321", check: false },
-        { title: "THOR", moviecode: "saf313", check: false },
-        { title: "MARVEL'S THE AVENGERS ", moviecode: "fsa18s", check: false }
-      ]
     };
   },
   methods: {
@@ -824,24 +711,6 @@ export default {
   width: 95%;
   margin: auto;
 }
-.onlineBtn {
-  background-color: #00a642;
-  color: white;
-  border-radius: 10px;
-  width: 90px;
-}
-.offlineBtn {
-  background-color: #e83939;
-  color: white;
-  border-radius: 10px;
-  width: 90px;
-}
-.otplineBtn {
-  background-color: #eda10f;
-  color: white;
-  border-radius: 10px;
-  width: 90px;
-}
 .bgDrop {
   background-color: rgba($color: #0f2c78, $alpha: 0.6);
 }
@@ -868,12 +737,13 @@ export default {
 }
 .ynBtn {
   margin: auto;
-  width: 120px;
-  height: 45px;
-  border-radius: 5px;
+  width: 160px;
+  height: 50px;
+  border-radius: 10px;
   border: 1px solid #ffc24c;
   cursor: pointer;
-  line-height: 45px;
+  font-size: 18px;
+  line-height: 50px;
 }
 .checkBox {
   padding-top: 20px;
@@ -886,18 +756,8 @@ export default {
   border-radius: 10px;
 }
 .securityBox {
+  border-radius: 20px;
   width: 460px;
-  height: 245px;
-}
-.deleteMovieBox {
-  max-width: 900px;
-  width: 830px;
-  height: 480px;
-  border-radius: 30px;
-}
-.delList {
-  border-radius: 0px !important;
-  height: 300px;
-  overflow-y: scroll;
+  height: 235px;
 }
 </style>

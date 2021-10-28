@@ -5,7 +5,6 @@
         <!-- header  -->
         <div class="row items-center q-pt-lg">
           <div class="col-5 q-pl-xl">
-            <q-btn label="test" @click="test()" />
             <q-input
               outlined
               rounded
@@ -69,7 +68,7 @@
         <!-- end header  -->
         <q-scroll-area
           class="newarrivaldiv"
-          style="height:88vh; max-width: 90vw;"
+          style="height:86vh; max-width: 90vw;"
         >
           <!-- movie box  -->
 
