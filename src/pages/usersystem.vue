@@ -150,13 +150,15 @@
       <q-dialog v-model="securityBtn" persistent>
         <q-card class="securityBox">
           <div align="center">
-            <div class="q-pt-sm" style="font-size:24px;">Security key</div>
+            <div class="q-pt-sm" style="font-size:24px;font-weight:500;">
+              Security key
+            </div>
             <div class="row items-center">
               <div
                 class="q-pa-sm"
                 style="padding-left:50px;margin-top:10px;font-size:18px;"
               >
-                key
+                Key
               </div>
               <div class="q-pa-xs" style="width:300px;">
                 <q-input dense v-model="passwordStr" />
@@ -171,13 +173,19 @@
               <div class="col"></div>
             </div>
             <div class="row q-pt-md" style="width:370px;margin:auto;">
-              <div class="ynBtn" @click="cancelSec()">Cancel</div>
+              <div
+                class="ynBtn"
+                style="border-color:black"
+                @click="cancelSec()"
+              >
+                Cancel
+              </div>
               <div
                 class="ynBtn"
                 style="background-color:#ffc24c"
                 @click="securitySave()"
               >
-                Ok
+                OK
               </div>
             </div>
           </div>
@@ -186,75 +194,84 @@
       <!-- Add new admin  -->
       <q-dialog v-model="addAdmin" persistent>
         <q-card class="editBox">
-          <div class="q-pt-lg" style="font-size:24px;" align="center">
+          <div class="q-pt-lg q-my-md" style="font-size:24px;" align="center">
             Add new admin user
           </div>
-          <div class="row q-pl-md">
-            <div class="col-2">
+          <div class="row q-pl-xl">
+            <div class="typeEdit">
               Username
             </div>
-            <div style="width:250px;">
+            <div style="width:300px;">
               <q-input dense v-model="userStr" />
             </div>
           </div>
-          <div class="row q-pl-md">
+          <div class="row q-pl-xl">
             <div class="typeEdit">
               Password
             </div>
-            <div class="" style="width:250px;">
-              <q-input v-model="passwordStr" />
+            <div class="" style="width:300px;">
+              <q-input
+                dense
+                v-model="passwordStr"
+                bottom-slots
+                error-message="Please use 6-14 characters"
+                :error="!isValid"
+              />
             </div>
           </div>
-          <div class="typeEdit q-pl-md">
+          <div class="q-pl-xl q-ml-md q-pt-lg">
             Access menu
           </div>
-
           <!-- checkbox  -->
           <div class="checkBox" align="left">
             <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[0]">
                   <div class="row items-center">
-                    <div class="q-pl-md">Category</div>
+                    <div class="q-pl-sm">
+                      Category
+                    </div>
                   </div>
                 </q-checkbox>
               </div>
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[4]">
                   <div class="row items-center">
-                    <div class="q-pl-md">Analytic</div>
+                    <div class="q-pl-sm">
+                      Analytic
+                    </div>
                   </div>
                 </q-checkbox>
               </div>
             </div>
-            <div class="row q-pt-sm">
+            <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[1]">
                   <div class="row items-center">
-                    <div class="q-pl-md">Movie</div>
+                    <div class="q-pl-sm">Movie</div>
                   </div>
                 </q-checkbox>
               </div>
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[5]">
                   <div class="row items-center">
-                    <div class="q-pl-md">User</div>
+                    <div class="q-pl-sm">User</div>
                   </div>
                 </q-checkbox>
               </div>
             </div>
-            <div class="row q-pt-sm">
+            <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[2]">
                   <div class="row items-center">
-                    <div class="q-pl-md">Series</div>
+                    <div class="q-pl-sm">Series</div>
                   </div>
                 </q-checkbox>
               </div>
-              <div class="col-5 q-pt-sm">
+              <div class="col-5">
                 <q-checkbox color="green" v-model="check[6]">
                   <div class="row items-center">
-                    <div class="q-pl-md">Admin</div>
+                    <div class="q-pl-sm">Admin</div>
                   </div>
                 </q-checkbox>
               </div>
@@ -262,15 +279,20 @@
             <div class="col-5">
               <q-checkbox color="green" v-model="check[3]">
                 <div class="row items-center">
-                  <div class="q-pl-md">Ads</div>
+                  <div class="q-pl-sm">Ads</div>
                 </div>
               </q-checkbox>
             </div>
           </div>
           <!-- end checkbox  -->
           <div class="">
-            <div class="row q-pt-md" style="width:370px;margin:auto;">
-              <div class="ynBtn q-ma-sm" align="center" @click="cancelAdmin()">
+            <div class="row q-pt-lg" style="width:370px;margin:auto;">
+              <div
+                class="ynBtn q-ma-sm"
+                style="border-color:black"
+                align="center"
+                @click="cancelAdmin()"
+              >
                 Cancel
               </div>
               <div class="q-pa-md"></div>
@@ -280,7 +302,7 @@
                 align="center"
                 @click="addAdminOk()"
               >
-                Ok
+                OK
               </div>
             </div>
           </div>
@@ -289,80 +311,84 @@
       <!-- edit user  -->
       <q-dialog v-model="editBtn" persistent>
         <q-card class="editBox">
-          <div class="q-pt-lg" style="font-size:24px;" align="center">
+          <div class="q-pt-lg q-my-md" style="font-size:24px;" align="center">
             Edit admin user
           </div>
-          <div class="row q-pl-md">
+          <div class="row q-pl-xl">
             <div class="typeEdit">
               Username
             </div>
-            <div style="width:250px;">
-              <q-input v-model="userStr" disable />
+            <div style="width:300px;">
+              <q-input dense v-model="userStr" disable />
             </div>
           </div>
-          <div class="row  q-pl-md">
+          <div class="row q-pl-xl">
             <div class="typeEdit">
               Password
             </div>
-            <div class="" style="width:250px;">
-              <q-input v-model="passwordStr" />
+            <div class="" style="width:300px;">
+              <q-input
+                dense
+                v-model="passwordStr"
+                bottom-slots
+                error-message="Please use 6-14 characters"
+                :error="!isValid"
+              />
             </div>
           </div>
-          <div class="typeEdit q-pl-md">
+          <div class="q-pl-xl q-ml-md q-pt-lg">
             Access menu
           </div>
           <!-- checkbox  -->
           <div class="checkBox" align="left" v-show="userStr != 'admin'">
-            <div class="row q-pt-sm">
+            <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[0]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconCategory.svg" style= />
-                    <div class="q-pl-xs">Category</div>
+                    <div class="q-pl-sm">
+                      Category
+                    </div>
                   </div>
                 </q-checkbox>
               </div>
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[4]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconAnalytic.svg" style= />
-                    <div class="q-pl-xs">Analytic</div>
+                    <div class="q-pl-sm">
+                      Analytic
+                    </div>
                   </div>
                 </q-checkbox>
               </div>
             </div>
-            <div class="row q-pt-sm">
+            <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[1]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconMovie.svg" style= />
-                    <div class="q-pl-xs">Movie</div>
+                    <div class="q-pl-sm">Movie</div>
                   </div>
                 </q-checkbox>
               </div>
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[5]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconUser.svg" style= />
-                    <div class="q-pl-xs">User</div>
+                    <div class="q-pl-sm">User</div>
                   </div>
                 </q-checkbox>
               </div>
             </div>
-            <div class="row q-pt-sm">
+            <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[2]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconSeries.svg" style= />
-                    <div class="q-pl-xs">Series</div>
+                    <div class="q-pl-sm">Series</div>
                   </div>
                 </q-checkbox>
               </div>
-              <div class="col-5 q-pt-sm">
+              <div class="col-5">
                 <q-checkbox color="green" v-model="check[6]">
                   <div class="row items-center">
-                    <img src="../../public/images/iconAdmin.svg" style= />
-                    <div class="q-pl-xs">Admin</div>
+                    <div class="q-pl-sm">Admin</div>
                   </div>
                 </q-checkbox>
               </div>
@@ -370,63 +396,60 @@
             <div class="col-5">
               <q-checkbox color="green" v-model="check[3]">
                 <div class="row items-center">
-                  <img src="../../public/images/iconAds.svg" style= />
-                  <div class="q-pl-xs">Ads</div>
+                  <div class="q-pl-sm">Ads</div>
                 </div>
               </q-checkbox>
             </div>
           </div>
           <div class="checkBox" align="left" v-show="userStr == 'admin'">
-            <div class="row q-pt-sm">
+            <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[0]" disable>
                   <div class="row items-center">
-                    <img src="../../public/images/iconCategory.svg" style= />
-                    <div class="q-pl-xs">Category</div>
+                    <div class="q-pl-sm">
+                      Category
+                    </div>
                   </div>
                 </q-checkbox>
               </div>
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[4]" disable>
                   <div class="row items-center">
-                    <img src="../../public/images/iconAnalytic.svg" style= />
-                    <div class="q-pl-xs">Analytic</div>
+                    <div class="q-pl-sm">
+                      Analytic
+                    </div>
                   </div>
                 </q-checkbox>
               </div>
             </div>
-            <div class="row q-pt-sm">
+            <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[1]" disable>
                   <div class="row items-center">
-                    <img src="../../public/images/iconMovie.svg" style= />
-                    <div class="q-pl-xs">Movie</div>
+                    <div class="q-pl-sm">Movie</div>
                   </div>
                 </q-checkbox>
               </div>
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[5]" disable>
                   <div class="row items-center">
-                    <img src="../../public/images/iconUser.svg" style= />
-                    <div class="q-pl-xs">User</div>
+                    <div class="q-pl-sm">User</div>
                   </div>
                 </q-checkbox>
               </div>
             </div>
-            <div class="row q-pt-sm">
+            <div class="row">
               <div class="col-5">
                 <q-checkbox color="green" v-model="check[2]" disable>
                   <div class="row items-center">
-                    <img src="../../public/images/iconSeries.svg" style= />
-                    <div class="q-pl-xs">Series</div>
+                    <div class="q-pl-sm">Series</div>
                   </div>
                 </q-checkbox>
               </div>
-              <div class="col-5 q-pt-sm">
+              <div class="col-5">
                 <q-checkbox color="green" v-model="check[6]" disable>
                   <div class="row items-center">
-                    <img src="../../public/images/iconAdmin.svg" style= />
-                    <div class="q-pl-xs">Admin</div>
+                    <div class="q-pl-sm">Admin</div>
                   </div>
                 </q-checkbox>
               </div>
@@ -434,16 +457,20 @@
             <div class="col-5">
               <q-checkbox color="green" v-model="check[3]" disable>
                 <div class="row items-center">
-                  <img src="../../public/images/iconAds.svg" style= />
-                  <div class="q-pl-xs">Ads</div>
+                  <div class="q-pl-sm">Ads</div>
                 </div>
               </q-checkbox>
             </div>
           </div>
           <!-- end checkbox  -->
           <div class="">
-            <div class="row q-pt-md" style="width:350px;margin:auto;">
-              <div class="ynBtn q-ma-sm" align="center" @click="cancelEdit()">
+            <div class="row q-pt-lg" style="width:370px;margin:auto;">
+              <div
+                class="ynBtn q-ma-sm"
+                style="border-color:black"
+                align="center"
+                @click="cancelEdit()"
+              >
                 Cancel
               </div>
               <div class="q-pa-md"></div>
@@ -453,7 +480,7 @@
                 align="center"
                 @click="editOk()"
               >
-                Ok
+                OK
               </div>
             </div>
           </div>
@@ -461,25 +488,32 @@
       </q-dialog>
       <!-- delete Btn  -->
       <q-dialog v-model="delBtn" persistent>
-        <q-card>
-          <div class="delBox" align="center">
+        <q-card class="delBox">
+          <div align="center">
             <q-icon
-              class="fas fa-exclamation-circle q-pa-md"
-              size="64px"
-              color="red"
+              class="fas fa-exclamation-triangle q-mt-lg"
+              size="80px"
+              style="color:#ffc24c"
             />
-            <div style="font-size:24px;">Are you sure?</div>
-            <div style="font-size:14px;">
-              You want to delete <span class="text-red">{{ userStr }}</span> !
+            <div class="q-pt-md" style="font-size:24px;">
+              You want to delete <span class="text-red">{{ userStr }}</span
+              >.
             </div>
-            <div class="row q-pt-md" style="width:280px;margin:auto;">
-              <div class="ynBtn q-ma-sm" @click="cancelDelete()">Cancel</div>
+            <div style="font-size:14px;">This item cannot restore.</div>
+            <div class="row q-pt-lg" style="width:370px;margin:auto;">
+              <div
+                class="ynBtn q-ma-sm"
+                style="border-color:black"
+                @click="cancelDelete()"
+              >
+                Cancel
+              </div>
               <div
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c"
                 @click="deleteOk()"
               >
-                Yes
+                OK
               </div>
             </div>
           </div>
@@ -512,6 +546,11 @@ export default {
       //
     };
   },
+  computed: {
+    isValid() {
+      return this.passwordStr.length >= 6 && this.passwordStr.length <= 14;
+    }
+  },
   methods: {
     // ปุ่ม cancel ใน security code
     cancelSec() {
@@ -532,7 +571,7 @@ export default {
       };
       let url = this.serverpath + "bo_editsecuritycode.php";
       let res = await axios.post(url, JSON.stringify(data));
-      this.greenNotify("Update security key");
+      this.greenNotify("Update security key.");
       this.passwordStr = "";
       this.securityBtn = false;
     },
@@ -547,12 +586,11 @@ export default {
     // ปุ่ม save ใน Add Admin
     async addAdminOk() {
       if (this.userStr.length == 0 || this.passwordStr.length == 0) {
-        this.$q.notify({
-          message: "Please input User name & Password",
-          color: "negative",
-          position: "top",
-          icon: "fas fa-times"
-        });
+        this.redNotify("Please input User name & Password");
+        return;
+      }
+      if (this.passwordStr.length < 6 || this.passwordStr.length > 14) {
+        this.redNotify("Password must be 6-14 characters.");
         return;
       }
       if (
@@ -566,14 +604,10 @@ export default {
           this.check[6]
         )
       ) {
-        this.$q.notify({
-          message: "Please select page",
-          color: "negative",
-          position: "top",
-          icon: "fas fa-times"
-        });
+        this.redNotify("Please select page.");
         return;
       }
+
       let data = {
         username: this.userStr,
         password: this.passwordStr,
@@ -588,21 +622,11 @@ export default {
       let url = this.serverpath + "bo_addusersystem.php";
       let res = await axios.post(url, JSON.stringify(data));
       if (res.data == "NR") {
-        this.$q.notify({
-          message: "This User name exist",
-          color: "negative",
-          position: "top",
-          icon: "fas fa-times"
-        });
+        this.redNotify("This User name exist");
       } else {
         this.loadData();
         this.addAdmin = false;
-        this.$q.notify({
-          message: "Add new admin complete",
-          color: "secondary",
-          position: "top",
-          icon: "fas fa-check"
-        });
+        this.greenNotify("Add new admin complete.");
         this.userStr = "";
         this.passwordStr = "";
         this.check = [false, false, false, false, false, false, false];
@@ -631,12 +655,7 @@ export default {
       let res = await axios.post(url, JSON.stringify(data));
 
       this.delBtn = false;
-      this.$q.notify({
-        message: "Delete " + this.userStr.toUpperCase() + " complete",
-        color: "secondary",
-        position: "top",
-        icon: "fas fa-check"
-      });
+      this.greenNotify("Delete " + this.userStr.toUpperCase() + " complete.");
       this.userStr = "";
       this.delUs = 0;
       this.loadData();
@@ -665,6 +684,24 @@ export default {
     },
     // ปุ่ม save ใน Edit Admin
     async editOk() {
+      if (this.passwordStr.length < 6 || this.passwordStr.length > 14) {
+        this.redNotify("Password must be 6-14 characters.");
+        return;
+      }
+      if (
+        !(
+          this.check[0] ||
+          this.check[1] ||
+          this.check[2] ||
+          this.check[3] ||
+          this.check[4] ||
+          this.check[5] ||
+          this.check[6]
+        )
+      ) {
+        this.redNotify("Please select page.");
+        return;
+      }
       let data = {
         us_id: this.memUs,
         username: this.userStr,
@@ -680,7 +717,7 @@ export default {
       let url = this.serverpath + "bo_editusersystem.php";
       let res = await axios.post(url, JSON.stringify(data));
 
-      this.greenNotify("Edit Admin " + this.userStr + " complete");
+      this.greenNotify("Edit admin " + this.userStr + " complete.");
       this.memUs = 0;
       this.userStr = "";
       this.passwordStr = "";
@@ -730,9 +767,9 @@ export default {
 .typeEdit {
   margin-left: 20px;
   padding-top: 16px;
-  width: 150px;
+  width: 100px;
   font-size: 18px;
-  color: black;
+  color: #313131;
   line-height: 30px;
 }
 .ynBtn {
@@ -750,10 +787,10 @@ export default {
   padding-left: 20%;
 }
 .delBox {
-  width: 400px;
-  height: 250px;
+  width: 500px;
+  height: 275px;
   background-color: #edf2fe;
-  border-radius: 10px;
+  border-radius: 30px;
 }
 .securityBox {
   border-radius: 20px;
