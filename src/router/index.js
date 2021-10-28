@@ -41,7 +41,8 @@ Vue.mixin({
         message: text,
         icon: "fas fa-exclamation",
         color: "negative",
-        position: "top"
+        position: "top",
+        icon: "fas fa-times-circle"
       });
     },
     greenNotify(text) {
@@ -49,7 +50,8 @@ Vue.mixin({
         message: text,
 
         color: "secondary",
-        position: "top"
+        position: "top",
+        icon: "fas fa-check-circle"
       });
     }
   }

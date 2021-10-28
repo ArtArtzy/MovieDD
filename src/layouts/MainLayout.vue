@@ -128,12 +128,12 @@
     </div>
     <!-- exit check  -->
     <q-dialog v-model="exitCheck" persistent>
-      <q-card>
-        <div class="delBox" align="center">
+      <q-card class="delBox">
+        <div align="center">
           <q-icon
-            class="fas fa-exclamation-circle q-pa-md"
+            class="fas fa-exclamation-triangle q-pa-md"
             size="64px"
-            color="red"
+            style="color:#ffc24c;font-size:90px;"
           />
           <div style="font-size:24px;">Are you sure?</div>
           <div style="font-size:14px;">
@@ -264,10 +264,10 @@ export default {
   bottom: 0px;
 }
 .delBox {
-  width: 400px;
-  height: 250px;
+  width: 500px;
+  height: 275px;
   background-color: #edf2fe;
-  border-radius: 10px;
+  border-radius: 30px;
 }
 .ynBtn {
   width: 120px;
