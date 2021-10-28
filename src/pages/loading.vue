@@ -68,7 +68,7 @@
           />
         </div>
         <div class="cursor-pointer q-pt-md" @click="backToSigIn">
-          <u>sign in as differnt user</u>
+          <u>sign in as different user</u>
         </div>
       </div>
     </div>
