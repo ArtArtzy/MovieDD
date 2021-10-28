@@ -2,8 +2,21 @@
   <div style="max-width:1600px; width:100%; margin:auto;" class="bgmain">
     <div class="contentDiv">
       <div class="boxWhite ">
-        <div class="bigcow">
-          <img src="../../public/images/bigcow.png" alt="" />
+        <!-- member  -->
+        <div class="row items-center q-mt-lg q-ml-lg">
+          <div class="" style="font-size:24px;font-weight:500;">
+            Member
+          </div>
+          <div class="">
+            <q-btn
+              rounded
+              dense
+              flat
+              style="height:40px;width:130px;background-color:#ffc24c"
+            >
+              Total member
+            </q-btn>
+          </div>
         </div>
       </div>
     </div>
@@ -20,11 +33,5 @@ export default {};
   background-size: cover;
   background-position: center;
   padding: 10px;
-}
-.bigcow {
-  position: relative;
-
-  left: -100px;
-  top: 150px;
 }
 </style>
