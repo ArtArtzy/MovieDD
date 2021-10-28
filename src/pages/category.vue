@@ -18,6 +18,7 @@
         </div>
         <div class="inBox q-pt-md">
           <div class="row q-pa-sm" style="font-size:20px;" align="center">
+            <div class="col-1" align="left">No.</div>
             <div class="col-2" align="left">Order id</div>
             <div class="col-2" align="left">Category</div>
             <div class="col">Movie</div>
@@ -35,9 +36,10 @@
               :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
               align="center"
             >
-              <div class="col-2" align="left">{{ item.orderid }}</div>
-              <div class="col-2" align="left">{{ item.catname }}</div>
-              <div class="col">{{ item.movie }}</div>
+              <div class="col-1 q-pl-sm" align="left">{{ index + 1 }}</div>
+              <div class="col-2 q-pl-sm" align="left">{{ item.orderid }}</div>
+              <div class="col-2 q-pl-sm" align="left">{{ item.catname }}</div>
+              <div class="col ">{{ item.movie }}</div>
               <div class="col">{{ item.series }}</div>
               <div class="col">
                 <div
