@@ -10,7 +10,7 @@
           >
             Currerent week : {{ 18 }}
           </div>
-          <q-scroll-area style="height:90vh; max-width: 100vw;">
+          <q-scroll-area style="height:88vh; max-width: 100vw;">
             <!-- Member  -->
             <div class="row items-center">
               <div class="" style="font-size:24px;font-weight:500;">
@@ -224,7 +224,7 @@
                 </div>
               </div>
             </div>
-            <hr style="width:98%;" align="left" />
+            <div class="q-py-md"></div>
           </q-scroll-area>
         </div>
       </div>
