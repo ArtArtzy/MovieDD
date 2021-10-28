@@ -42,7 +42,7 @@ Vue.mixin({
         icon: "fas fa-exclamation",
         color: "negative",
         position: "top",
-        icon: "fas fa-times-circle"
+        icon: "fas fa-exclamation-circle"
       });
     },
     greenNotify(text) {
