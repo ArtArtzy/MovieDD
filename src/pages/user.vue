@@ -2,8 +2,43 @@
   <div style="max-width:1600px; width:100%; margin:auto;" class="bgmain">
     <div class="contentDiv">
       <div class="boxWhite ">
+        <!-- header  -->
+        <div class="row items-center q-pt-lg">
+          <div class="col-5 q-pl-xl">
+            <q-input
+              outlined
+              rounded
+              clearable
+              clear-icon="close"
+              v-model="searchUser"
+              placeholder="Search : username"
+              dense
+              style="width:400px;"
+            >
+              <template v-slot:prepend>
+                <q-icon class="fas fa-search" />
+              </template>
+            </q-input>
+          </div>
+          <div class="col"></div>
+          <div class="col-1" align="right">
+            Page
+          </div>
+          <div class="q-pl-sm">
+            <q-select
+              color="orange-13"
+              v-model="userCurrentPage"
+              :options="pageList"
+              dense
+              style="width:50px;font-size:16px;"
+            >
+            </q-select>
+          </div>
+          <div class="col-1" align="left">of {{ pageList.length }}</div>
+        </div>
+
         <div class="inBox q-pt-xl">
-          <div class="row q-pa-sm" style="font-size:20px;" align="center">
+          <div class="row q-pa-sm" style=" font-weight:bold;" align="center">
             <div class="col-2" align="left">Username</div>
             <div class="col-2" align="left">Password</div>
             <div class="col-2">Telephone</div>
@@ -134,6 +169,9 @@ import axios from "axios";
 export default {
   data() {
     return {
+      searchUser: "", //ช่องค้นหา user
+      userCurrentPage: 1, //หน้าของ user ปัจจุบัน
+      pageList: [1], //List หน้าทั้งหมด
       mname: "",
       mdate: "",
       mfav: ["", "", "", "", "", "", "", ""],
