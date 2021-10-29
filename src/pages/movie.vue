@@ -724,7 +724,7 @@
                 icon="far fa-times-circle"
                 flat
                 round
-                size="lg"
+                size="18px"
                 dense
                 @click="closePromotion()"
               />
@@ -938,7 +938,7 @@
                 icon="far fa-times-circle"
                 flat
                 round
-                size="lg"
+                size="18px"
                 dense
                 v-close-popup
               />
@@ -1031,7 +1031,7 @@
                 icon="far fa-times-circle"
                 flat
                 round
-                size="lg"
+                size="18px"
                 dense
                 v-close-popup
               />
@@ -1053,7 +1053,7 @@
       <!-- Report  -->
       <q-dialog v-model="dialogReport" persistent>
         <q-card class="reportDialog">
-          <div class="row q-pa-md" align="center">
+          <div class="row q-pa-md items-center" align="center">
             <div class="col-1"></div>
             <div class="col" style="font-size:24px;">Report</div>
             <div class="col-1">
@@ -1061,7 +1061,7 @@
                 icon="far fa-times-circle"
                 flat
                 round
-                size="md"
+                size="18px"
                 dense
                 v-close-popup
               />
@@ -1595,21 +1595,9 @@ export default {
       let res = await axios.post(url, JSON.stringify(data));
 
       if (sta == 0) {
-        this.$q.notify({
-          progress: true,
-          message: item.nameEng + " status change to offline",
-          color: "positive",
-          position: "top",
-          icon: "fas fa-check"
-        });
+        this.redNotify(item.nameEng + " status change to offline");
       } else {
-        this.$q.notify({
-          progress: true,
-          message: item.nameEng + " status change to online",
-          color: "positive",
-          position: "top",
-          icon: "fas fa-check"
-        });
+        this.greenNotify(item.nameEng + " status change to online");
       }
       this.data[index].status = sta;
       //this.loadMovieData();

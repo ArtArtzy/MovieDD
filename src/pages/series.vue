@@ -4,7 +4,7 @@
       <!-- Main page -->
       <div class="boxWhite ">
         <!-- header  -->
-        <div class="row items-center q-pt-lg">
+        <div class="row items-center q-pt-lg q-pb-md">
           <div class="col-5 q-pl-xl">
             <q-input
               outlined
@@ -64,7 +64,6 @@
         <!-- end header  -->
         <!-- series Box  -->
         <q-scroll-area class="" style="height:88vh; max-width: 90vw;">
-          <div class="q-pt-md"></div>
           <div v-for="(item, index) in data" :key="index">
             <div class="seriesBox row ">
               <div class="q-ma-md" v-if="item.poster == 1">
