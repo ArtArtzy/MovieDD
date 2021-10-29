@@ -39,11 +39,12 @@
 
         <div class="inBox q-pt-xl">
           <div class="row q-pa-sm" style=" font-weight:bold;" align="center">
-            <div class="col-2" align="left">Username</div>
-            <div class="col-2" align="left">Password</div>
-            <div class="col-2">Telephone</div>
+            <div class="col-1">No.</div>
+            <div class="col" align="left">Username</div>
+            <div class="col-2" align="center">Password</div>
+            <div class="col-1" style="width:180px;">Telephone</div>
+            <div class="col-2" style="width:300px;">Register Date</div>
             <div class="col-1">Status</div>
-            <div class="col">Register Date</div>
             <div class="col-1">Detail</div>
           </div>
           <hr />
@@ -54,10 +55,13 @@
             :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
             align="center"
           >
-            <div class="col-2" align="left">{{ item.username }}</div>
-            <div class="col-2" align="left">{{ item.password }}</div>
-            <div class="col-2">{{ item.telephone }}</div>
-
+            <div class="col-1">{{ index * userCurrentPage + 1 }}</div>
+            <div class="col" align="left">{{ item.username }}</div>
+            <div class="col-2" align="center">{{ item.password }}</div>
+            <div class="col-1" style="width:180px;">
+              {{ changeFormatTel(item.telephone) }}
+            </div>
+            <div class="col-2" style="width:300px;">{{ item.timestamp }}</div>
             <div class="col-1">
               <div
                 class="onlineBtn cursor-pointer"
@@ -81,7 +85,7 @@
                 OTP
               </div>
             </div>
-            <div class="col">{{ item.timestamp }}</div>
+
             <div class="col-1 cursor-pointer" @click="detailShow(item)">
               <u>Detail</u>
             </div>
@@ -116,49 +120,47 @@
         </q-card>
       </q-dialog>
       <!-- detail -->
-      <q-dialog v-model="detailBtn" persistent>
-        <q-card class="detailBox" style="color:#797575">
-          <div class=" row items-center">
-            <div class="col"></div>
-            <div class="text-h6 col-9 q-pt-lg" align="center">{{ mname }}</div>
-            <div class="col">
+      <q-dialog v-model="dialogDetail" persistent>
+        <q-card class="detailBox q-pa-sm">
+          <div class="row" style="height:50px;">
+            <div style="width:50px;"></div>
+            <div class="col q-pt-lg font24" align="center">
+              {{ detail.name }} - {{ detail.phone }}
+            </div>
+            <div style="width:50px;">
               <q-btn
-                icon="fas fa-times"
+                icon="far fa-times-circle"
                 round
                 flat
-                size="md"
-                @click="detailBtn = false"
+                size="18px"
+                @click="dialogDetail = false"
               />
             </div>
           </div>
+
+          <div class="font18 q-pt-md" align="center">
+            Register date : {{ this.detail.regDate }}
+          </div>
+
           <div class=" row items-center justify-center">
-            <div class="q-pa-md">Register date : {{ mdate }}</div>
+            <div class="q-pa-md">Register date : {{ this.detail.regDate }}</div>
           </div>
           <div class="row items-center q-pl-lg">
-            <div v-for="index in 3" :key="mfav[index - 1]" align="center">
-              <div class="favBox q-ma-sm" v-if="mfav[index - 1] != ''">
-                {{ mfav[index - 1] }}
+            <div
+              v-for="(item, index) in detail.fav"
+              :key="index"
+              align="center"
+            >
+              <div class="favBox q-ma-sm font14" style="line-height:34px;">
+                {{ catname(item) }}
               </div>
             </div>
           </div>
-          <div class="row items-center q-pl-lg">
-            <div v-for="index in 3" :key="mfav[index + 2]" align="center">
-              <div class="favBox q-ma-sm" v-if="mfav[index + 2] != ''">
-                {{ mfav[index + 2] }}
-              </div>
-            </div>
-          </div>
-          <div class="row items-center q-pl-lg">
-            <div v-for="index in 2" :key="mfav[index + 5]" align="center">
-              <div class="favBox q-ma-sm" v-if="mfav[index + 5] != ''">
-                {{ mfav[index + 5] }}
-              </div>
-            </div>
-          </div>
+          <div id="container1" style="height: 400px; min-width: 600px"></div>
         </q-card>
       </q-dialog>
       <!-- bg Drop  -->
-      <div class="bgDrop fullscreen" v-show="otpBtn || detailBtn"></div>
+      <div class="bgDrop fullscreen" v-show="otpBtn || dialogDetail"></div>
     </div>
   </div>
 </template>
@@ -172,27 +174,36 @@ export default {
       searchUser: "", //ช่องค้นหา user
       userCurrentPage: 1, //หน้าของ user ปัจจุบัน
       pageList: [1], //List หน้าทั้งหมด
-      mname: "",
-      mdate: "",
-      mfav: ["", "", "", "", "", "", "", ""],
-      otpBtn: false,
-      detailBtn: false,
-      data: [
-        {
-          username: "Artzy",
-          password: "123456",
-          telephone: "085-749-9812",
-          status: 1,
-          timestamp: "13/75/278"
-        },
-        {
-          username: "Artzy",
-          password: "57841",
-          telephone: "085-749-9812",
-          status: 0,
-          timestamp: "156125"
-        }
+      userPerPage: 50, //จำนวน user ต่อ 1 หน้า
+      dialogDetail: false, //หน้าต่าง detail ของ user
+      detail: {
+        name: "",
+        phone: "",
+        regDate: "",
+        fav: "",
+        id: ""
+      }, //ข้อมูลที่แสดงใน หน้ารายละเอียด
+      data: [], //ข้อมูลในหน้าแรก
+      catData: [], //ข้อมูลของ category
+      monthName: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "July",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
       ],
+      yValueChart: [],
+      xValueChart: [],
+
+      otpBtn: false,
+
       memid: 0,
       staOtp: 2,
       options: [
@@ -212,6 +223,40 @@ export default {
     };
   },
   methods: {
+    //แปลงเบอร์โทรศัพท์ให้อยู่ในรูป xxx-xxxx-xx
+    changeFormatTel(phone) {
+      return (
+        phone.substring(0, 3) +
+        "-" +
+        phone.substring(3, 7) +
+        "-" +
+        phone.substring(7, 10)
+      );
+    },
+
+    //เปิดหน้า Detail
+    detailShow(item) {
+      this.$router.push("userdetail/" + item.id);
+    },
+    //โหลข้อมูลหน้าหลัก
+    async loadData() {
+      let url = this.serverpath + "bo_loaduser.php";
+      let res = await axios.get(url);
+      this.data = res.data;
+    },
+    //เปลี่ยน status online - offline
+    async changeSta(item) {
+      let sta = 0;
+      if (item.status == 0) sta = 1;
+      let data = {
+        id: item.id,
+        status: sta
+      };
+      let url = this.serverpath + "bo_changestatususer.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.loadData();
+    },
+
     clrmem() {
       this.otpBtn = false;
       this.detailBtn = false;
@@ -219,29 +264,7 @@ export default {
       this.staOtp = 2;
       this.loadData();
     },
-    async detailShow(item) {
-      this.mname = item.username + " : " + item.telephone;
-      this.mdate = item.timestamp;
-      this.mfav[0] = await this.catname(item.fav1id);
-      this.mfav[1] = await this.catname(item.fav2id);
-      this.mfav[2] = await this.catname(item.fav3id);
-      this.mfav[3] = await this.catname(item.fav4id);
-      this.mfav[4] = await this.catname(item.fav5id);
-      this.mfav[5] = await this.catname(item.fav6id);
-      this.mfav[6] = await this.catname(item.fav7id);
-      this.mfav[7] = await this.catname(item.fav8id);
-      this.detailBtn = true;
 
-      this.loadData();
-    },
-    async catname(id) {
-      let data = {
-        catid: id
-      };
-      let url = this.serverpath + "bo_loadfavuser.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      return res.data;
-    },
     otpSelect(item) {
       this.memid = item.id;
       this.otpBtn = true;
@@ -273,24 +296,6 @@ export default {
         });
       }
       this.clrmem();
-      this.loadData();
-    },
-    async loadData() {
-      let url = this.serverpath + "bo_loaduser.php";
-      let res = await axios.get(url);
-      this.data = res.data;
-      //  this.data.sort((a, b) => a.orderid - b.orderid);
-    },
-    async changeSta(item) {
-      let sta = 0;
-      if (item.status == 0) sta = 1;
-      let data = {
-        id: item.id,
-        status: sta
-      };
-      let url = this.serverpath + "bo_changestatususer.php";
-      let res = await axios.post(url, JSON.stringify(data));
-
       this.loadData();
     }
   },
@@ -346,8 +351,9 @@ export default {
   line-height: 45px;
 }
 .detailBox {
-  width: 520px;
-  height: 320px;
+  width: 1020px;
+  max-width: 1020px;
+  height: 820px;
   border-radius: 10px;
 }
 .favBox {
@@ -355,5 +361,10 @@ export default {
   height: 34px;
   border-radius: 30px;
   border: 1px solid #797575;
+}
+.barbox {
+  height: 80px;
+  width: 100%;
+  border: 1px solid red;
 }
 </style>

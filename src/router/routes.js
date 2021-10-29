@@ -36,12 +36,17 @@ const routes = [
       {
         path: "/forgetpass",
         component: () => import("pages/forgetpassword.vue"),
-        name: "user"
+        name: "forgetpass"
       },
       {
         path: "/user",
         component: () => import("pages/user.vue"),
         name: "user"
+      },
+      {
+        path: "/userdetail/:id",
+        component: () => import("pages/userdetail.vue"),
+        name: "userdetail"
       },
       {
         path: "/usersystem",
