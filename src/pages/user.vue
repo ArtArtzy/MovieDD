@@ -8,15 +8,21 @@
             <q-input
               outlined
               rounded
-              clearable
-              clear-icon="close"
               v-model="searchUser"
               placeholder="Search : username"
               dense
               style="width:400px;"
+              @keyup.enter="searchData()"
             >
               <template v-slot:prepend>
                 <q-icon class="fas fa-search" />
+              </template>
+              <template v-slot:append>
+                <q-icon
+                  name="close"
+                  @click="clearSearch()"
+                  class="cursor-pointer"
+                />
               </template>
             </q-input>
           </div>
@@ -31,6 +37,7 @@
               :options="pageList"
               dense
               style="width:50px;font-size:16px;"
+              @input="loadData()"
             >
             </q-select>
           </div>
@@ -48,53 +55,57 @@
             <div class="col-1">Detail</div>
           </div>
           <hr />
-          <div
-            class="row q-pa-sm"
-            v-for="(item, index) in data"
-            :key="index"
-            :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
-            align="center"
-          >
-            <div class="col-1">{{ index * userCurrentPage + 1 }}</div>
-            <div class="col" align="left">{{ item.username }}</div>
-            <div class="col-2" align="center">{{ item.password }}</div>
-            <div class="col-1" style="width:180px;">
-              {{ changeFormatTel(item.telephone) }}
-            </div>
-            <div class="col-2" style="width:300px;">{{ item.timestamp }}</div>
-            <div class="col-1">
-              <div
-                class="onlineBtn cursor-pointer"
-                v-show="item.status == 1"
-                @click="changeSta(item)"
-              >
-                Enable
+          <div class="contentuser">
+            <div
+              class="row q-pa-sm "
+              v-for="(item, index) in data"
+              :key="index"
+              :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+              align="center"
+            >
+              <div class="col-1">
+                {{ (userCurrentPage - 1) * userPerPage + index + 1 }}
               </div>
-              <div
-                class="offlineBtn cursor-pointer"
-                v-show="item.status == 0"
-                @click="changeSta(item)"
-              >
-                Disable
+              <div class="col" align="left">{{ item.username }}</div>
+              <div class="col-2" align="center">{{ item.password }}</div>
+              <div class="col-1" style="width:180px;">
+                {{ changeFormatTel(item.telephone) }}
               </div>
-              <div
-                class="otplineBtn cursor-pointer"
-                v-show="item.status == 2"
-                @click="otpSelect(item)"
-              >
-                OTP
+              <div class="col-2" style="width:300px;">{{ item.timestamp }}</div>
+              <div class="col-1">
+                <div
+                  class="onlineBtn cursor-pointer"
+                  v-show="item.status == 1"
+                  @click="changeSta(item)"
+                >
+                  Enable
+                </div>
+                <div
+                  class="offlineBtn cursor-pointer"
+                  v-show="item.status == 0"
+                  @click="changeSta(item)"
+                >
+                  Disable
+                </div>
+                <div
+                  class="otplineBtn cursor-pointer"
+                  v-show="item.status == 2"
+                  @click="otpSelect(item)"
+                >
+                  OTP
+                </div>
               </div>
-            </div>
 
-            <div class="col-1 cursor-pointer" @click="detailShow(item)">
-              <u>Detail</u>
+              <div class="col-1 cursor-pointer" @click="detailShow(item)">
+                <u>Detail</u>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <!-- end table  -->
       <!-- otp select  -->
-      <q-dialog v-model="otpBtn" persistent>
+      <q-dialog v-model="dialogOTP" persistent>
         <q-card>
           <div class="otpBox" align="center">
             <div class="q-pt-md" style="font-size:24px;">OTP Solver</div>
@@ -107,60 +118,21 @@
               />
             </div>
             <div class="row q-pt-md" style="width:280px;margin:auto;">
-              <div class="ynBtn q-ma-sm" @click="otpBtn = false">Cancel</div>
+              <div class="ynBtn q-ma-sm" @click="dialogOTP = false">Cancel</div>
               <div
                 class="ynBtn q-ma-sm"
                 style="background-color:#ffc24c"
                 @click="otpSelected()"
               >
-                Yes
+                OK
               </div>
             </div>
           </div>
         </q-card>
       </q-dialog>
-      <!-- detail -->
-      <q-dialog v-model="dialogDetail" persistent>
-        <q-card class="detailBox q-pa-sm">
-          <div class="row" style="height:50px;">
-            <div style="width:50px;"></div>
-            <div class="col q-pt-lg font24" align="center">
-              {{ detail.name }} - {{ detail.phone }}
-            </div>
-            <div style="width:50px;">
-              <q-btn
-                icon="far fa-times-circle"
-                round
-                flat
-                size="18px"
-                @click="dialogDetail = false"
-              />
-            </div>
-          </div>
 
-          <div class="font18 q-pt-md" align="center">
-            Register date : {{ this.detail.regDate }}
-          </div>
-
-          <div class=" row items-center justify-center">
-            <div class="q-pa-md">Register date : {{ this.detail.regDate }}</div>
-          </div>
-          <div class="row items-center q-pl-lg">
-            <div
-              v-for="(item, index) in detail.fav"
-              :key="index"
-              align="center"
-            >
-              <div class="favBox q-ma-sm font14" style="line-height:34px;">
-                {{ catname(item) }}
-              </div>
-            </div>
-          </div>
-          <div id="container1" style="height: 400px; min-width: 600px"></div>
-        </q-card>
-      </q-dialog>
       <!-- bg Drop  -->
-      <div class="bgDrop fullscreen" v-show="otpBtn || dialogDetail"></div>
+      <div class="bgDrop fullscreen" v-show="dialogOTP"></div>
     </div>
   </div>
 </template>
@@ -174,38 +146,12 @@ export default {
       searchUser: "", //ช่องค้นหา user
       userCurrentPage: 1, //หน้าของ user ปัจจุบัน
       pageList: [1], //List หน้าทั้งหมด
-      userPerPage: 50, //จำนวน user ต่อ 1 หน้า
-      dialogDetail: false, //หน้าต่าง detail ของ user
-      detail: {
-        name: "",
-        phone: "",
-        regDate: "",
-        fav: "",
-        id: ""
-      }, //ข้อมูลที่แสดงใน หน้ารายละเอียด
+      userPerPage: 10, //จำนวน user ต่อ 1 หน้า
       data: [], //ข้อมูลในหน้าแรก
-      catData: [], //ข้อมูลของ category
-      monthName: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "July",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-      ],
-      yValueChart: [],
-      xValueChart: [],
 
-      otpBtn: false,
-
-      memid: 0,
-      staOtp: 2,
+      dialogOTP: false, //หน้าต่าง OTP
+      memid: 0, //id ของ user สำหรับ OTP
+      staOtp: 2, //ค่าเริ่มต้นของหน้าต่าง OTP
       options: [
         {
           label: "Resend OTP",
@@ -223,6 +169,43 @@ export default {
     };
   },
   methods: {
+    //ล้างข้อมูลค้นหา
+    clearSearch() {
+      this.searchUser = "";
+      this.loadData();
+      this.loadNoPage();
+    },
+
+    //ค้นหา user
+    async searchData() {
+      if (this.searchUser.length >= 3) {
+        this.data = [];
+        let data2 = {
+          searchText: this.searchUser
+        };
+        let url = this.serverpath + "bo_loadusersearch.php";
+        let res = await axios.post(url, JSON.stringify(data2));
+        this.data = res.data;
+        this.userCurrentPage = 1;
+        this.pageList = [1];
+      } else {
+        this.redNotify("Search text must be at least 3 characters.");
+      }
+    },
+    //loadnumberofpage
+    async loadNoPage() {
+      this.pageList = [];
+      let data = {
+        userPerPage: this.userPerPage
+      };
+      let url = this.serverpath + "bo_loadusertotalpage.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      let pageTotal = res.data;
+      for (let i = 1; i <= pageTotal; i++) {
+        this.pageList.push(i);
+      }
+    },
     //แปลงเบอร์โทรศัพท์ให้อยู่ในรูป xxx-xxxx-xx
     changeFormatTel(phone) {
       return (
@@ -240,8 +223,14 @@ export default {
     },
     //โหลข้อมูลหน้าหลัก
     async loadData() {
+      this.data = [];
+      let data = {
+        page: this.userCurrentPage,
+        userPerPage: this.userPerPage
+      };
+
       let url = this.serverpath + "bo_loaduser.php";
-      let res = await axios.get(url);
+      let res = await axios.post(url, JSON.stringify(data));
       this.data = res.data;
     },
     //เปลี่ยน status online - offline
@@ -256,20 +245,13 @@ export default {
       let res = await axios.post(url, JSON.stringify(data));
       this.loadData();
     },
-
-    clrmem() {
-      this.otpBtn = false;
-      this.detailBtn = false;
-      this.memid = 0;
-      this.staOtp = 2;
-      this.loadData();
-    },
-
+    //เปิดหน้าต่าง OTP
     otpSelect(item) {
       this.memid = item.id;
-      this.otpBtn = true;
-      this.loadData();
+      this.staOtp = 2;
+      this.dialogOTP = true;
     },
+    //เลือก OTP
     async otpSelected() {
       let data = {
         id: this.memid,
@@ -278,34 +260,30 @@ export default {
       if (this.staOtp == 3) {
         let url = this.serverpath + "bo_deluser.php";
         let res = await axios.post(url, JSON.stringify(data));
-        this.$q.notify({
-          progress: true,
-          message: "Delete user complete",
-          color: "negative",
-          position: "top"
-        });
-      } else {
+        this.greenNotify("Delete user completely");
+      } else if (this.staOtp == 1) {
         let url = this.serverpath + "bo_changestatususer.php";
         let res = await axios.post(url, JSON.stringify(data));
-        this.$q.notify({
-          progress: true,
-          message: "Update user status complete",
-          color: "positive",
-          position: "top",
-          icon: "fas fa-check"
-        });
+        this.greenNotify("Update user status completely");
+      } else {
+        alert("Don't worry I didn't code it!!");
       }
-      this.clrmem();
+      this.dialogOTP = false;
       this.loadData();
     }
   },
   mounted() {
     this.loadData();
+    this.loadNoPage();
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.contentuser {
+  height: calc(100vh - 220px);
+  overflow-y: auto;
+}
 .bgmain {
   background-image: url("../../public/images/bg.jpg");
   background-size: cover;
@@ -346,7 +324,7 @@ export default {
   width: 120px;
   height: 45px;
   border-radius: 5px;
-  border: 1px solid #ffc24c;
+  border: 1px solid black;
   cursor: pointer;
   line-height: 45px;
 }
