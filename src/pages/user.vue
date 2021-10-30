@@ -108,7 +108,7 @@
       <q-dialog v-model="dialogOTP" persistent>
         <q-card>
           <div class="otpBox" align="center">
-            <div class="q-pt-md" style="font-size:24px;">OTP Solver</div>
+            <div class="q-pt-md font24">OTP Solver</div>
             <div class="q-pl-xl q-pt-sm">
               <q-option-group
                 v-model="staOtp"
