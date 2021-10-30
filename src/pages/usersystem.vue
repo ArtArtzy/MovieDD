@@ -21,7 +21,7 @@
               rounded
               class="cursor-pointer"
               style="background-color:#FFC24C;font-size:18px;width:160px;"
-              label="+ admin"
+              label="+ Admin"
               no-caps=""
               @click="addAdmin = true"
             />
@@ -57,95 +57,96 @@
             <div class="col">Edit</div>
           </div>
           <hr />
-          <div
-            class="row q-pa-sm"
-            v-for="(item, index) in data"
-            style="height:50px;"
-            :key="index"
-            :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
-            align="center"
-          >
-            <div class="col-2 q-pl-lg" align="left">{{ item.username }}</div>
-            <div class="col-2">{{ item.password }}</div>
-            <div class="col">
-              <div v-show="item.us_category == 1">
-                <img src="../../public/images/true.svg" alt="" />
+          <div class="contextDiv">
+            <div
+              class="row q-px-sm"
+              v-for="(item, index) in data"
+              style="height:50px; line-height:50px;"
+              :key="index"
+              :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
+              align="center"
+            >
+              <div class="col-2 q-pl-lg" align="left">{{ item.username }}</div>
+              <div class="col-2">{{ item.password }}</div>
+              <div class="col">
+                <div v-show="item.us_category == 1">
+                  <img src="../../public/images/true.svg" alt="" />
+                </div>
+                <div v-show="item.us_category == 0">
+                  <img src="../../public/images/false.svg" alt="" />
+                </div>
               </div>
-              <div v-show="item.us_category == 0">
-                <img src="../../public/images/false.svg" alt="" />
+              <div class="col">
+                <div v-show="item.us_movie == 1">
+                  <img src="../../public/images/true.svg" alt="" />
+                </div>
+                <div v-show="item.us_movie == 0">
+                  <img src="../../public/images/false.svg" alt="" />
+                </div>
               </div>
-            </div>
-            <div class="col">
-              <div v-show="item.us_movie == 1">
-                <img src="../../public/images/true.svg" alt="" />
+              <div class="col">
+                <div v-show="item.us_series == 1">
+                  <img src="../../public/images/true.svg" alt="" />
+                </div>
+                <div v-show="item.us_series == 0">
+                  <img src="../../public/images/false.svg" alt="" />
+                </div>
               </div>
-              <div v-show="item.us_movie == 0">
-                <img src="../../public/images/false.svg" alt="" />
+              <div class="col">
+                <div v-show="item.us_ads == 1">
+                  <img src="../../public/images/true.svg" alt="" />
+                </div>
+                <div v-show="item.us_ads == 0">
+                  <img src="../../public/images/false.svg" alt="" />
+                </div>
               </div>
-            </div>
-            <div class="col">
-              <div v-show="item.us_series == 1">
-                <img src="../../public/images/true.svg" alt="" />
+              <div class="col">
+                <div v-show="item.us_analytic == 1">
+                  <img src="../../public/images/true.svg" alt="" />
+                </div>
+                <div v-show="item.us_analytic == 0">
+                  <img src="../../public/images/false.svg" alt="" />
+                </div>
               </div>
-              <div v-show="item.us_series == 0">
-                <img src="../../public/images/false.svg" alt="" />
+              <div class="col">
+                <div v-show="item.us_user == 1">
+                  <img src="../../public/images/true.svg" alt="" />
+                </div>
+                <div v-show="item.us_user == 0">
+                  <img src="../../public/images/false.svg" alt="" />
+                </div>
               </div>
-            </div>
-            <div class="col">
-              <div v-show="item.us_ads == 1">
-                <img src="../../public/images/true.svg" alt="" />
+              <div class="col">
+                <div v-show="item.us_admin == 1">
+                  <img src="../../public/images/true.svg" alt="" />
+                </div>
+                <div v-show="item.us_admin == 0">
+                  <img src="../../public/images/false.svg" alt="" />
+                </div>
               </div>
-              <div v-show="item.us_ads == 0">
-                <img src="../../public/images/false.svg" alt="" />
+              <div class="col">
+                <img
+                  v-show="item.username != 'admin'"
+                  class="cursor-pointer"
+                  src="../../public/images/delBin.svg"
+                  alt=""
+                  @click="deleteUser(item)"
+                /><img
+                  v-show="item.username == 'admin'"
+                  src="../../public/images/delsBin.svg"
+                  alt=""
+                />
               </div>
-            </div>
-            <div class="col">
-              <div v-show="item.us_analytic == 1">
-                <img src="../../public/images/true.svg" alt="" />
+              <div
+                class="col-1 underLine cursor-pointer"
+                @click="editUser(item)"
+              >
+                <u>Edit</u>
               </div>
-              <div v-show="item.us_analytic == 0">
-                <img src="../../public/images/false.svg" alt="" />
-              </div>
-            </div>
-            <div class="col">
-              <div v-show="item.us_user == 1">
-                <img src="../../public/images/true.svg" alt="" />
-              </div>
-              <div v-show="item.us_user == 0">
-                <img src="../../public/images/false.svg" alt="" />
-              </div>
-            </div>
-            <div class="col">
-              <div v-show="item.us_admin == 1">
-                <img src="../../public/images/true.svg" alt="" />
-              </div>
-              <div v-show="item.us_admin == 0">
-                <img src="../../public/images/false.svg" alt="" />
-              </div>
-            </div>
-            <div class="col">
-              <img
-                v-show="item.username != 'admin'"
-                class="cursor-pointer"
-                src="../../public/images/delBin.svg"
-                alt=""
-                @click="deleteUser(item)"
-              /><img
-                v-show="item.username == 'admin'"
-                src="../../public/images/delsBin.svg"
-                alt=""
-              />
-            </div>
-            <div class="col-1 underLine cursor-pointer" @click="editUser(item)">
-              <u>Edit</u>
             </div>
           </div>
         </div>
       </div>
-      <!---------------------------------------- end table  ---------------------------------------------------------->
-      <!---------------------------------------- end table  ---------------------------------------------------------->
-      <!---------------------------------------- end table  ---------------------------------------------------------->
-      <!---------------------------------------- end table  ---------------------------------------------------------->
       <!-- security code -->
       <q-dialog v-model="securityBtn" persistent>
         <q-card class="securityBox">
@@ -194,7 +195,7 @@
       <!-- Add new admin  -->
       <q-dialog v-model="addAdmin" persistent>
         <q-card class="editBox">
-          <div class="q-pt-lg q-my-md" style="font-size:24px;" align="center">
+          <div class="q-pt-lg q-my-md font24" align="center">
             Add new admin user
           </div>
           <div class="row q-pl-xl">
@@ -202,7 +203,11 @@
               Username
             </div>
             <div style="width:300px;">
-              <q-input dense v-model="userStr" />
+              <q-input
+                dense
+                v-model="userStr"
+                hint="username must be 3-12 characters."
+              />
             </div>
           </div>
           <div class="row q-pl-xl">
@@ -213,9 +218,7 @@
               <q-input
                 dense
                 v-model="passwordStr"
-                bottom-slots
-                error-message="Please use 6-14 characters"
-                :error="!isValid"
+                hint="Password must be 6-14 characters."
               />
             </div>
           </div>
@@ -330,9 +333,7 @@
               <q-input
                 dense
                 v-model="passwordStr"
-                bottom-slots
-                error-message="Please use 6-14 characters"
-                :error="!isValid"
+                hint="Password must be 6-14 characters."
               />
             </div>
           </div>
@@ -546,11 +547,7 @@ export default {
       //
     };
   },
-  computed: {
-    isValid() {
-      return this.passwordStr.length >= 6 && this.passwordStr.length <= 14;
-    }
-  },
+
   methods: {
     // ปุ่ม cancel ใน security code
     cancelSec() {
@@ -589,6 +586,10 @@ export default {
         this.redNotify("Please input User name & Password");
         return;
       }
+      if (this.userStr.length < 3 || this.userStr.length > 12) {
+        this.redNotify("Username must be 3-12 characters.");
+        return;
+      }
       if (this.passwordStr.length < 6 || this.passwordStr.length > 14) {
         this.redNotify("Password must be 6-14 characters.");
         return;
@@ -604,7 +605,7 @@ export default {
           this.check[6]
         )
       ) {
-        this.redNotify("Please select page.");
+        this.redNotify("Access menu must be selected at least a menu.");
         return;
       }
 
@@ -717,7 +718,7 @@ export default {
       let url = this.serverpath + "bo_editusersystem.php";
       let res = await axios.post(url, JSON.stringify(data));
 
-      this.greenNotify("Edit admin " + this.userStr + " complete.");
+      this.greenNotify("Update admin " + this.userStr + " completely.");
       this.memUs = 0;
       this.userStr = "";
       this.passwordStr = "";
@@ -738,6 +739,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.contextDiv {
+  height: calc(100vh - 250px);
+  overflow-y: auto;
+}
 .bgmain {
   background-image: url("../../public/images/bg.jpg");
   background-size: cover;
