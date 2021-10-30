@@ -17,7 +17,7 @@
           </div>
         </div>
         <div class="inBox q-pt-md">
-          <div class="row q-pa-sm" style="font-size:20px;" align="center">
+          <div class="row q-pa-sm" style="font-weight:500;" align="center">
             <div class="col-1" align="left">No.</div>
             <div class="col-2" align="left">Order id</div>
             <div class="col-2" align="left">Category</div>
@@ -110,11 +110,7 @@
       <q-dialog v-model="addBtn" persistent>
         <q-card class="editBox">
           <div class="">
-            <div
-              class="q-pa-md"
-              style="font-size:24px;color:#797575;"
-              align="center"
-            >
+            <div class="q-pa-md font24" align="center">
               Add new category
             </div>
             <div class="row">
@@ -157,11 +153,7 @@
       <q-dialog v-model="editBtn" persistent>
         <q-card class="editBox">
           <div class="">
-            <div
-              class="q-pa-md"
-              style="font-size:24px;color:#797575;"
-              align="center"
-            >
+            <div class="q-pa-md font24" align="center">
               Edit category
             </div>
             <div class="row">
@@ -247,7 +239,7 @@ export default {
     async addCat() {
       // ไม่ได้ใส่ order id กับ categry
       if (this.editId == "" || this.editCat == "") {
-        this.redNotify("Plese input Order and Category");
+        this.redNotify("Please input order id / category name");
         return;
       } else {
         let data = {
@@ -265,7 +257,7 @@ export default {
           this.redNotify("This Category exist");
           this.editCat = "";
         } else if (res.data == "OK") {
-          this.greenNotify("Add new category complete");
+          this.greenNotify("Add new category completely");
           this.clrmem();
           this.loadData();
         }
@@ -304,7 +296,7 @@ export default {
       };
       let url = this.serverpath + "bo_delcategory.php";
       let res = await axios.post(url, JSON.stringify(data));
-      this.greenNotify("Delete category complete");
+      this.greenNotify("Delete category completely");
       this.clrmem();
       this.loadData();
     },
@@ -319,7 +311,7 @@ export default {
     async editOk() {
       if (this.editId == "" || this.editCat == "") {
         // ไม่ได้ใส่ order id กับ categry
-        this.redNotify("Plese input order id and category");
+        this.redNotify("Please input order id / category");
         return;
       }
       let data = {
@@ -330,7 +322,7 @@ export default {
       let url = this.serverpath + "bo_editcategory.php";
       let res = await axios.post(url, JSON.stringify(data));
       if (res.data == "OK") {
-        this.greenNotify("Edit category complete");
+        this.greenNotify("Update category completely");
         this.clrmem();
         this.loadData();
       } else if (res.data == "notchange") {
@@ -389,7 +381,7 @@ export default {
   width: 160px;
   height: 50px;
   border-radius: 5px;
-  border: 1px solid #ffc24c;
+  border: 1px solid black;
   cursor: pointer;
   line-height: 50px;
   font-size: 18px;

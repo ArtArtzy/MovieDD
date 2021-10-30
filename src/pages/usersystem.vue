@@ -28,33 +28,34 @@
           </div>
         </div>
         <div class="inBox q-pt-xl">
-          <div class="row q-pa-sm" style="font-size:20px;" align="center">
-            <div class="col-2 q-px-md" align="left">Username</div>
-            <div class="col-2">Password</div>
-            <div class="col">
+          <div class="row q-pa-sm" style="font-weight:500;" align="center">
+            <div class="col-1">No.</div>
+            <div class="col q-px-md" align="left">Username</div>
+            <div class="col-1" style="width:150px;">Password</div>
+            <div class="col-1" style="width:80px;">
               <img src="../../public/images/iconCategory.svg" alt="" />
             </div>
-            <div class="col">
+            <div class="col-1" style="width:80px;">
               <img src="../../public/images/iconMovie.svg" alt="" />
             </div>
-            <div class="col">
+            <div class="col-1" style="width:80px;">
               <img src="../../public/images/iconSeries.svg" alt="" />
             </div>
 
-            <div class="col">
+            <div class="col-1" style="width:80px;">
               <img src="../../public/images/iconAds.svg" alt="" />
             </div>
-            <div class="col">
+            <div class="col-1" style="width:80px;">
               <img src="../../public/images/iconAnalytic.svg" alt="" />
             </div>
-            <div class="col">
+            <div class="col-1" style="width:80px;">
               <img src="../../public/images/iconUser.svg" alt="" />
             </div>
-            <div class="col">
+            <div class="col-1" style="width:80px;">
               <img src="../../public/images/iconAdmin.svg" alt="" />
             </div>
-            <div class="col">Delete</div>
-            <div class="col">Edit</div>
+            <div class="col-1" style="width:80px;">Delete</div>
+            <div class="col-1" style="width:80px;">Edit</div>
           </div>
           <hr />
           <div class="contextDiv">
@@ -66,9 +67,10 @@
               :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
               align="center"
             >
-              <div class="col-2 q-pl-lg" align="left">{{ item.username }}</div>
-              <div class="col-2">{{ item.password }}</div>
-              <div class="col">
+              <div class="col-1">{{ index + 1 }}.</div>
+              <div class="col q-pl-lg" align="left">{{ item.username }}</div>
+              <div class="col-1" style="width:150px;">{{ item.password }}</div>
+              <div class="col-1" style="width:80px;">
                 <div v-show="item.us_category == 1">
                   <img src="../../public/images/true.svg" alt="" />
                 </div>
@@ -76,7 +78,7 @@
                   <img src="../../public/images/false.svg" alt="" />
                 </div>
               </div>
-              <div class="col">
+              <div class="col-1" style="width:80px;">
                 <div v-show="item.us_movie == 1">
                   <img src="../../public/images/true.svg" alt="" />
                 </div>
@@ -84,7 +86,7 @@
                   <img src="../../public/images/false.svg" alt="" />
                 </div>
               </div>
-              <div class="col">
+              <div class="col-1" style="width:80px;">
                 <div v-show="item.us_series == 1">
                   <img src="../../public/images/true.svg" alt="" />
                 </div>
@@ -92,7 +94,7 @@
                   <img src="../../public/images/false.svg" alt="" />
                 </div>
               </div>
-              <div class="col">
+              <div class="col-1" style="width:80px;">
                 <div v-show="item.us_ads == 1">
                   <img src="../../public/images/true.svg" alt="" />
                 </div>
@@ -100,7 +102,7 @@
                   <img src="../../public/images/false.svg" alt="" />
                 </div>
               </div>
-              <div class="col">
+              <div class="col-1" style="width:80px;">
                 <div v-show="item.us_analytic == 1">
                   <img src="../../public/images/true.svg" alt="" />
                 </div>
@@ -108,7 +110,7 @@
                   <img src="../../public/images/false.svg" alt="" />
                 </div>
               </div>
-              <div class="col">
+              <div class="col-1" style="width:80px;">
                 <div v-show="item.us_user == 1">
                   <img src="../../public/images/true.svg" alt="" />
                 </div>
@@ -116,7 +118,7 @@
                   <img src="../../public/images/false.svg" alt="" />
                 </div>
               </div>
-              <div class="col">
+              <div class="col-1" style="width:80px;">
                 <div v-show="item.us_admin == 1">
                   <img src="../../public/images/true.svg" alt="" />
                 </div>
@@ -124,7 +126,7 @@
                   <img src="../../public/images/false.svg" alt="" />
                 </div>
               </div>
-              <div class="col">
+              <div class="col-1" style="width:80px;">
                 <img
                   v-show="item.username != 'admin'"
                   class="cursor-pointer"
@@ -139,6 +141,7 @@
               </div>
               <div
                 class="col-1 underLine cursor-pointer"
+                style="width:80px;"
                 @click="editUser(item)"
               >
                 <u>Edit</u>

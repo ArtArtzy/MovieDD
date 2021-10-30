@@ -45,7 +45,7 @@
         </div>
 
         <div class="inBox q-pt-xl">
-          <div class="row q-pa-sm" style=" font-weight:bold;" align="center">
+          <div class="row q-pa-sm" style=" font-weight:500;" align="center">
             <div class="col-1">No.</div>
             <div class="col" align="left">Username</div>
             <div class="col-2" align="center">Password</div>
