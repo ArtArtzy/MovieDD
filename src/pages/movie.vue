@@ -76,8 +76,8 @@
             <div class="boxdiv row">
               <div v-show="item.new == 1" class="newarrivaldiv">
                 <img
-                  src="../../public/images/new.png"
-                  style="width:88px; height:88px"
+                  src="../../public/images/new.svg"
+                  style="width:88px; height:75px"
                   alt=""
                 />
               </div>
@@ -95,14 +95,67 @@
               </div>
               <div class="col q-pt-md contentdiv">
                 <div class="row" style="line-height:30px;">
-                  <div style="font-size:24px;">
+                  <div class="font24">
                     {{ item.nameEng }}
                   </div>
-                  <div class="q-pl-md" style="font-size:14px;color:blue">
+                  <div
+                    v-show="item.movieCodeTh && item.alertThaiSound == 0"
+                    class="testMovie q-ml-md"
+                    align="center"
+                  >
+                    TH Sound
+                    <img
+                      src="../../public/images/bell.svg"
+                      style="height:15px;"
+                      alt=""
+                    />
+                  </div>
+                  <div
+                    v-show="item.movieCodeTh && item.alertThaiSound != 0"
+                    class="testMovie q-ml-md cursor-pointer"
+                    align="center"
+                  >
+                    TH Sound
+                    <img
+                      src="../../public/images/bellwithreddot.svg"
+                      style="height:17px;"
+                      alt=""
+                    />
+                  </div>
+                  <div
+                    v-show="item.movieCodeEng && item.alertThaiSub == 0"
+                    class="testMovie"
+                    align="center"
+                  >
+                    TH Sub
+                    <img
+                      src="../../public/images/bell.svg"
+                      style="height:15px;"
+                      alt=""
+                    />
+                  </div>
+                  <div
+                    v-show="item.movieCodeEng && item.alertThaiSub != 0"
+                    class="testMovie cursor-pointer"
+                    align="center"
+                  >
+                    TH Sub
+                    <img
+                      src="../../public/images/bellwithreddot.svg"
+                      style="height:17px;"
+                      alt=""
+                    />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="q-pr-md" v-show="item.nameTh">
+                    {{ item.nameTh }}
+                  </div>
+                  <div style="font-size:14px;color:#2F7EF5">
                     <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
                   </div>
                 </div>
-                <div style="font-size:18px;">{{ item.nameTh }}</div>
+
                 <div class="row q-py-sm" style="font-size:14px;">
                   <div class="col-1">{{ item.year }}</div>
                   <div class="col-1">{{ item.mparate }}</div>
@@ -118,20 +171,6 @@
                     >
                       | {{ catName(item.type[i]) }}&nbsp;
                     </div>
-                  </div>
-                  <div
-                    v-show="item.movieCodeTh"
-                    class="testMovie"
-                    align="center"
-                  >
-                    TH Sound
-                  </div>
-                  <div
-                    v-show="item.movieCodeEng"
-                    class="testMovie"
-                    align="center"
-                  >
-                    TH Sub
                   </div>
                 </div>
                 <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
@@ -1857,8 +1896,8 @@ export default {
 }
 .testMovie {
   margin-right: 10px;
-  width: 77px;
-  max-height: 26px;
+  width: 100px;
+
   height: 26 px;
   border: 1px solid black;
   border-radius: 5px;

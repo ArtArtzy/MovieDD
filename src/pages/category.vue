@@ -28,7 +28,7 @@
             <div class="col">Edit</div>
           </div>
           <hr />
-          <q-scroll-area class="" style="height:80vh; max-width: 90vw;">
+          <div class="contextDiv">
             <div
               class="row q-pa-sm"
               v-for="(item, index) in data"
@@ -72,7 +72,7 @@
                 <u>Edit</u>
               </div>
             </div>
-          </q-scroll-area>
+          </div>
         </div>
       </div>
       <!-- dialog Box -->
@@ -398,5 +398,9 @@ export default {
   width: 150px;
   font-size: 18px;
   line-height: 40px;
+}
+.contextDiv {
+  height: calc(100vh - 200px);
+  overflow-y: auto;
 }
 </style>

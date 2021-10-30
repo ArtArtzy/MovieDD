@@ -133,6 +133,37 @@
 
       <!-- bg Drop  -->
       <div class="bgDrop fullscreen" v-show="dialogOTP"></div>
+      <!-- Detail -->
+      <div class="bgDrop fullscreen" v-show="dialogDetail">
+        <div class="detailBox absolute-center">
+          <div align="right">  <q-btn
+                icon="far fa-times-circle"
+                flat
+                round
+                size="18px"
+                dense
+                @click="closeDialogDetail()"
+              />
+            </div>
+            <div class="q-pt-sm font24" align="center">
+          {{ detail.name }} - {{ changeFormatTel(detail.phone) }}
+        </div>
+         <div class="q-pa-md" align="center">
+          Register date : {{ this.detail.regDate }}
+        </div>
+             <div class="row items-center q-pl-lg">
+          <div v-for="(item, index) in detail.fav" :key="index" align="center">
+            <div class="favBox q-ma-sm font14" style="line-height:34px;">
+              {{ catname(item) }}
+            </div>
+          </div>
+        </div>
+        <div align="center" class="q-pt-md">
+          <div id="container1" style="height: 600px; min-width: 800px"></div>
+        </div>
+            </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -146,7 +177,7 @@ export default {
       searchUser: "", //ช่องค้นหา user
       userCurrentPage: 1, //หน้าของ user ปัจจุบัน
       pageList: [1], //List หน้าทั้งหมด
-      userPerPage: 10, //จำนวน user ต่อ 1 หน้า
+      userPerPage: 50, //จำนวน user ต่อ 1 หน้า
       data: [], //ข้อมูลในหน้าแรก
 
       dialogOTP: false, //หน้าต่าง OTP
@@ -165,10 +196,52 @@ export default {
           label: "Delete this account",
           value: 3
         }
-      ]
+      ],
+      dialogDetail: false, //หน้าต่าง Detail
+       detail: {
+        name: "",
+        phone: "",
+        regDate: "",
+        fav: ""
+      }, //ข้อมูลที่แสดงใน หน้ารายละเอียด
+      xValueChart:[],
+      yValueChart:[],
+       monthName: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "July",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      ],
     };
   },
   methods: {
+      //หาชื่อ category
+    catname(id) {
+      let temp = this.catData.filter(x => x.id == id);
+      return temp[0].catname;
+    },
+    //แปลงเบอร์โทรศัพท์ให้อยู่ในรูป xxx-xxxx-xx
+    changeFormatTel(phone) {
+      return (
+        phone.substring(0, 3) +
+        "-" +
+        phone.substring(3, 7) +
+        "-" +
+        phone.substring(7, 10)
+      );
+    },
+    //ปิดหน้าต่าง graph
+    closeDialogDetail(){
+      this.dialogDetail = false
+    },
     //ล้างข้อมูลค้นหา
     clearSearch() {
       this.searchUser = "";
@@ -218,8 +291,14 @@ export default {
     },
 
     //เปิดหน้า Detail
-    detailShow(item) {
-      this.$router.push("userdetail/" + item.id);
+   detailShow(item) {
+      this.detail.name = item.username
+      this.detail.phone = item.telephone
+      this.detail.regDate = item.timestamp
+      this.detail.fav = item.fav.split(",");
+      this.loaduserstat(item.id)
+      this.dialogDetail = true;
+      // this.$router.push("userdetail/" + item.id);
     },
     //โหลข้อมูลหน้าหลัก
     async loadData() {
@@ -270,11 +349,110 @@ export default {
       }
       this.dialogOTP = false;
       this.loadData();
+    },
+     //load category มาเก็บไว้
+    async loadCategory() {
+      let url = this.serverpath + "bo_loadcategory.php";
+      let res = await axios.get(url);
+      this.catData = res.data;
+    },
+     //load ข้อมูลการดูหนังของ user
+    async loaduserstat(id) {
+      this.yValueChart = [];
+      this.xValueChart = [];
+      let data = {
+        id: id
+      };
+      let url = this.serverpath + "bo_userstatview.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      let userStat = res.data;
+      let today = new Date();
+      let cYear = today.getFullYear();
+      let cMonth = today.getMonth() + 1;
+      let counter = 0;
+      for (let i = cYear; i >= cYear - 2; i--) {
+        if (counter == 13) {
+          break;
+        }
+        let startMonth = 12;
+        if (counter == 0) {
+          startMonth = cMonth;
+        }
+        for (let j = startMonth; j >= 1; j--) {
+          counter++;
+          if (counter == 13) {
+            break;
+          }
+          //
+          let statview = userStat.filter(x => x.year == i && x.month == j);
+          let view = 0;
+          if (statview.length != 0) {
+            view = statview[0].view;
+          }
+          this.yValueChart.push(Number(view));
+          this.xValueChart.push(this.monthName[j - 1] + " " + i);
+        }
+      }
+      this.xValueChart.reverse();
+      this.yValueChart.reverse();
+      Highcharts.chart("container1", {
+        chart: {
+          type: "areaspline",
+          width: 800,
+          height:420,
+          backgroundColor: "#E1EBFE"
+        },
+        title: {
+          text: "Movie/Series watching"
+        },
+        exporting: { enabled: false },
+        xAxis: {
+          categories: this.xValueChart,
+          lineColor: "#00CEFA",
+          lineWidth: 2,
+           labels: {
+            rotation: -90
+        }
+        },
+
+        yAxis: {
+          title: {
+            text: "Movie/Series watching"
+          },
+          lineColor: "#00CEFA",
+          lineWidth: 2,
+          min: 0,
+          softMax: 100
+        },
+        tooltip: {
+          shared: true,
+          valueSuffix: "times"
+        },
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          areaspline: {
+            fillOpacity: 0.5
+          },
+          line: {
+            softThreshold: false
+          }
+        },
+        series: [
+          {
+            name: "Movie/Series watching",
+            data: this.yValueChart
+          }
+        ]
+      });
     }
   },
   mounted() {
+    this.loadCategory();
     this.loadData();
     this.loadNoPage();
+    
   }
 };
 </script>
@@ -329,10 +507,11 @@ export default {
   line-height: 45px;
 }
 .detailBox {
-  width: 1020px;
-  max-width: 1020px;
-  height: 820px;
-  border-radius: 10px;
+  width: 900px;
+  max-width: 900px;
+  height: 720px;
+  border-radius: 20px;
+  background-color: #edf2fe;
 }
 .favBox {
   width: 140px;

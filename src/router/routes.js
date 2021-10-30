@@ -33,6 +33,7 @@ const routes = [
         component: () => import("pages/stat.vue"),
         name: "stat"
       },
+
       {
         path: "/forgetpass",
         component: () => import("pages/forgetpassword.vue"),
@@ -43,11 +44,7 @@ const routes = [
         component: () => import("pages/user.vue"),
         name: "user"
       },
-      {
-        path: "/userdetail/:id",
-        component: () => import("pages/userdetail.vue"),
-        name: "userdetail"
-      },
+
       {
         path: "/usersystem",
         component: () => import("pages/usersystem.vue"),
