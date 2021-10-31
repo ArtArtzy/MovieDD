@@ -32,7 +32,8 @@ Vue.mixin({
   data() {
     return {
       //    serverpath: "https://www.yaksaconcept.com/movieddapi/"
-      serverpath: "http://localhost/moviedd/"
+      serverpath: "http://localhost/moviedd/",
+      startDate: "09-06-2021"
     };
   },
   methods: {

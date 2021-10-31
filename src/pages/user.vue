@@ -136,32 +136,36 @@
       <!-- Detail -->
       <div class="bgDrop fullscreen" v-show="dialogDetail">
         <div class="detailBox absolute-center">
-          <div align="right">  <q-btn
-                icon="far fa-times-circle"
-                flat
-                round
-                size="18px"
-                dense
-                @click="closeDialogDetail()"
-              />
-            </div>
-            <div class="q-pt-sm font24" align="center">
-          {{ detail.name }} - {{ changeFormatTel(detail.phone) }}
-        </div>
-         <div class="q-pa-md" align="center">
-          Register date : {{ this.detail.regDate }}
-        </div>
-             <div class="row items-center q-pl-lg">
-          <div v-for="(item, index) in detail.fav" :key="index" align="center">
-            <div class="favBox q-ma-sm font14" style="line-height:34px;">
-              {{ catname(item) }}
+          <div align="right">
+            <q-btn
+              icon="far fa-times-circle"
+              flat
+              round
+              size="18px"
+              dense
+              @click="closeDialogDetail()"
+            />
+          </div>
+          <div class="q-pt-sm font24" align="center">
+            {{ detail.name }} - {{ changeFormatTel(detail.phone) }}
+          </div>
+          <div class="q-pa-md" align="center">
+            Register date : {{ this.detail.regDate }}
+          </div>
+          <div class="row items-center q-pl-lg">
+            <div
+              v-for="(item, index) in detail.fav"
+              :key="index"
+              align="center"
+            >
+              <div class="favBox q-ma-sm font14" style="line-height:34px;">
+                {{ catname(item) }}
+              </div>
             </div>
           </div>
-        </div>
-        <div align="center" class="q-pt-md">
-          <div id="container1" style="height: 600px; min-width: 800px"></div>
-        </div>
-            </div>
+          <div align="center" class="q-pt-md">
+            <div id="container1" style="height: 600px; min-width: 800px"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -198,15 +202,15 @@ export default {
         }
       ],
       dialogDetail: false, //หน้าต่าง Detail
-       detail: {
+      detail: {
         name: "",
         phone: "",
         regDate: "",
         fav: ""
       }, //ข้อมูลที่แสดงใน หน้ารายละเอียด
-      xValueChart:[],
-      yValueChart:[],
-       monthName: [
+      xValueChart: [],
+      yValueChart: [],
+      monthName: [
         "Jan",
         "Feb",
         "Mar",
@@ -219,11 +223,11 @@ export default {
         "Oct",
         "Nov",
         "Dec"
-      ],
+      ]
     };
   },
   methods: {
-      //หาชื่อ category
+    //หาชื่อ category
     catname(id) {
       let temp = this.catData.filter(x => x.id == id);
       return temp[0].catname;
@@ -239,8 +243,8 @@ export default {
       );
     },
     //ปิดหน้าต่าง graph
-    closeDialogDetail(){
-      this.dialogDetail = false
+    closeDialogDetail() {
+      this.dialogDetail = false;
     },
     //ล้างข้อมูลค้นหา
     clearSearch() {
@@ -291,12 +295,12 @@ export default {
     },
 
     //เปิดหน้า Detail
-   detailShow(item) {
-      this.detail.name = item.username
-      this.detail.phone = item.telephone
-      this.detail.regDate = item.timestamp
+    detailShow(item) {
+      this.detail.name = item.username;
+      this.detail.phone = item.telephone;
+      this.detail.regDate = item.timestamp;
       this.detail.fav = item.fav.split(",");
-      this.loaduserstat(item.id)
+      this.loaduserstat(item.id);
       this.dialogDetail = true;
       // this.$router.push("userdetail/" + item.id);
     },
@@ -350,13 +354,13 @@ export default {
       this.dialogOTP = false;
       this.loadData();
     },
-     //load category มาเก็บไว้
+    //load category มาเก็บไว้
     async loadCategory() {
       let url = this.serverpath + "bo_loadcategory.php";
       let res = await axios.get(url);
       this.catData = res.data;
     },
-     //load ข้อมูลการดูหนังของ user
+    //load ข้อมูลการดูหนังของ user
     async loaduserstat(id) {
       this.yValueChart = [];
       this.xValueChart = [];
@@ -399,7 +403,7 @@ export default {
         chart: {
           type: "areaspline",
           width: 800,
-          height:420,
+          height: 420,
           backgroundColor: "#E1EBFE"
         },
         title: {
@@ -410,9 +414,9 @@ export default {
           categories: this.xValueChart,
           lineColor: "#00CEFA",
           lineWidth: 2,
-           labels: {
+          labels: {
             rotation: -90
-        }
+          }
         },
 
         yAxis: {
@@ -452,7 +456,6 @@ export default {
     this.loadCategory();
     this.loadData();
     this.loadNoPage();
-    
   }
 };
 </script>
