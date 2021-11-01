@@ -158,7 +158,11 @@
                   <div class="q-pr-md" v-show="item.nameTh">
                     {{ item.nameTh }}
                   </div>
-                  <div style="font-size:14px;color:#2F7EF5">
+                  <div
+                    style="font-size:14px;color:#2F7EF5"
+                    class="cursor-pointer"
+                    @click="showChart(item)"
+                  >
                     <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
                   </div>
                 </div>
@@ -1160,6 +1164,10 @@
             dialogReport
         "
       ></div>
+      <!-- Chart view -->
+      <div class="bgDrop fullscreen" v-show="dialogChart">
+        <div class="chartdiv">123</div>
+      </div>
     </div>
   </div>
 </template>
@@ -1177,6 +1185,7 @@ export default {
       moviePage: [], // Array ลำดับเลข 1 ถึงหน้าสุดท้าย
       data: [], //ข้อมูลที่โชว์
       // Add movie
+      dialogChart: false,
       dialogAddMovie: false,
       dialogEditMovie: false,
       deleteMovieAlert: false, //เปิดหน้าต่างยืนยันการลบ Movie
@@ -1236,8 +1245,9 @@ export default {
     };
   },
   methods: {
-    test() {
-      console.log(new Date("2021-11-21").getTime());
+    //แสดง chart ของหนังเรื่องนั้น
+    showChart(item) {
+      this.dialogChart = true;
     },
     //Remove new expired
     removeNewERxpired() {},
@@ -1281,7 +1291,7 @@ export default {
       this.addmovie.titleEn = "test1";
       this.addmovie.year = "ทดสอล";
       this.addmovie.mpaRating = "G";
-      this.addmovie.durationHour = "ๅ";
+      this.addmovie.durationHour = "1";
       this.addmovie.durationMin = "45";
       this.addmovie.posterFile = null;
       this.addmovie.synopsis = "แผปแฟกหก";
@@ -1296,6 +1306,7 @@ export default {
       this.addmovie.newArraival = false;
       let today = new Date();
       let mi = today.getTime() + 1296000000;
+
       let a = new Date(mi);
       this.addmovie.expiredDate =
         a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
@@ -1362,11 +1373,13 @@ export default {
 
       //Convert expirteddate เป็น microtime
       if (this.addmovie.newArraival) {
-        this.timestamp = this.addmovie.expiredDate;
-        this.timestamp = this.timestamp.split("/");
-        this.timestamp =
-          this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
-        this.timestamp = new Date(this.timestamp).getTime();
+        let today = new Date();
+        this.timestamp = today.getTime() + 1296000000;
+        // this.timestamp = this.addmovie.expiredDate;
+        // this.timestamp = this.timestamp.split("/");
+        // this.timestamp =
+        //   this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
+        // this.timestamp = new Date(this.timestamp).getTime();
       }
 
       let data = {
@@ -1985,5 +1998,11 @@ export default {
   border-radius: 30px;
   width: 530px;
   height: 500px;
+}
+.chartdiv {
+  width: 600px;
+  height: 450px;
+  background-color: #edf2fe;
+  border-radius: 20px;
 }
 </style>
