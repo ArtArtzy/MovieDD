@@ -8,9 +8,9 @@
             align="center"
             style="font-size:24px;font-weight:500;"
           >
-            Currerent week : {{ 18 }}
+            Currerent week : {{ currentWeek }}
           </div>
-          <q-scroll-area style="height:88vh; max-width: 100vw;">
+          <div class="scrollArea">
             <!-- Member  -->
             <div class="row items-center">
               <div class="" style="font-size:24px;font-weight:500;">
@@ -73,7 +73,7 @@
                 <div class="col-7" align="left">&nbsp;(+{{ 1.42 }}%)</div>
               </div>
             </div>
-            <div class="chartArea"></div>
+            <div id="container1" style="height: 600px; min-width: 800px"></div>
             <hr style="width:98%;" align="left" />
             <!-- Ads  -->
             <div class="row items-center q-mt-lg">
@@ -91,7 +91,7 @@
             <div class="row items-end">
               <div class="col-3">
                 <q-select
-                  v-model="durationMember"
+                  v-model="durationAds"
                   :options="durationOptions"
                   label="Campaign"
                   emit-value
@@ -101,7 +101,7 @@
               </div>
               <div class="col-3">
                 <q-select
-                  v-model="durationMember"
+                  v-model="durationAds"
                   :options="durationOptions"
                   label="Duration"
                   emit-value
@@ -133,7 +133,7 @@
             <div class="row items-end">
               <div class="col-3">
                 <q-select
-                  v-model="durationMember"
+                  v-model="durationStreaming"
                   :options="durationOptions"
                   label="Duration"
                   emit-value
@@ -166,7 +166,7 @@
               <div class="row">
                 <q-select
                   class="q-px-md"
-                  v-model="durationMember"
+                  v-model="durationMovie"
                   :options="durationOptions"
                   label="Duration"
                   emit-value
@@ -225,7 +225,7 @@
               </div>
             </div>
             <div class="q-py-md"></div>
-          </q-scroll-area>
+          </div>
         </div>
       </div>
     </div>
@@ -233,15 +233,12 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       selectMember: 1, // ตัวเลือกการแสดงผล Member 1=total member, 2=new member
       durationOptions: [
-        {
-          label: "The last week",
-          value: 1
-        },
         {
           label: "The last 4 weeks",
           value: 4
@@ -263,10 +260,10 @@ export default {
           value: 0
         }
       ],
-      durationMember: "The last week", // ตัวเลือกแสดงผลของ Member
-      durationAds: "The last week", // ตัวเลือกแสดงผลของ Ads
-      durationStreaming: "The last week", // ตัวเลือกแสดงผลของ Streaming
-      durationMovie: "The last week", // ตัวเลือกแสดงผลของ Movie/Series
+      durationMember: "The last 4 weeks", // ตัวเลือกแสดงผลของ Member
+      durationAds: "The last 4 weeks", // ตัวเลือกแสดงผลของ Ads
+      durationStreaming: "The last 4 weeks", // ตัวเลือกแสดงผลของ Streaming
+      durationMovie: "The last 4 weeks", // ตัวเลือกแสดงผลของ Movie/Series
       selectMovie: "Movie",
       selectMovieOptions: ["Movie", "Series"],
       typeMovie: "Top 20",
@@ -292,8 +289,29 @@ export default {
         { view: 1240, name: "Xmen 18" },
         { view: 1240, name: "Xmen 19" },
         { view: 1240, name: "Xmen 20" }
-      ]
+      ],
+      totalMember: [],
+      currentWeek: 0
     };
+  },
+  methods: {
+    async loadTotalMember() {
+      let url = this.serverpath + "bo_loadviewtotalmember.php";
+      let res = await axios.get(url);
+      this.totalMember = res.data;
+      console.log(this.totalMember);
+    },
+    calCurrentWeek() {
+      let currentTime = new Date().getTime();
+      let startTime = new Date(this.startDate).getTime();
+      this.currentWeek = Math.floor(
+        (currentTime - startTime) / (1000 * 60 * 60 * 24 * 7)
+      );
+    }
+  },
+  mounted() {
+    this.loadTotalMember();
+    this.calCurrentWeek();
   }
 };
 </script>
@@ -307,5 +325,9 @@ export default {
 }
 .chartArea {
   height: 400px;
+}
+.scrollArea {
+  height: calc(100vh - 220px);
+  overflow-y: auto;
 }
 </style>
