@@ -113,8 +113,8 @@
                 <div v-show="item.episode != null">
                   <div class="row">
                     <div v-for="(item2, index2) in item.episode" :key="index2">
-                      <div class="epBox">
-                        ซีซั่น {{ index2 + 1 }} - {{ item2 }} ตอน
+                      <div class="epBox q-mt-sm">
+                        SS {{ index2 + 1 }} : {{ item2 }} Ep.
                       </div>
                     </div>
                   </div>
