@@ -111,12 +111,7 @@ export default {
         let url = this.serverpath + "bo_checkusername.php";
         let res = await axios.post(url, JSON.stringify(data));
         if (res.data == "NR") {
-          this.$q.notify({
-            message: "Username / password incorrect",
-            color: "negative",
-            position: "top",
-            icon: "far fa-times-circle"
-          });
+          this.redNotify("Username / password incorrect");
         } else {
           let token = res.data[0].token;
           this.$q.localStorage.set("token", token);
@@ -124,12 +119,7 @@ export default {
           this.$router.push("welcome");
         }
       } else {
-        this.$q.notify({
-          message: "Username / password incorrect",
-          color: "negative",
-          position: "top",
-          icon: "far fa-times-circle"
-        });
+        this.redNotify("Username / password incorrect");
       }
     },
     //เมื่อ login ค้า่งไว้แล้วกลับมาอีกครั้ง

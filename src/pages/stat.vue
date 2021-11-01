@@ -95,7 +95,7 @@
               </div>
               <div class="col" align="right">Total click</div>
               <div class="col-3" align="center" style="font-size:36px;">
-                {{ 26640 }}
+                {{ totalAdsClick }}
               </div>
             </div>
             <div class="row items-end">
@@ -123,8 +123,12 @@
               </div>
               <div class="col" align="right">Click in this week</div>
               <div class="col-3 row" style="font-size:24px;">
-                <div class="col" align="right">{{ 1200 }}</div>
-                <div class="col-7" align="left">&nbsp;(+{{ 1.82 }}%)</div>
+                <div class="col" align="right">{{ lastAdsClick }}</div>
+                <div class="col-7" align="left">
+                  &nbsp;(+{{
+                    ((lastAdsClick / totalAdsClick) * 100).toFixed(2)
+                  }}%)
+                </div>
               </div>
             </div>
             <div align="center" class="q-pt-md">
@@ -144,7 +148,7 @@
               </div>
               <div class="col" align="right">Total streaming</div>
               <div class="col-3" align="center" style="font-size:36px;">
-                {{ 12547 }}
+                {{ totalStreaming }}
               </div>
             </div>
             <div class="row items-end">
@@ -160,8 +164,12 @@
               </div>
               <div class="col" align="right">Streaming in this week</div>
               <div class="col-3 row" style="font-size:24px;">
-                <div class="col" align="right">{{ 300 }}</div>
-                <div class="col-7" align="left">&nbsp;(+{{ 10.72 }}%)</div>
+                <div class="col" align="right">{{ thisWeekStreaming }}</div>
+                <div class="col-7" align="left">
+                  &nbsp;(+{{
+                    ((thisWeekStreaming / totalStreaming) * 100).toFixed(2)
+                  }}%)
+                </div>
               </div>
             </div>
             <div class="chartArea"></div>
@@ -280,8 +288,8 @@ export default {
       durationMember: 4, // ตัวเลือกแสดงผลของ Member
       durationAds: 4, // ตัวเลือกแสดงผลของ Ads
       durationStreaming: 4, // ตัวเลือกแสดงผลของ Streaming
-      weekMovie: 0, // ตัวเลือกแสดงผลของ Movie/Series
-      weekOptions: [],
+      weekMovie: 0, // ตัวเลือกแสดงผลเป็น week ของ Movie/Series
+      weekOptions: [], // ตัวเลือก week
       selectMovie: "Movie",
       selectMovieOptions: ["Movie", "Series"],
       typeMovie: "Top 20",
@@ -308,20 +316,25 @@ export default {
         { view: 1240, name: "Xmen 19" },
         { view: 1240, name: "Xmen 20" }
       ],
-      memberData: [],
-      adsData: [],
-      currentWeek: 0,
+      memberData: [], // โหลดค่าจาก [viewuser] มาเก็บไว้
+      adsData: [], // โหลดค่าจาก [ads] มาเก็บไว้
+      currentWeek: 0, // บอกเวลาปัจจุบัน
       xValueMember: [], //ค่าแกน x ของ Member
       yValueMember: [], //ค่าแกน y ของ Member
       xValueAds: [], //ค่าแกน x ของ Ads
       yValueAds: [], //ค่าแกน y ของ Ads
-      totalMemberNumber: 0,
-      newMemberNumber: 0,
-      adsCampaign: 0,
-      adsOptions: []
+      totalMemberNumber: 0, // ค่าแสดงขอบซ้ายบนกรอป  member
+      newMemberNumber: 0, // ค่าที่เพิ่มขึ้นเป็น %
+      adsCampaign: 0, // ตัวเลือกแสดงกราฟ ads
+      adsOptions: [], //
+      totalAdsClick: 0, // ค่าแสดงขอบซ้ายบนกรอป  Ads ผลรวม view ของ ads
+      lastAdsClick: 0, // ค่าที่เพิ่มขึ้นเป็น %
+      totalStreaming: 0,
+      thisWeekStreaming: 0
     };
   },
   methods: {
+    // โหลด id และ ชื่อ ads มาเก็บไว้ใน adsOptions ในรูปแบบ label:ชื่อ value:id
     async loadAdsCampaign() {
       this.adsOptions = [];
       let url = this.serverpath + "bo_loadads.php";
@@ -337,15 +350,18 @@ export default {
       });
       this.adsCampaign = this.adsOptions[0].value;
     },
+    // กดเลือก Total member ของ member
     totalMemberBtn() {
       this.selectMember = 1;
       this.loadChartMember();
     },
+    // กดเลือก New member ของ member
     newMemberBtn() {
       this.selectMember = 2;
       this.loadChartMember();
     },
-    calCurrentWeek() {
+    // หาเวลาปัจจุบันว่าเป็น week ที่เท่าไร พร้อมทั้งเพิ่มตัวเลือก weekOptions
+    async calCurrentWeek() {
       let currentTime = new Date().getTime();
       let startTime = new Date(this.startDate).getTime();
       this.currentWeek = Math.floor(
@@ -356,12 +372,21 @@ export default {
       for (let i = this.weekMovie; i > 0; i--) {
         this.weekOptions.push(i);
       }
+      let url = this.serverpath + "bo_totalstreaming.php";
+      let res = await axios.get(url);
+      this.totalStreaming = res.data;
+
+      url = this.serverpath + "bo_streamingthisweek.php";
+      res = await axios.post(url, JSON.stringify(currentTime));
+      this.thisWeekStreaming = res.data;
     },
+    // ดึงค่าในตาราง [viewads]
     async loadAdsData() {
       let url = this.serverpath + "bo_loadviewads.php";
       let res = await axios.get(url);
       this.adsData = res.data;
     },
+    // สร้างกราฟ Ads
     async loadChartAds() {
       this.xValueAds = [];
       this.yValueAds = [];
@@ -380,13 +405,23 @@ export default {
 
       this.xValueAds.forEach(x => {
         let yRawData = adsTemp.filter(y => y.week == x);
-
         if (yRawData.length == 0) {
           this.yValueAds.push(0);
         } else {
           this.yValueAds.push(Number(yRawData[0].view));
         }
       });
+      this.totalAdsClick = 0;
+      this.lastAdsClick = 0;
+      adsTemp = adsTemp.sort((a, b) => a.week - b.week);
+
+      for (let i = 0; i < adsTemp.length; i++) {
+        let j = parseInt(adsTemp[i].view);
+
+        this.totalAdsClick += j;
+        this.lastAdsClick;
+      }
+      this.lastAdsClick = parseInt(adsTemp[adsTemp.length - 1].view);
 
       let OptionAds = this.adsOptions.filter(x => x.value == this.adsCampaign);
       let titleChart = OptionAds[0].label;
@@ -441,6 +476,7 @@ export default {
         ]
       });
     },
+    // สร้างกราฟ Member
     async loadChartMember() {
       this.xValueMember = [];
       this.yValueMember = [];
@@ -532,11 +568,13 @@ export default {
         ]
       });
     },
+    // ดึงต่า ในตาราง [viewuser]
     async loadMember() {
       let url = this.serverpath + "bo_loadviewtotalmember.php";
       let res = await axios.get(url);
       this.memberData = res.data;
     },
+    // หาค่า total member กับ new member ไปแสดง
     checkTotal() {
       let temp = this.memberData.filter(
         y => y.week == this.xValueMember[this.xValueMember.length - 1]
@@ -546,12 +584,12 @@ export default {
     }
   },
   async mounted() {
-    await this.calCurrentWeek();
-    await this.loadMember();
-    await this.loadChartMember();
-    await this.loadAdsCampaign();
-    await this.loadAdsData();
-    await this.loadChartAds();
+    await this.calCurrentWeek(); // หา week ปัจจุบัน
+    await this.loadMember(); // โหลด database [viewuser]
+    await this.loadChartMember(); // สร้างกราฟ
+    await this.loadAdsCampaign(); // โหลด database [ads] พร้อมทั้งสร้าง ตัวเลือกชื่อ ads
+    await this.loadAdsData(); // ดึงค่าในตาราง [viewads]
+    await this.loadChartAds(); // สร้างกราฟ
     this.checkTotal();
   }
 };
