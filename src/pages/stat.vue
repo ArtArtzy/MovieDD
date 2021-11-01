@@ -27,7 +27,7 @@
                       ? 'background-color:#ffc24c'
                       : 'border:1px solid black;'
                   "
-                  @click="selectMember = 1"
+                  @click="totalMemberBtn()"
                 >
                   Total member
                 </q-btn>
@@ -43,7 +43,7 @@
                       ? 'background-color:#ffc24c'
                       : 'border:1px solid black;'
                   "
-                  @click="selectMember = 2"
+                  @click="newMemberBtn()"
                 >
                   New member
                 </q-btn>
@@ -65,6 +65,7 @@
                   emit-value
                   map-options
                   style="width:220px;"
+                  @input="loadChartMember()"
                 />
               </div>
               <div class="col" align="right">New member in this week</div>
@@ -73,7 +74,12 @@
                 <div class="col-7" align="left">&nbsp;(+{{ 1.42 }}%)</div>
               </div>
             </div>
-            <div id="container1" style="height: 600px; min-width: 800px"></div>
+            <div align="center" class="q-pt-md">
+              <div
+                id="container1"
+                style="height: 600px; min-width: 800px"
+              ></div>
+            </div>
             <hr style="width:98%;" align="left" />
             <!-- Ads  -->
             <div class="row items-center q-mt-lg">
@@ -260,10 +266,10 @@ export default {
           value: 0
         }
       ],
-      durationMember: "The last 4 weeks", // ตัวเลือกแสดงผลของ Member
-      durationAds: "The last 4 weeks", // ตัวเลือกแสดงผลของ Ads
-      durationStreaming: "The last 4 weeks", // ตัวเลือกแสดงผลของ Streaming
-      durationMovie: "The last 4 weeks", // ตัวเลือกแสดงผลของ Movie/Series
+      durationMember: 4, // ตัวเลือกแสดงผลของ Member
+      durationAds: 4, // ตัวเลือกแสดงผลของ Ads
+      durationStreaming: 4, // ตัวเลือกแสดงผลของ Streaming
+      durationMovie: 4, // ตัวเลือกแสดงผลของ Movie/Series
       selectMovie: "Movie",
       selectMovieOptions: ["Movie", "Series"],
       typeMovie: "Top 20",
@@ -290,16 +296,20 @@ export default {
         { view: 1240, name: "Xmen 19" },
         { view: 1240, name: "Xmen 20" }
       ],
-      totalMember: [],
-      currentWeek: 0
+      memberData: [],
+      currentWeek: 0,
+      xValueMember: [], //ค่าแกน x ของ Member
+      yValueMember: [] //ค่าแกน y ของ Member
     };
   },
   methods: {
-    async loadTotalMember() {
-      let url = this.serverpath + "bo_loadviewtotalmember.php";
-      let res = await axios.get(url);
-      this.totalMember = res.data;
-      console.log(this.totalMember);
+    totalMemberBtn() {
+      this.selectMember = 1;
+      this.loadChartMember();
+    },
+    newMemberBtn() {
+      this.selectMember = 2;
+      this.loadChartMember();
     },
     calCurrentWeek() {
       let currentTime = new Date().getTime();
@@ -307,11 +317,106 @@ export default {
       this.currentWeek = Math.floor(
         (currentTime - startTime) / (1000 * 60 * 60 * 24 * 7)
       );
+    },
+    async loadChartMember() {
+      this.xValueMember = [];
+      this.yValueMember = [];
+      let weekOnProcess = 0;
+      if (this.durationMember >= this.currentWeek) {
+        weekOnProcess = this.currentWeek - 1;
+      } else {
+        weekOnProcess = this.durationMember;
+      }
+      for (let i = 1; i <= weekOnProcess; i++) {
+        let weekx = this.currentWeek - i;
+        this.xValueMember.push(weekx);
+      }
+      this.xValueMember.reverse();
+      let url = this.serverpath + "bo_loadviewtotalmember.php";
+      let res = await axios.get(url);
+      this.memberData = res.data;
+
+      this.xValueMember.forEach(x => {
+        let yRawData = this.memberData.filter(y => y.week == x);
+        if (this.selectMember == 1) {
+          if (yRawData.length == 0) {
+            this.yValueMember.push(0);
+          } else {
+            this.yValueMember.push(Number(yRawData[0].totalmember));
+          }
+        } else {
+          if (yRawData.length == 0) {
+            this.yValueMember.push(0);
+          } else {
+            this.yValueMember.push(Number(yRawData[0].member));
+          }
+        }
+      });
+      let titleChart = "New member";
+      if (this.selectMember == 1) {
+        titleChart = "Total member";
+        for (let i = 1; i < this.yValueMember.length; i++) {
+          if (this.yValueMember[i] == 0) {
+            this.yValueMember[i] = this.yValueMember[i - 1];
+          }
+        }
+      }
+
+      Highcharts.chart("container1", {
+        chart: {
+          type: "line",
+          width: 800,
+          height: 420,
+          backgroundColor: "#E1EBFE"
+        },
+        title: {
+          text: titleChart
+        },
+        exporting: { enabled: false },
+        xAxis: {
+          categories: this.xValueMember,
+          lineColor: "#00CEFA",
+          lineWidth: 2
+        },
+
+        yAxis: {
+          title: {
+            text: titleChart
+          },
+          lineColor: "#00CEFA",
+          lineWidth: 2,
+          min: 0,
+          softMax: 100
+        },
+        tooltip: {
+          useHTML: true,
+          headerFormat: "",
+          pointFormat: "{point.y:,.f} members"
+        },
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          areaspline: {
+            fillOpacity: 0.5
+          },
+          line: {
+            softThreshold: false
+          }
+        },
+        series: [
+          {
+            showInLegend: false,
+            name: "Movie/Series watching",
+            data: this.yValueMember
+          }
+        ]
+      });
     }
   },
-  mounted() {
-    this.loadTotalMember();
-    this.calCurrentWeek();
+  async mounted() {
+    await this.calCurrentWeek();
+    await this.loadChartMember();
   }
 };
 </script>
