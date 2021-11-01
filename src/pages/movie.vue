@@ -4,7 +4,7 @@
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg">
-          <div class="col-5 q-pl-xl">
+          <div class="col-4 q-pl-xl">
             <q-input
               outlined
               rounded
@@ -13,7 +13,7 @@
               v-model="searchMovie"
               placeholder="Search : film title"
               dense
-              style="width:400px;"
+              style="width:350px;"
             >
               <template v-slot:prepend>
                 <q-icon class="fas fa-search" />
@@ -52,7 +52,17 @@
             >
             </q-select>
           </div>
-          <div class="col" align="left">of {{ moviePage.length }}</div>
+          <div class="col-2" align="right">
+            <q-btn
+              outline
+              rounded
+              class="cursor-pointer "
+              style="font-size:18px;width:160px;"
+              label="Deleted movie"
+              no-caps
+              @click="showdeleteMovie()"
+            />
+          </div>
           <div class="col-2" align="center">
             <q-btn
               rounded
@@ -66,10 +76,7 @@
         </div>
         <div class="q-pt-md"></div>
         <!-- end header  -->
-        <q-scroll-area
-          class="newarrivaldiv"
-          style="height:86vh; max-width: 90vw;"
-        >
+        <div class="contextdiv">
           <!-- movie box  -->
 
           <div v-for="(item, index) in data" :key="index">
@@ -179,21 +186,13 @@
               </div>
               <div class="col-1 btndiv">
                 <div class="row q-pt-md">
-                  <div class="col" align="left">
-                    <q-btn
-                      dense
-                      round
-                      flat
-                      icon="far fa-bell"
-                      @click="reportBtn(item.id)"
-                    >
-                      <q-badge v-show="item.alert != 0" color="red" floating>{{
-                        item.alert
-                      }}</q-badge>
-                    </q-btn>
-                  </div>
-                  <div class="col cursor-pointer" @click="editMovieBtn(item)">
-                    <u>Edit</u>
+                  <div
+                    class="btnMovie bg-primary"
+                    align="center"
+                    @click="editMovieBtn(item)"
+                  >
+                    <q-icon class="fas fa-cog" />
+                    edit
                   </div>
                 </div>
                 <div
@@ -222,14 +221,7 @@
                   <q-icon class="fas fa-play" />
                   trailer
                 </div>
-                <div
-                  v-show="!item.trailerCode"
-                  class="btnMovie bg-grey"
-                  align="center"
-                >
-                  <q-icon class="fas fa-play" />
-                  trailer
-                </div>
+
                 <div
                   v-show="item.promotion == 1"
                   class="btnMovie bg-positive"
@@ -249,7 +241,7 @@
                 </div>
                 <div
                   v-show="item.promotion == 0"
-                  class="btnMovie bg-grey"
+                  class="btnMovie bggrey"
                   align="center"
                   @click="
                     promotionBTN(
@@ -287,7 +279,7 @@
             <div style="height:15px;"></div>
           </div>
           <!-- end moviebox  -->
-        </q-scroll-area>
+        </div>
       </div>
       <!------------------ dialog  ---------------->
       <!-- add movie box  -->
@@ -490,7 +482,7 @@
                 @click="addMovieBtn()"
                 align="center"
               >
-                Ok
+                OK
               </div>
             </div>
           </div>
@@ -1209,6 +1201,7 @@ export default {
         newArraival: false,
         expiredDate: ""
       },
+      timestamp: "",
       labelExpired: "", // คำอธิบาย label สำหรับ New arraival
       mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"],
       // แก้ไขข้อมูล
@@ -1284,7 +1277,23 @@ export default {
     },
     //ปุ่มเพิ่ม Movie
     showAddMovieBtn() {
-      // expired date
+      // expired date    this.addmovie.titleTh = "";
+      this.addmovie.titleEn = "test1";
+      this.addmovie.year = "ทดสอล";
+      this.addmovie.mpaRating = "G";
+      this.addmovie.durationHour = "ๅ";
+      this.addmovie.durationMin = "45";
+      this.addmovie.posterFile = null;
+      this.addmovie.synopsis = "แผปแฟกหก";
+      this.addmovie.movieCodeThaiSound = "asdasdadas";
+      this.addmovie.movieCodeThaiSub = "";
+      this.addmovie.trailerCode = "";
+      this.addmovie.category = null;
+      this.addmovie.netflix = false;
+      this.addmovie.disney = false;
+      this.addmovie.amazon = false;
+      this.addmovie.hbo = false;
+      this.addmovie.newArraival = false;
       let today = new Date();
       let mi = today.getTime() + 1296000000;
       let a = new Date(mi);
@@ -1301,24 +1310,6 @@ export default {
     },
     // ปิดปุ่ม edit movie
     closeEditMovieBtn() {
-      this.addmovie.titleTh = "";
-      this.addmovie.titleEn = "";
-      this.addmovie.year = "";
-      this.addmovie.mpaRating = "";
-      this.addmovie.durationHour = "";
-      this.addmovie.durationMin = "";
-      this.addmovie.posterFile = null;
-      this.addmovie.synopsis = "";
-      this.addmovie.movieCodeThaiSound = "";
-      this.addmovie.movieCodeThaiSub = "";
-      this.addmovie.trailerCode = "";
-      this.addmovie.category = null;
-      this.addmovie.netflix = false;
-      this.addmovie.disney = false;
-      this.addmovie.amazon = false;
-      this.addmovie.hbo = false;
-      this.addmovie.newArraival = false;
-
       this.dialogEditMovie = false;
     },
     //ปุ่ม saves หนัง ใน add movie
@@ -1368,14 +1359,14 @@ export default {
         categoryData += "[" + x + "],";
       });
       categoryData = categoryData.slice(0, -1);
-      let tempDate;
+
       //Convert expirteddate เป็น microtime
-      if (this.addmovie.newArraival == 1) {
-        tempDate = this.addmovie.newArraival;
-        tempdate = tempDate.split("/");
-        tempDate = tempDate[3] + "-" + tempDate[2] + "-" + tempDate[1];
-        tempDate = new Date(tempDate).getTime();
-        console.log(tempDate);
+      if (this.addmovie.newArraival) {
+        this.timestamp = this.addmovie.expiredDate;
+        this.timestamp = this.timestamp.split("/");
+        this.timestamp =
+          this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
+        this.timestamp = new Date(this.timestamp).getTime();
       }
 
       let data = {
@@ -1395,7 +1386,7 @@ export default {
         amazon: this.addmovie.amazon ? 1 : 0,
         hbo: this.addmovie.hbo ? 1 : 0,
         new: this.addmovie.newArraival ? 1 : 0,
-        expiredDate: this.addmovie.newArraival ? this.addmovie.expiredDate : 0
+        expiredDate: this.addmovie.newArraival ? this.timestamp : 0
       };
 
       let url = this.serverpath + "bo_movieadddata.php";
@@ -1515,17 +1506,25 @@ export default {
       this.addmovie.newArraival = item.new == 1 ? true : false;
       this.addmovie.expiredDate = item.expireddate;
       this.editMovieId = item.id;
-      if (this.addmovie.expiredDate == null) {
+      if (this.addmovie.expiredDate == null || this.addmovie.expiredDate == 0) {
         let today = new Date();
         let mi = today.getTime() + 1296000000;
+        this.timestamp = mi;
+        console.log(mi);
         let a = new Date(mi);
         this.addmovie.expiredDate =
           a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
         this.labelExpired =
           "New arrival (expired date " + this.addmovie.expiredDate + ")";
       } else {
-        this.labelExpired =
-          "New arrival (expired date " + this.addmovie.expiredDate + ")";
+        let temp = new Date(this.addmovie.expiredDate * 1);
+        let temp2 =
+          temp.getDate() +
+          "/" +
+          (temp.getMonth() + 1) +
+          "/" +
+          temp.getFullYear();
+        this.labelExpired = "New arrival (expired date " + temp2 + ")";
       }
 
       this.dialogEditMovie = true;
@@ -1577,13 +1576,14 @@ export default {
         categoryData += "[" + x + "],";
       });
       categoryData = categoryData.slice(0, -1);
-      //Convert ExpiredDate to timestamp
+      // Convert ExpiredDate to timestamp
       if (this.addmovie.newArraival == 1) {
-        tempDate = this.addmovie.newArraival;
-        tempdate = tempDate.split("/");
-        tempDate = tempDate[3] + "-" + tempDate[2] + "-" + tempDate[1];
-        tempDate = new Date(tempDate).getTime();
-        console.log(tempDate);
+        this.timestamp = this.addmovie.expiredDate + 1296000000;
+        this.timestamp = this.timestamp.split("/");
+        this.timestamp =
+          this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
+        this.timestamp = new Date(this.timestamp).getTime();
+        console.log(this.timestamp);
       }
       let data = {
         nameEng: this.addmovie.titleEn,
@@ -1602,10 +1602,10 @@ export default {
         amazon: this.addmovie.amazon ? 1 : 0,
         hbo: this.addmovie.hbo ? 1 : 0,
         new: this.addmovie.newArraival ? 1 : 0,
-        expiredDate: this.addmovie.newArraival ? this.addmovie.expiredDate : 0,
+        expiredDate: this.addmovie.newArraival ? this.timestamp : 0,
         id: this.editMovieId
       };
-      console.log(data);
+
       let url = this.serverpath + "bo_movieeditdata.php";
       let res = await axios.post(url, JSON.stringify(data));
       //Check file delete
@@ -1832,6 +1832,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.contextdiv {
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+.bggrey {
+  background-color: #6c6c6c;
+}
 .btndiv {
   position: absolute;
   left: calc(100% - 100px);
@@ -1925,7 +1932,7 @@ export default {
   width: 120px;
   height: 45px;
   border-radius: 5px;
-  border: 1px solid #ffc24c;
+  border: 1px solid black;
   cursor: pointer;
   line-height: 45px;
 }
