@@ -375,9 +375,9 @@ export default {
       let url = this.serverpath + "bo_totalstreaming.php";
       let res = await axios.get(url);
       this.totalStreaming = res.data;
-
+      let currentW = this.currentWeek;
       url = this.serverpath + "bo_streamingthisweek.php";
-      res = await axios.post(url, JSON.stringify(currentTime));
+      res = await axios.post(url, JSON.stringify(currentW));
       this.thisWeekStreaming = res.data;
     },
     // ดึงค่าในตาราง [viewads]
