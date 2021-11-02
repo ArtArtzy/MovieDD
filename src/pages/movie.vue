@@ -1554,7 +1554,7 @@ export default {
       // expired date    this.addmovie.titleTh = "";
       this.addmovie.titleEn = "";
       this.addmovie.year = "";
-      this.addmovie.mpaRating = "";
+      this.addmovie.mpaRating = "G";
       this.addmovie.durationHour = "";
       this.addmovie.durationMin = "";
       this.addmovie.posterFile = null;
@@ -1746,11 +1746,10 @@ export default {
       let res = await axios.post(url, JSON.stringify(data));
       res.data.forEach(x => {
         //หาวันที่ upload ไป
-        let dateUploadMovie = new Date(x.timestamp);
-        let dateUploadTime = dateUploadMovie.getTime();
+
         let dateCurrent = new Date();
         let dateCurrentTime = dateCurrent.getTime();
-        let dateDiff = dateCurrentTime - dateUploadTime;
+        let dateDiff = dateCurrentTime - x.timestamp;
         x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
 
         let movieType = x.type.split(",");
