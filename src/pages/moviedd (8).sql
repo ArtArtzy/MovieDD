@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 02, 2021 at 07:53 AM
+-- Generation Time: Nov 02, 2021 at 08:05 AM
 -- Server version: 8.0.17
 -- PHP Version: 7.3.10
 
@@ -80,9 +80,9 @@ INSERT INTO `category` (`id`, `orderid`, `catname`, `movie`, `series`, `status`)
 (713, 100, 'การ์ตูน', 0, 0, 1),
 (714, 300, 'ครอบครัว', 0, 0, 1),
 (716, 500, 'ซุปเปอร์ฮีโร่', 0, 0, 1),
-(717, 900, 'ตลก', 0, 0, 1),
-(718, 1000, 'ไทย', 0, 0, 1),
-(719, 1100, 'ประวัติศาสตร์', 0, 0, 1),
+(717, 900, 'ตลก', 1, 0, 1),
+(718, 1000, 'ไทย', 1, 0, 1),
+(719, 1100, 'ประวัติศาสตร์', 1, 0, 1),
 (721, 1500, 'ยอดนิยม', 0, 0, 1),
 (722, 1600, 'ระทึกขวัญ', 0, 0, 1),
 (723, 1700, 'รายการโชว์', 0, 0, 1),
@@ -132,7 +132,8 @@ INSERT INTO `deletedmovie` (`id`, `title`, `movieCode`, `type`, `month`, `year`,
 (8, 'River', '0q37DbzK', 2, 11, 2021, 0),
 (9, 'River', 'xvFkL2YH', 1, 11, 2021, 0),
 (10, 'Only Today', 'ieh8jaRp', 2, 11, 2021, 0),
-(11, 'Only Today', '38g3LzJQ', 1, 11, 2021, 0);
+(11, 'Only Today', '38g3LzJQ', 1, 11, 2021, 0),
+(12, 'TEST1', 'tdasdwq', 1, 11, 2021, 0);
 
 -- --------------------------------------------------------
 
@@ -184,8 +185,15 @@ CREATE TABLE `movie` (
   `new` int(11) NOT NULL COMMENT '0=ไม่มี new / 1 = new',
   `expireddate` text,
   `status` int(11) NOT NULL DEFAULT '0' COMMENT '0=offline / 1 = online',
-  `timestamp` timestamp NOT NULL
+  `timestamp` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `movie`
+--
+
+INSERT INTO `movie` (`id`, `nameEng`, `nameTh`, `poster`, `year`, `mparate`, `durationHour`, `durationMin`, `type`, `synopsis`, `alertThaiSound`, `alertThaiSub`, `movieCodeEng`, `movieCodeTh`, `trailerCode`, `netflix`, `disney`, `amazon`, `hbo`, `promotion`, `promotionMobilePic`, `promotionTabletPic`, `promotionPCPic`, `new`, `expireddate`, `status`, `timestamp`) VALUES
+(44, 'Test1', '', 1, 2011, 'G', 0, 45, '[717],[718],[719]', '', 0, 0, '', 'FSDSFS', '', 0, 1, 0, 0, 0, 0, 0, 0, 1, '1637136167073', 0, 1635840167000);
 
 -- --------------------------------------------------------
 
@@ -732,7 +740,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `deletedmovie`
 --
 ALTER TABLE `deletedmovie`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `episode`
@@ -744,7 +752,7 @@ ALTER TABLE `episode`
 -- AUTO_INCREMENT for table `movie`
 --
 ALTER TABLE `movie`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `problem`
