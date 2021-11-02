@@ -60,7 +60,7 @@
               style="font-size:18px;width:160px;"
               label="Deleted movie"
               no-caps
-              @click="showdeleteMovie()"
+              @click="showDeletedMovie()"
             />
           </div>
           <div class="col-2" align="center">
@@ -1152,6 +1152,53 @@
           </q-scroll-area>
         </q-card>
       </q-dialog>
+      <!-- Deleted Movies -->
+      <q-dialog v-model="dialogDeletedMovie" persistent>
+        <q-card class="deletedDialog">
+          <div class="row q-px-md q-pt-md items-center" align="center">
+            <div class="col-1"></div>
+            <div class="col font24">Deleted Movie</div>
+            <div class="col-1">
+              <q-btn
+                icon="far fa-times-circle"
+                flat
+                round
+                size="18px"
+                dense
+                @click="dialogDeletedMovie = false"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4 q-px-lg">
+              <q-select
+                v-model="monthSelected"
+                :options="monthOption"
+                emit-value
+                map-options
+                label="month"
+                @input="loadDeletedData()"
+              />
+            </div>
+            <div class="col-4 q-px-lg">
+              <q-select
+                v-model="yearSelected"
+                :options="yearOption"
+                label="year"
+                @input="loadDeletedData()"
+              />
+            </div>
+            <div class="col-4 q-px-lg">
+              <q-select
+                v-model="typeSelected"
+                :options="typeOption"
+                label="type"
+                @input="filterDeletedMovie()"
+              />
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
       <!-- bg drop  -->
       <div
         class="bgDrop fullscreen"
@@ -1166,7 +1213,24 @@
       ></div>
       <!-- Chart view -->
       <div class="bgDrop fullscreen" v-show="dialogChart">
-        <div class="chartdiv">123</div>
+        <div class="chartdiv absolute-center">
+          <div class="row q-px-md q-pt-md items-center" align="center">
+            <div class="col-1"></div>
+            <div class="col font24">{{ titleView }}</div>
+            <div class="col-1">
+              <q-btn
+                icon="far fa-times-circle"
+                flat
+                round
+                size="18px"
+                dense
+                @click="dialogChart = false"
+              />
+            </div>
+          </div>
+          <div align="center">Current week : {{ currentWeek }}</div>
+          <div id="container1"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1241,12 +1305,160 @@ export default {
       posterP: null, //รูปภาพของ Promotion สำหรับ PC
 
       problemList: [], //List ของปัญหา
-      problemListetc: [] //List ของปัญหา etc
+      problemListetc: [], //List ของปัญหา etc
+
+      titleView: "", //ชื่อหนังในหน้า View
+      currentWeek: "", //สัปดาห์ปัจจุบัน
+      xValueView: [], //ค่าแกน x ของ View
+      yValueView: [], //ค่าแกน y ของ View
+      viewData: [], //ค่า view ของ movie
+
+      dialogDeletedMovie: false, //เปิดปิดหน้าต่าง deleted movie
+      monthOption: [
+        { value: 1, label: "Jan" },
+        { value: 2, label: "Feb" },
+        { value: 3, label: "Mar" },
+        { value: 4, label: "Apr" },
+        { value: 5, label: "May" },
+        { value: 6, label: "Jun" },
+        { value: 7, label: "Jul" },
+        { value: 8, label: "Aug" },
+        { value: 9, label: "Sep" },
+        { value: 10, label: "Oct" },
+        { value: 11, label: "Nov" },
+        { value: 12, label: "Dec" }
+      ], //ข้อมูลเดือนสำหรับ Deleted movie
+      yearOption: [2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030], //ข้อมูลปีสำหรับ Deleted movie
+      typeOption: ["All movie", "Deleted movie", "Undeleted movie"], //ประเภทสำหรับ Deleted movie
+      monthSelected: "", //เดือนที่ถูกเลือกใน deleted movie
+      yearSelected: "", //ปีที่ถูกเลือกใน deleted movie
+      typeSelected: "All movie", //ประเภทที่ถูกเลือกใน deleted movie
+      deletedListRaw: [], //List ของ Deleted movie
+      deletedListShow: [] //List ของ Deleted movie ที่แสดง
     };
   },
   methods: {
+    //load ข้อมูล Deleted data
+    async loadDeletedData() {
+      this.deletedListRaw = [];
+      let data = {
+        month: this.monthSelected,
+        year: this.yearSelected
+      };
+      let url = this.serverpath + "bo_moviedeleted.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.deletedListRaw = res.data;
+      this.filterDeletedMovie();
+    },
+    //filter Type of Deleted Movie
+    filterDeletedMovie() {
+      if (this.typeOption == "Deleted movie") {
+        this.deletedListShow = this.deletedListRaw.filter(x => x.status == 1);
+      } else if (this.typeOption == "All movie") {
+        this.deletedListShow = this.deletedListRaw;
+      } else {
+        this.deletedListShow = this.deletedListRaw.filter(x => (x.status = 0));
+      }
+    },
+    //เปิดหน้าต่าง Deleted movie
+    showDeletedMovie() {
+      let today = new Date();
+      this.yearSelected = today.getFullYear();
+      this.monthSelected = Number(today.getMonth()) + 1;
+      this.loadDeletedData();
+      this.dialogDeletedMovie = true;
+    },
+    calCurrentWeek() {
+      let currentTime = new Date().getTime();
+      let startTime = new Date(this.startDate).getTime();
+      this.currentWeek = Math.floor(
+        (currentTime - startTime) / (1000 * 60 * 60 * 24 * 7)
+      );
+    },
     //แสดง chart ของหนังเรื่องนั้น
-    showChart(item) {
+    async showChart(item) {
+      this.calCurrentWeek();
+      this.xValueView = [];
+      this.yValueView = [];
+      let weekOnProcess = 0;
+      if (20 >= this.currentWeek) {
+        weekOnProcess = this.currentWeek - 1;
+      } else {
+        weekOnProcess = 20;
+      }
+      for (let i = 1; i <= weekOnProcess; i++) {
+        let weekx = this.currentWeek - i;
+        this.xValueView.push(weekx);
+      }
+      this.xValueView.reverse();
+
+      let data = {
+        id: item.id
+      };
+      let url = this.serverpath + "bo_loadmovieview.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.viewData = res.data;
+      this.xValueView.forEach(x => {
+        let yRawData = this.viewData.filter(y => y.week == x);
+
+        if (yRawData.length == 0) {
+          this.yValueView.push(0);
+        } else {
+          this.yValueView.push(Number(yRawData[0].view));
+        }
+      });
+      let titleChart = "Movie view per week";
+      Highcharts.chart("container1", {
+        chart: {
+          type: "line",
+          width: 600,
+          height: 320,
+          backgroundColor: "#edf2fe"
+        },
+        title: {
+          text: titleChart
+        },
+        exporting: { enabled: false },
+        xAxis: {
+          categories: this.xValueView,
+          lineColor: "#00CEFA",
+          lineWidth: 2
+        },
+
+        yAxis: {
+          title: {
+            text: titleChart
+          },
+          lineColor: "#00CEFA",
+          lineWidth: 2,
+          min: 0,
+          softMax: 100
+        },
+        tooltip: {
+          useHTML: true,
+          headerFormat: "",
+          pointFormat: "{point.y:,.f} views"
+        },
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          areaspline: {
+            fillOpacity: 0.5
+          },
+          line: {
+            softThreshold: false
+          }
+        },
+        series: [
+          {
+            showInLegend: false,
+            name: "Movie/Series watching",
+            data: this.yValueView
+          }
+        ]
+      });
+      this.titleView = item.nameEng;
       this.dialogChart = true;
     },
     //Remove new expired
@@ -2000,6 +2212,12 @@ export default {
   height: 500px;
 }
 .chartdiv {
+  width: 600px;
+  height: 450px;
+  background-color: #edf2fe;
+  border-radius: 20px;
+}
+.deletedDialog {
   width: 600px;
   height: 450px;
   background-color: #edf2fe;
