@@ -338,26 +338,15 @@ export default {
       let url = this.serverpath + "bo_editads.php";
       let res = await axios.post(url, JSON.stringify(data));
       if (res.data == "OK") {
-        this.$q.notify({
-          progress: true,
-          message: "Edit ads complete",
-          color: "positive",
-          position: "top",
-          icon: "fas fa-check"
-        });
+        this.greenNotify("Edit ads complete");
         this.clrmem();
         this.loadData();
       } else if (res.data == "notchange") {
+        this.redNotify("not change");
         this.clrmem();
         this.loadData();
       } else {
-        this.$q.notify({
-          progress: true,
-          message: res.data,
-          color: "negative",
-          position: "top",
-          icon: "fas fa-times"
-        });
+        this.redNotify(res.data);
       }
     },
     loadAds() {
@@ -411,21 +400,9 @@ export default {
       let res = await axios.post(url, JSON.stringify(data));
 
       if (sta == 0) {
-        this.$q.notify({
-          progress: true,
-          message: item.at_title + " status change to offline",
-          color: "positive",
-          position: "top",
-          icon: "fas fa-check"
-        });
+        this.redNotify(item.at_title + " status change to offline");
       } else {
-        this.$q.notify({
-          progress: true,
-          message: item.at_title + " status change to online",
-          color: "positive",
-          position: "top",
-          icon: "fas fa-check"
-        });
+        this.greenNotify(item.at_title + " status change to online");
       }
       this.dataShowPage[index].status = sta;
     },
@@ -436,13 +413,7 @@ export default {
         this.mweight == "" ||
         this.mfolder == ""
       ) {
-        this.$q.notify({
-          progress: true,
-          message: "Plese input all fields",
-          color: "negative",
-          position: "top",
-          icon: "fas fa-times"
-        }); // ใส่ข้อมูลไม่ครบ
+        this.redNotify("Plese input all fields"); // ใส่ข้อมูลไม่ครบ
         return;
       } else {
         let data = {
@@ -454,31 +425,11 @@ export default {
         let url = this.serverpath + "bo_addads.php";
         let res = await axios.post(url, JSON.stringify(data));
         if (res.data == "NR") {
-          this.$q.notify({
-            progress: true,
-            message: "This campaign exist",
-            color: "negative",
-            position: "top",
-            icon: "fas fa-times"
-          });
-          // ชื่อแคมเปญซ้ำ
+          this.redNotify("This campaign exist"); // ชื่อแคมเปญซ้ำ
         } else if (res.data == "NRF") {
-          this.$q.notify({
-            progress: true,
-            message: "This folder exist",
-            color: "negative",
-            position: "top",
-            icon: "fas fa-times"
-          });
-          // ชื่อแคมเปญซ้ำ
+          this.redNotify("This folder exist"); // โฟลเดอซ้ำ
         } else if (res.data == "OK") {
-          this.$q.notify({
-            progress: true,
-            message: "Add new ads complete",
-            color: "positive",
-            position: "top",
-            icon: "fas fa-check"
-          });
+          this.greenNotify("Add new ads complete");
           this.loadData();
           this.clrmem();
         }

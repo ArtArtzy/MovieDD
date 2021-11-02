@@ -53,7 +53,7 @@
             <div class="row items-center">
               <div class="col" align="right">Total member</div>
               <div class="col-3" align="center" style="font-size:36px;">
-                {{ 26540 }}
+                {{ totalMemberNumber }}
               </div>
             </div>
             <div class="row items-end">
@@ -70,14 +70,18 @@
               </div>
               <div class="col" align="right">New member in this week</div>
               <div class="col-3 row" style="font-size:24px;">
-                <div class="col" align="right">{{ 540 }}</div>
-                <div class="col-7" align="left">&nbsp;(+{{ 1.42 }}%)</div>
+                <div class="col" align="right">{{ newMemberNumber }}</div>
+                <div class="col-7" align="left">
+                  &nbsp;(+{{
+                    ((newMemberNumber / totalMemberNumber) * 100).toFixed(2)
+                  }}%)
+                </div>
               </div>
             </div>
             <div align="center" class="q-pt-md">
               <div
                 id="container1"
-                style="height: 600px; min-width: 800px"
+                style="height: 500px; min-width: 800px"
               ></div>
             </div>
             <hr style="width:98%;" align="left" />
@@ -91,18 +95,19 @@
               </div>
               <div class="col" align="right">Total click</div>
               <div class="col-3" align="center" style="font-size:36px;">
-                {{ 26640 }}
+                {{ totalAdsClick }}
               </div>
             </div>
             <div class="row items-end">
               <div class="col-3">
                 <q-select
-                  v-model="durationAds"
-                  :options="durationOptions"
+                  v-model="adsCampaign"
+                  :options="adsOptions"
                   label="Campaign"
                   emit-value
                   map-options
                   style="width:220px;"
+                  @input="loadChartAds()"
                 />
               </div>
               <div class="col-3">
@@ -113,15 +118,25 @@
                   emit-value
                   map-options
                   style="width:220px;"
+                  @input="loadChartAds()"
                 />
               </div>
               <div class="col" align="right">Click in this week</div>
               <div class="col-3 row" style="font-size:24px;">
-                <div class="col" align="right">{{ 1200 }}</div>
-                <div class="col-7" align="left">&nbsp;(+{{ 1.82 }}%)</div>
+                <div class="col" align="right">{{ lastAdsClick }}</div>
+                <div class="col-7" align="left">
+                  &nbsp;(+{{
+                    ((lastAdsClick / totalAdsClick) * 100).toFixed(2)
+                  }}%)
+                </div>
               </div>
             </div>
-            <div class="chartArea"></div>
+            <div align="center" class="q-pt-md">
+              <div
+                id="container2"
+                style="height: 500px; min-width: 800px"
+              ></div>
+            </div>
             <hr style="width:98%;" align="left" />
             <!-- Steaming  -->
             <div class="row items-center q-mt-lg">
@@ -133,7 +148,7 @@
               </div>
               <div class="col" align="right">Total streaming</div>
               <div class="col-3" align="center" style="font-size:36px;">
-                {{ 12547 }}
+                {{ totalStreaming }}
               </div>
             </div>
             <div class="row items-end">
@@ -149,8 +164,12 @@
               </div>
               <div class="col" align="right">Streaming in this week</div>
               <div class="col-3 row" style="font-size:24px;">
-                <div class="col" align="right">{{ 300 }}</div>
-                <div class="col-7" align="left">&nbsp;(+{{ 10.72 }}%)</div>
+                <div class="col" align="right">{{ thisWeekStreaming }}</div>
+                <div class="col-7" align="left">
+                  &nbsp;(+{{
+                    ((thisWeekStreaming / totalStreaming) * 100).toFixed(2)
+                  }}%)
+                </div>
               </div>
             </div>
             <div class="chartArea"></div>
@@ -172,9 +191,9 @@
               <div class="row">
                 <q-select
                   class="q-px-md"
-                  v-model="durationMovie"
-                  :options="durationOptions"
-                  label="Duration"
+                  v-model="weekMovie"
+                  :options="weekOptions"
+                  label="Week"
                   emit-value
                   map-options
                   style="width:200px;"
@@ -263,13 +282,14 @@ export default {
         },
         {
           label: "All time",
-          value: 0
+          value: 999
         }
       ],
       durationMember: 4, // ตัวเลือกแสดงผลของ Member
       durationAds: 4, // ตัวเลือกแสดงผลของ Ads
       durationStreaming: 4, // ตัวเลือกแสดงผลของ Streaming
-      durationMovie: 4, // ตัวเลือกแสดงผลของ Movie/Series
+      weekMovie: 0, // ตัวเลือกแสดงผลเป็น week ของ Movie/Series
+      weekOptions: [], // ตัวเลือก week
       selectMovie: "Movie",
       selectMovieOptions: ["Movie", "Series"],
       typeMovie: "Top 20",
@@ -296,28 +316,167 @@ export default {
         { view: 1240, name: "Xmen 19" },
         { view: 1240, name: "Xmen 20" }
       ],
-      memberData: [],
-      currentWeek: 0,
+      memberData: [], // โหลดค่าจาก [viewuser] มาเก็บไว้
+      adsData: [], // โหลดค่าจาก [ads] มาเก็บไว้
+      currentWeek: 0, // บอกเวลาปัจจุบัน
       xValueMember: [], //ค่าแกน x ของ Member
-      yValueMember: [] //ค่าแกน y ของ Member
+      yValueMember: [], //ค่าแกน y ของ Member
+      xValueAds: [], //ค่าแกน x ของ Ads
+      yValueAds: [], //ค่าแกน y ของ Ads
+      totalMemberNumber: 0, // ค่าแสดงขอบซ้ายบนกรอป  member
+      newMemberNumber: 0, // ค่าที่เพิ่มขึ้นเป็น %
+      adsCampaign: 0, // ตัวเลือกแสดงกราฟ ads
+      adsOptions: [], //
+      totalAdsClick: 0, // ค่าแสดงขอบซ้ายบนกรอป  Ads ผลรวม view ของ ads
+      lastAdsClick: 0, // ค่าที่เพิ่มขึ้นเป็น %
+      totalStreaming: 0,
+      thisWeekStreaming: 0
     };
   },
   methods: {
+    // โหลด id และ ชื่อ ads มาเก็บไว้ใน adsOptions ในรูปแบบ label:ชื่อ value:id
+    async loadAdsCampaign() {
+      this.adsOptions = [];
+      let url = this.serverpath + "bo_loadads.php";
+      let res = await axios.get(url);
+      let dataTemp = res.data;
+
+      dataTemp.forEach(x => {
+        let temp = {
+          label: x.at_title,
+          value: x.at_id
+        };
+        this.adsOptions.push(temp);
+      });
+      this.adsCampaign = this.adsOptions[0].value;
+    },
+    // กดเลือก Total member ของ member
     totalMemberBtn() {
       this.selectMember = 1;
       this.loadChartMember();
     },
+    // กดเลือก New member ของ member
     newMemberBtn() {
       this.selectMember = 2;
       this.loadChartMember();
     },
-    calCurrentWeek() {
+    // หาเวลาปัจจุบันว่าเป็น week ที่เท่าไร พร้อมทั้งเพิ่มตัวเลือก weekOptions
+    async calCurrentWeek() {
       let currentTime = new Date().getTime();
       let startTime = new Date(this.startDate).getTime();
       this.currentWeek = Math.floor(
         (currentTime - startTime) / (1000 * 60 * 60 * 24 * 7)
       );
+      this.weekOptions = [];
+      this.weekMovie = this.currentWeek - 1;
+      for (let i = this.weekMovie; i > 0; i--) {
+        this.weekOptions.push(i);
+      }
+      let url = this.serverpath + "bo_totalstreaming.php";
+      let res = await axios.get(url);
+      this.totalStreaming = res.data;
+      let currentW = this.currentWeek;
+      url = this.serverpath + "bo_streamingthisweek.php";
+      res = await axios.post(url, JSON.stringify(currentW));
+      this.thisWeekStreaming = res.data;
     },
+    // ดึงค่าในตาราง [viewads]
+    async loadAdsData() {
+      let url = this.serverpath + "bo_loadviewads.php";
+      let res = await axios.get(url);
+      this.adsData = res.data;
+    },
+    // สร้างกราฟ Ads
+    async loadChartAds() {
+      this.xValueAds = [];
+      this.yValueAds = [];
+      let weekOnProcess = 0;
+      if (this.durationAds >= this.currentWeek) {
+        weekOnProcess = this.currentWeek - 1;
+      } else {
+        weekOnProcess = this.durationAds;
+      }
+      for (let i = 1; i <= weekOnProcess; i++) {
+        let weekx = this.currentWeek - i;
+        this.xValueAds.push(weekx);
+      }
+      this.xValueAds.reverse();
+      let adsTemp = this.adsData.filter(y => y.adsid == this.adsCampaign);
+
+      this.xValueAds.forEach(x => {
+        let yRawData = adsTemp.filter(y => y.week == x);
+        if (yRawData.length == 0) {
+          this.yValueAds.push(0);
+        } else {
+          this.yValueAds.push(Number(yRawData[0].view));
+        }
+      });
+      this.totalAdsClick = 0;
+      this.lastAdsClick = 0;
+      adsTemp = adsTemp.sort((a, b) => a.week - b.week);
+
+      for (let i = 0; i < adsTemp.length; i++) {
+        let j = parseInt(adsTemp[i].view);
+
+        this.totalAdsClick += j;
+        this.lastAdsClick;
+      }
+      this.lastAdsClick = parseInt(adsTemp[adsTemp.length - 1].view);
+
+      let OptionAds = this.adsOptions.filter(x => x.value == this.adsCampaign);
+      let titleChart = OptionAds[0].label;
+      Highcharts.chart("container2", {
+        chart: {
+          type: "line",
+          width: 800,
+          height: 420,
+          backgroundColor: "#E1EBFE"
+        },
+        title: {
+          text: titleChart
+        },
+        exporting: { enabled: false },
+        xAxis: {
+          categories: this.xValueAds,
+          lineColor: "#00CEFA",
+          lineWidth: 2
+        },
+
+        yAxis: {
+          title: {
+            text: "Total of click"
+          },
+          lineColor: "#00CEFA",
+          lineWidth: 2,
+          min: 0,
+          softMax: 100
+        },
+        tooltip: {
+          useHTML: true,
+          headerFormat: "",
+          pointFormat: "{point.y:,.f} click"
+        },
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          areaspline: {
+            fillOpacity: 0.5
+          },
+          line: {
+            softThreshold: false
+          }
+        },
+        series: [
+          {
+            showInLegend: false,
+            name: "Movie/Series watching",
+            data: this.yValueAds
+          }
+        ]
+      });
+    },
+    // สร้างกราฟ Member
     async loadChartMember() {
       this.xValueMember = [];
       this.yValueMember = [];
@@ -331,11 +490,8 @@ export default {
         let weekx = this.currentWeek - i;
         this.xValueMember.push(weekx);
       }
-      this.xValueMember.reverse();
-      let url = this.serverpath + "bo_loadviewtotalmember.php";
-      let res = await axios.get(url);
-      this.memberData = res.data;
 
+      this.xValueMember.reverse();
       this.xValueMember.forEach(x => {
         let yRawData = this.memberData.filter(y => y.week == x);
         if (this.selectMember == 1) {
@@ -361,7 +517,6 @@ export default {
           }
         }
       }
-
       Highcharts.chart("container1", {
         chart: {
           type: "line",
@@ -412,11 +567,30 @@ export default {
           }
         ]
       });
+    },
+    // ดึงต่า ในตาราง [viewuser]
+    async loadMember() {
+      let url = this.serverpath + "bo_loadviewtotalmember.php";
+      let res = await axios.get(url);
+      this.memberData = res.data;
+    },
+    // หาค่า total member กับ new member ไปแสดง
+    checkTotal() {
+      let temp = this.memberData.filter(
+        y => y.week == this.xValueMember[this.xValueMember.length - 1]
+      );
+      this.totalMemberNumber = temp[0].totalmember;
+      this.newMemberNumber = temp[0].member;
     }
   },
   async mounted() {
-    await this.calCurrentWeek();
-    await this.loadChartMember();
+    await this.calCurrentWeek(); // หา week ปัจจุบัน
+    await this.loadMember(); // โหลด database [viewuser]
+    await this.loadChartMember(); // สร้างกราฟ
+    await this.loadAdsCampaign(); // โหลด database [ads] พร้อมทั้งสร้าง ตัวเลือกชื่อ ads
+    await this.loadAdsData(); // ดึงค่าในตาราง [viewads]
+    await this.loadChartAds(); // สร้างกราฟ
+    this.checkTotal();
   }
 };
 </script>
