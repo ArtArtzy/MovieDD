@@ -1530,6 +1530,7 @@ export default {
       };
       url = this.serverpath + "bo_moviedeldata.php";
       res = await axios.post(url, JSON.stringify(data));
+      this.movieP = 1;
       this.loadMovieData();
       this.deleteMovieAlert = false;
       this.dialogEditMovie = false;
