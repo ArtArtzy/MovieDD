@@ -1188,13 +1188,57 @@
                 @input="loadDeletedData()"
               />
             </div>
-            <div class="col-4 q-px-lg">
+            <div class="col-4 q-px-md">
               <q-select
                 v-model="typeSelected"
                 :options="typeOption"
                 label="type"
-                @input="filterDeletedMovie()"
+                @input="loadDeletedData()"
               />
+            </div>
+          </div>
+          <div class="contentDelDiv">
+            <div class="row font18 q-pt-md">
+              <div class="col-3" align="center">Code</div>
+              <div class="col-3" align="center">Title</div>
+              <div class="col-3" align="center">Type</div>
+              <div class="col-3" align="center">JW deleted</div>
+            </div>
+            <div
+              v-for="(item, index) in deletedListShow"
+              :key="index"
+              class="row font14"
+              :style="index % 2 == 0 ? 'background-color:#cedff2' : ''"
+              style="height:40px; line-height:40px;"
+            >
+              <div class="col-3" align="center">{{ item.movieCode }}</div>
+              <div class="col-3" align="center">{{ item.title }}</div>
+              <div class="col-3" align="center">
+                {{ item.type == 1 ? "Thai sound" : "Thai sub" }}
+              </div>
+              <div
+                class="col-3 q-pt-xs"
+                align="center"
+                v-show="item.status == 0"
+              >
+                <span
+                  @click="updateDeletedMovie(1, item.id)"
+                  class="cursor-pointer"
+                  ><img src="../../public/images/block.svg" alt=""
+                /></span>
+              </div>
+              <div
+                class="col-3  q-pt-xs"
+                align="center"
+                v-show="item.status == 1"
+              >
+                <span
+                  @click="updateDeletedMovie(0, item.id)"
+                  class="cursor-pointer"
+                >
+                  <img src="../../public/images/blockwithcheck.svg" alt=""
+                /></span>
+              </div>
             </div>
           </div>
         </q-card>
@@ -1338,6 +1382,16 @@ export default {
     };
   },
   methods: {
+    //updated deleted movie status
+    async updateDeletedMovie(value, id) {
+      let data = {
+        value: value,
+        id: id
+      };
+      let url = this.serverpath + "bo_updatedeletedmovie.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.loadDeletedData();
+    },
     //load ข้อมูล Deleted data
     async loadDeletedData() {
       this.deletedListRaw = [];
@@ -1352,12 +1406,12 @@ export default {
     },
     //filter Type of Deleted Movie
     filterDeletedMovie() {
-      if (this.typeOption == "Deleted movie") {
+      if (this.typeSelected == "Deleted movie") {
         this.deletedListShow = this.deletedListRaw.filter(x => x.status == 1);
-      } else if (this.typeOption == "All movie") {
+      } else if (this.typeSelected == "All movie") {
         this.deletedListShow = this.deletedListRaw;
       } else {
-        this.deletedListShow = this.deletedListRaw.filter(x => (x.status = 0));
+        this.deletedListShow = this.deletedListRaw.filter(x => x.status == 0);
       }
     },
     //เปิดหน้าต่าง Deleted movie
@@ -1461,8 +1515,6 @@ export default {
       this.titleView = item.nameEng;
       this.dialogChart = true;
     },
-    //Remove new expired
-    removeNewERxpired() {},
     //ปุ่ม OK ยืนยันการลบ
     async delMovieBtn() {
       //ลบข้อมูลออกจาก category
@@ -1500,14 +1552,14 @@ export default {
     //ปุ่มเพิ่ม Movie
     showAddMovieBtn() {
       // expired date    this.addmovie.titleTh = "";
-      this.addmovie.titleEn = "test1";
-      this.addmovie.year = "ทดสอล";
-      this.addmovie.mpaRating = "G";
-      this.addmovie.durationHour = "1";
-      this.addmovie.durationMin = "45";
+      this.addmovie.titleEn = "";
+      this.addmovie.year = "";
+      this.addmovie.mpaRating = "";
+      this.addmovie.durationHour = "";
+      this.addmovie.durationMin = "";
       this.addmovie.posterFile = null;
-      this.addmovie.synopsis = "แผปแฟกหก";
-      this.addmovie.movieCodeThaiSound = "asdasdadas";
+      this.addmovie.synopsis = "";
+      this.addmovie.movieCodeThaiSound = "";
       this.addmovie.movieCodeThaiSub = "";
       this.addmovie.trailerCode = "";
       this.addmovie.category = null;
@@ -2222,5 +2274,9 @@ export default {
   height: 450px;
   background-color: #edf2fe;
   border-radius: 20px;
+}
+.contentDelDiv {
+  height: 300px;
+  overflow-y: auto;
 }
 </style>

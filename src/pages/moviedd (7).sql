@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 02, 2021 at 03:49 AM
+-- Generation Time: Nov 02, 2021 at 07:53 AM
 -- Server version: 8.0.17
 -- PHP Version: 7.3.10
 
@@ -73,33 +73,33 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `orderid`, `catname`, `movie`, `series`, `status`) VALUES
-(1, 800, 'ดราม่า', 16, 0, 1),
-(2, 3000, 'แอคชั่น', 1, 0, 1),
+(1, 800, 'ดราม่า', 0, 0, 1),
+(2, 3000, 'แอคชั่น', 0, 0, 1),
 (3, 2200, 'สารคดี', 0, 0, 1),
 (4, 200, 'เกาหลี', 0, 0, 1),
 (713, 100, 'การ์ตูน', 0, 0, 1),
-(714, 300, 'ครอบครัว', 1, 0, 1),
-(716, 500, 'ซุปเปอร์ฮีโร่', 14, 0, 1),
-(717, 900, 'ตลก', 12, 0, 1),
-(718, 1000, 'ไทย', 3, 0, 1),
-(719, 1100, 'ประวัติศาสตร์', 19, 0, 1),
+(714, 300, 'ครอบครัว', 0, 0, 1),
+(716, 500, 'ซุปเปอร์ฮีโร่', 0, 0, 1),
+(717, 900, 'ตลก', 0, 0, 1),
+(718, 1000, 'ไทย', 0, 0, 1),
+(719, 1100, 'ประวัติศาสตร์', 0, 0, 1),
 (721, 1500, 'ยอดนิยม', 0, 0, 1),
 (722, 1600, 'ระทึกขวัญ', 0, 0, 1),
-(723, 1700, 'รายการโชว์', 1, 0, 1),
+(723, 1700, 'รายการโชว์', 0, 0, 1),
 (724, 1900, 'ลึกลับ', 0, 0, 1),
 (725, 400, 'จีน', 0, 0, 1),
 (726, 600, 'ไซไฟ', 0, 0, 1),
-(727, 700, 'ญี่ปุ่น', 3, 0, 1),
-(728, 1200, 'ผจญภัย', 4, 0, 1),
-(729, 1300, 'เพลง', 8, 0, 1),
+(727, 700, 'ญี่ปุ่น', 0, 0, 1),
+(728, 1200, 'ผจญภัย', 0, 0, 1),
+(729, 1300, 'เพลง', 0, 0, 1),
 (730, 1400, 'แฟนตาซี', 0, 0, 1),
-(731, 1800, 'โรแมนติก', 2, 0, 1),
+(731, 1800, 'โรแมนติก', 0, 0, 1),
 (732, 2000, 'สงคราม', 0, 0, 1),
 (733, 2100, 'สยองขวัญ', 0, 0, 1),
 (734, 2300, 'หนังรางวัล', 0, 0, 1),
-(735, 2400, 'อาชญากรรม', 1, 0, 1),
-(736, 2500, 'อินเดีย', 1, 0, 1),
-(737, 2600, 'อีโรติก', 1, 0, 1);
+(735, 2400, 'อาชญากรรม', 0, 0, 1),
+(736, 2500, 'อินเดีย', 0, 0, 1),
+(737, 2600, 'อีโรติก', 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -111,7 +111,7 @@ CREATE TABLE `deletedmovie` (
   `id` int(11) NOT NULL,
   `title` text NOT NULL,
   `movieCode` text NOT NULL,
-  `Type` int(11) NOT NULL COMMENT '1=thaisound/2=thaisub',
+  `type` int(11) NOT NULL COMMENT '1=thaisound/2=thaisub',
   `month` int(11) NOT NULL,
   `year` int(11) NOT NULL,
   `status` int(11) NOT NULL DEFAULT '0' COMMENT '0=undeleted / 1 = deleted'
@@ -121,9 +121,18 @@ CREATE TABLE `deletedmovie` (
 -- Dumping data for table `deletedmovie`
 --
 
-INSERT INTO `deletedmovie` (`id`, `title`, `movieCode`, `Type`, `month`, `year`, `status`) VALUES
-(1, 'Only you', 'LGNBSD', 1, 11, 2021, 0),
-(2, 'Only me', 'LFDSAE', 2, 11, 2021, 0);
+INSERT INTO `deletedmovie` (`id`, `title`, `movieCode`, `type`, `month`, `year`, `status`) VALUES
+(1, 'Only you', 'LGNBSD', 1, 11, 2021, 1),
+(2, 'Only me', 'LFDSAE', 2, 11, 2021, 1),
+(3, 'Ded', ' 3tPEIu6p', 1, 11, 2021, 0),
+(4, 'Tsugi no Seaso', 'IXJedGdO', 2, 11, 2021, 0),
+(5, 'Tsugi no Seaso', 'ev9nPqQc', 1, 11, 2021, 0),
+(6, 'Kimi wa melody', 'giGeF5ZZ', 2, 11, 2021, 0),
+(7, 'Kimi wa melody', 'G6HE4m1V', 1, 11, 2021, 1),
+(8, 'River', '0q37DbzK', 2, 11, 2021, 0),
+(9, 'River', 'xvFkL2YH', 1, 11, 2021, 0),
+(10, 'Only Today', 'ieh8jaRp', 2, 11, 2021, 0),
+(11, 'Only Today', '38g3LzJQ', 1, 11, 2021, 0);
 
 -- --------------------------------------------------------
 
@@ -177,23 +186,6 @@ CREATE TABLE `movie` (
   `status` int(11) NOT NULL DEFAULT '0' COMMENT '0=offline / 1 = online',
   `timestamp` timestamp NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `movie`
---
-
-INSERT INTO `movie` (`id`, `nameEng`, `nameTh`, `poster`, `year`, `mparate`, `durationHour`, `durationMin`, `type`, `synopsis`, `alertThaiSound`, `alertThaiSub`, `movieCodeEng`, `movieCodeTh`, `trailerCode`, `netflix`, `disney`, `amazon`, `hbo`, `promotion`, `promotionMobilePic`, `promotionTabletPic`, `promotionPCPic`, `new`, `expireddate`, `status`, `timestamp`) VALUES
-(16, 'Only Today', '', 1, 2022, 'G', 1, 36, '[729],[718],[727]', 'Senbatsu Members\nBNK48 Team BⅢ\nMiori Ohkubo (Miori) / Khawisara Singplod (Myyu) / Warinrat Yolprasong (Niky)\n\nBNK48 Team NⅤ\nNatticha Chantaravareelekha (Fond) / Napaphat Worraphuttanon (Jaa) / Chanyapuk Numprasop (New) / Tarisa Preechatangkit (Stang)', 0, 0, 'ieh8jaRp', '38g3LzJQ', 'f7UboONb', 0, 0, 0, 0, 0, 1, 1, 1, 1, NULL, 1, '2021-10-19 04:44:54'),
-(17, 'River', '', 1, 2018, 'PG', 6, 23, '[729],[727],[718]', '', 0, 0, '0q37DbzK', 'xvFkL2YH', '', 0, 0, 0, 0, 0, 0, 0, 0, 1, '1635699600000', 1, '2021-10-19 04:48:22'),
-(18, 'Kimi wa melody', 'เธอคือเมโลดี้', 1, 2018, 'PG-13', 7, 2, '[718],[727],[729]', 'BNK48 Team BⅢ:', 2, 3, 'giGeF5ZZ', 'G6HE4m1V', '', 0, 0, 0, 0, 0, 0, 0, 0, 1, NULL, 1, '2021-10-19 04:52:08'),
-(19, 'Tsugi no Seaso', 'ฤดูใหม่', 1, 2018, 'G', 5, 28, '[718],[727],[729]', '『Tsugi no Season –ฤดูใหม่–』\nLyrics: Yasushi Akimoto\nMusic: Masanobu Fujita\nArrangement: Ikuta Machine\nThai Lyrics Arrangement: Pongchuk Pissathanporn', 5, 0, 'IXJedGdO', 'ev9nPqQc', '', 0, 0, 0, 0, 0, 0, 0, 0, 1, NULL, 0, '2021-10-19 04:55:32'),
-(20, 'Beginer', '', 1, 2019, 'G', 6, 34, '[718],[729],[727]', '『Beginner』\nLyrics: Yasushi Akimoto\nMusic: Yoshimasa Inoue\nArrangement: Yoshimasa Inoue\nThai Lyrics Arrangement: Pongchuk Pissathanporn', 0, 0, 'yg6ArNm5', 'IvbYU4S9', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, '2021-10-19 04:59:55'),
-(21, 'Sukida Sukida Sukida', 'ชอบเธอนะ', 1, 2021, 'PG', 4, 1, '[718],[727],[729]', 'Lyrics: Yasushi Akimoto\nMusic: Yusuke Itagaki\nArrangement: Yusuke Itagaki\nThai Lyrics Arrangement: Prapop Chomthaworn', 0, 0, 'GpNVVmdp', 'npjCaPWo', 'f7UboONb', 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 1, '2021-10-19 05:02:54'),
-(22, 'Next Level', '', 1, 2021, 'PG', 3, 55, '[718],[4],[729]', 'aespa\'s new single \"Next Level\" is out!\nListen and download on your favorite platform: https://smarturl.it/aespa_NextLevel\n⚔️ Performance Stage #1: https://youtu.be/z58k37I4Crs\n⚔️ Performance Stage #2: https://youtu.be/hehFXvnWyKo\n⚔️ Performance Stage #3: https://youtu.be/82CnK4M2sxo', 0, 0, 'mw24jM8x', 'f7UboONb', '', 0, 0, 0, 0, 0, 0, 0, 0, 1, '1636938877481', 0, '2021-10-19 05:05:14'),
-(23, 'Lalisa', '', 1, 2021, 'R', 2, 26, '[4],[718],[729],[721]', 'Protect it like a barrier\nPromise there’s nothing scarier\nThan me if anybody coming gunnin for my man\nGonna catch a case\nGun up in my hand\nBam bam bam\nHit after hit though\nRocks in my wrist so I call em the flintstones', 0, 0, 'kcGUrtFP', 'DLMEyVdf', '', 0, 0, 0, 0, 0, 0, 0, 0, 1, '1635699600000', 0, '2021-10-19 05:07:48'),
-(24, 'Mutelu', 'มูเตลู', 1, 2021, 'G', 3, 2, '[718],[729],[730]', 'PiXXiE - มูเตลู (MUTELU) OFFICIAL M/V', 0, 0, 'SvZFj3Be', ' eUVZVJEo', '', 0, 0, 1, 1, 0, 0, 0, 0, 0, NULL, 1, '2021-10-19 05:11:22'),
-(25, 'Ded', 'เด็ด', 1, 2021, 'G', 3, 32, '[718],[729],[731]', 'PiXXiE - เด็ด (DED) ', 0, 0, ' g5oUHvPR', ' 3tPEIu6p', '', 0, 1, 1, 1, 0, 0, 0, 0, 1, NULL, 0, '2021-10-19 05:13:16'),
-(27, 'shinochi', 'วันแรก', 1, 2018, 'R', 4, 41, '[718],[727],[729],[731]', '『Shonichi –วันแรก–』\nLyrics: Yasushi Akimoto\nMusic: Mio Okada\nArrangement: Yuichi Ichikawa\nThai Lyrics Arrangement: Prapop Chomtawon', 0, 0, '', 'vAoyg3Kr', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, '0', 0, '2021-10-19 05:22:33');
 
 -- --------------------------------------------------------
 
@@ -740,7 +732,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `deletedmovie`
 --
 ALTER TABLE `deletedmovie`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `episode`
