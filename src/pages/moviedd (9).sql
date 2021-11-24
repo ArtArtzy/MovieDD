@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 02, 2021 at 08:05 AM
+-- Generation Time: Nov 24, 2021 at 06:06 AM
 -- Server version: 8.0.17
 -- PHP Version: 7.3.10
 
@@ -73,15 +73,15 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `orderid`, `catname`, `movie`, `series`, `status`) VALUES
-(1, 800, 'ดราม่า', 0, 0, 1),
+(1, 800, 'ดราม่า', 1, 0, 1),
 (2, 3000, 'แอคชั่น', 0, 0, 1),
 (3, 2200, 'สารคดี', 0, 0, 1),
 (4, 200, 'เกาหลี', 0, 0, 1),
 (713, 100, 'การ์ตูน', 0, 0, 1),
 (714, 300, 'ครอบครัว', 0, 0, 1),
-(716, 500, 'ซุปเปอร์ฮีโร่', 0, 0, 1),
+(716, 500, 'ซุปเปอร์ฮีโร่', 1, 0, 1),
 (717, 900, 'ตลก', 1, 0, 1),
-(718, 1000, 'ไทย', 1, 0, 1),
+(718, 1000, 'ไทย', 2, 0, 1),
 (719, 1100, 'ประวัติศาสตร์', 1, 0, 1),
 (721, 1500, 'ยอดนิยม', 0, 0, 1),
 (722, 1600, 'ระทึกขวัญ', 0, 0, 1),
@@ -116,24 +116,6 @@ CREATE TABLE `deletedmovie` (
   `year` int(11) NOT NULL,
   `status` int(11) NOT NULL DEFAULT '0' COMMENT '0=undeleted / 1 = deleted'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `deletedmovie`
---
-
-INSERT INTO `deletedmovie` (`id`, `title`, `movieCode`, `type`, `month`, `year`, `status`) VALUES
-(1, 'Only you', 'LGNBSD', 1, 11, 2021, 1),
-(2, 'Only me', 'LFDSAE', 2, 11, 2021, 1),
-(3, 'Ded', ' 3tPEIu6p', 1, 11, 2021, 0),
-(4, 'Tsugi no Seaso', 'IXJedGdO', 2, 11, 2021, 0),
-(5, 'Tsugi no Seaso', 'ev9nPqQc', 1, 11, 2021, 0),
-(6, 'Kimi wa melody', 'giGeF5ZZ', 2, 11, 2021, 0),
-(7, 'Kimi wa melody', 'G6HE4m1V', 1, 11, 2021, 1),
-(8, 'River', '0q37DbzK', 2, 11, 2021, 0),
-(9, 'River', 'xvFkL2YH', 1, 11, 2021, 0),
-(10, 'Only Today', 'ieh8jaRp', 2, 11, 2021, 0),
-(11, 'Only Today', '38g3LzJQ', 1, 11, 2021, 0),
-(12, 'TEST1', 'tdasdwq', 1, 11, 2021, 0);
 
 -- --------------------------------------------------------
 
@@ -193,7 +175,8 @@ CREATE TABLE `movie` (
 --
 
 INSERT INTO `movie` (`id`, `nameEng`, `nameTh`, `poster`, `year`, `mparate`, `durationHour`, `durationMin`, `type`, `synopsis`, `alertThaiSound`, `alertThaiSub`, `movieCodeEng`, `movieCodeTh`, `trailerCode`, `netflix`, `disney`, `amazon`, `hbo`, `promotion`, `promotionMobilePic`, `promotionTabletPic`, `promotionPCPic`, `new`, `expireddate`, `status`, `timestamp`) VALUES
-(44, 'Test1', '', 1, 2011, 'G', 0, 45, '[717],[718],[719]', '', 0, 0, '', 'FSDSFS', '', 0, 1, 0, 0, 0, 0, 0, 0, 1, '1637136167073', 0, 1635840167000);
+(44, 'Test1', '', 1, 2011, 'G', 0, 45, '[717],[718],[719]', '', 1, 1, 'FSEQQ', 'FSDSFS', 'DSDAD', 0, 1, 0, 0, 0, 0, 0, 0, 1, NULL, 0, 1635840167000),
+(45, 'EST2', '', 1, 2022, 'G', 0, 50, '[718],[1],[716]', 'dasda', 0, 0, '', 'dadqwda', 'dasdas', 0, 0, 1, 0, 0, 0, 0, 0, 1, '1637136564233', 0, 1635840564000);
 
 -- --------------------------------------------------------
 
@@ -245,6 +228,7 @@ CREATE TABLE `reportproblemmovie` (
   `id` int(11) NOT NULL,
   `problemid` int(11) NOT NULL,
   `movieid` int(11) NOT NULL,
+  `type` int(11) NOT NULL COMMENT '1=Thai sound / 2 =Thai sub',
   `userid` int(11) NOT NULL,
   `solved` int(11) NOT NULL DEFAULT '0',
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -254,13 +238,9 @@ CREATE TABLE `reportproblemmovie` (
 -- Dumping data for table `reportproblemmovie`
 --
 
-INSERT INTO `reportproblemmovie` (`id`, `problemid`, `movieid`, `userid`, `solved`, `timestamp`) VALUES
-(1, 1, 16, 1, 0, '2021-10-25 19:36:21'),
-(2, 1, 16, 3, 0, '2021-10-25 19:36:21'),
-(3, 2, 16, 32, 0, '2021-10-25 19:36:56'),
-(4, 2, 16, 48, 0, '2021-10-25 19:36:56'),
-(5, 3, 16, 55, 0, '2021-10-25 19:38:33'),
-(6, 1, 17, 111, 0, '2021-10-25 19:39:00');
+INSERT INTO `reportproblemmovie` (`id`, `problemid`, `movieid`, `type`, `userid`, `solved`, `timestamp`) VALUES
+(7, 1, 44, 1, 11, 0, '2021-11-23 03:45:39'),
+(8, 2, 44, 1, 12, 0, '2021-11-23 03:45:39');
 
 -- --------------------------------------------------------
 
@@ -454,9 +434,6 @@ CREATE TABLE `usersystem` (
 
 INSERT INTO `usersystem` (`us_id`, `username`, `password`, `us_category`, `us_movie`, `us_series`, `us_ads`, `us_analytic`, `us_user`, `us_admin`, `token`) VALUES
 (1, 'admin', '123456', 1, 1, 1, 1, 1, 1, 1, '5fs4226sa'),
-(13, '2', 'sfsafa', 1, 1, 1, 1, 0, 0, 0, ''),
-(15, 'qwesa', 'asfgczxc', 1, 1, 0, 0, 0, 1, 1, ''),
-(29, 'hfmfg', 'sdsj', 1, 1, 1, 0, 0, 0, 0, ''),
 (31, 'art', '123456', 1, 1, 0, 0, 0, 0, 0, 'r4QMRTKsWCl6cYmS97R7'),
 (32, 'test1', '1234567x', 1, 0, 0, 0, 0, 0, 0, 'I3wSCov9TRJb0Uj72xAL'),
 (33, 'test2', '12223332', 1, 1, 0, 0, 0, 0, 0, 'jvJfnwmBPXaigjeoJljH'),
@@ -752,7 +729,7 @@ ALTER TABLE `episode`
 -- AUTO_INCREMENT for table `movie`
 --
 ALTER TABLE `movie`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `problem`
@@ -770,7 +747,7 @@ ALTER TABLE `reportbroblemseriesetc`
 -- AUTO_INCREMENT for table `reportproblemmovie`
 --
 ALTER TABLE `reportproblemmovie`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `reportproblemmovieetc`

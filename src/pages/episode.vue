@@ -821,6 +821,7 @@ export default {
     this.id = this.$route.params.id;
     this.loadSeriesName();
     this.loadEpisodeList();
+    this.checkMenuAccess(3);
   }
 };
 </script>

@@ -28,6 +28,7 @@ export default function(/* { store, ssrContext } */) {
 
   return Router;
 }
+import axios from "axios";
 Vue.mixin({
   data() {
     return {
@@ -37,6 +38,7 @@ Vue.mixin({
     };
   },
   methods: {
+    //Notification สีแดง
     redNotify(text) {
       this.$q.notify({
         message: text,
@@ -46,6 +48,7 @@ Vue.mixin({
         icon: "fas fa-exclamation-circle"
       });
     },
+    //Notification สีเขียว
     greenNotify(text) {
       this.$q.notify({
         message: text,
@@ -54,6 +57,28 @@ Vue.mixin({
         position: "top",
         icon: "fas fa-check-circle"
       });
+    },
+
+    //ตรวจสอบสิทธิในการเข้า menu
+    //menuid = 1=>Category
+    //menuid = 2=>Movie
+    //menuid = 3=>Series
+    //Menuid = 4=>Ads
+    //Menuid = 5=>Analytic
+    //Menuid = 6=>User
+    //Menuid = 7=>Admin
+
+    async checkMenuAccess(menuid) {
+      let temp = {
+        menuid: menuid,
+        token: this.$q.localStorage.getItem("token")
+      };
+      let url = this.serverpath + "bo_checkmenuaccess.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      if (res.data == "logout" || res.data == "not pass") {
+        this.$q.localStorage.clear();
+        this.$router.push("/");
+      }
     }
   }
 });

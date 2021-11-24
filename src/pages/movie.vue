@@ -121,6 +121,7 @@
                     v-show="item.movieCodeTh && item.alertThaiSound != 0"
                     class="testMovie q-ml-md cursor-pointer"
                     align="center"
+                    @click="alertThSound(item.id, item.nameEng)"
                   >
                     TH Sound
                     <img
@@ -1255,6 +1256,23 @@
             dialogReport
         "
       ></div>
+      <!-- Alert -->
+      <q-dialog v-model="dialogAlertProblem" persistent>
+        <q-card class="alertProblemDialog">
+          <div class="font24 q-pt-md" align="center">
+            {{ alertProblemTitle }}
+          </div>
+          <div align="center">{{ alertProblemType }}</div>
+          <div class="row q-px-lg">
+            <div class="col-9">Movie quality</div>
+            <div class="col-3" align="right">
+              <span class="cursor-pointer" @click="solveProblemQuality()">
+                <u>solved</u></span
+              >
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
       <!-- Chart view -->
       <div class="bgDrop fullscreen" v-show="dialogChart">
         <div class="chartdiv absolute-center">
@@ -1378,10 +1396,32 @@ export default {
       yearSelected: "", //ปีที่ถูกเลือกใน deleted movie
       typeSelected: "All movie", //ประเภทที่ถูกเลือกใน deleted movie
       deletedListRaw: [], //List ของ Deleted movie
-      deletedListShow: [] //List ของ Deleted movie ที่แสดง
+      deletedListShow: [], //List ของ Deleted movie ที่แสดง
+      //หน้าต่างแจ้งเตือน
+      dialogAlertProblem: false, //หน้าต่างแสดงปัญหา
+      alertProblemTitle: "", //ชื่อเรื่อง
+      alertProblemType: "", //ประเภทของหนัง
+      alertProblemId: "", //movie id
+      alertQualityShow: false //มีปัญหา movie quality หรือเปล่าว
     };
   },
   methods: {
+    //แก้ปัญหาคุณภาพของ Movie
+    solveProblemQuality() {},
+    //เปิดหน้าต่าง Alert ของ TH sound
+    async alertThSound(id, title) {
+      this.alertProblemId = id;
+      this.alertProblemTitle = title;
+      this.alertProblemType = "Th sound";
+      let temp = {
+        movieid: id,
+        type: 1
+      };
+      let url = this.serverpath + "bo_movieproblemqualitylist.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      if (res.data.length) console.log(res.data.length);
+      this.dialogAlertProblem = true;
+    },
     //updated deleted movie status
     async updateDeletedMovie(value, id) {
       let data = {
@@ -2104,6 +2144,7 @@ export default {
     this.loadcatatmovie();
     this.loadpagenumber();
     this.loadMovieData();
+    this.checkMenuAccess(2);
   }
 };
 </script>
@@ -2278,5 +2319,9 @@ export default {
 .contentDelDiv {
   height: 300px;
   overflow-y: auto;
+}
+.alertProblemDialog {
+  width: 580px;
+  height: 550px;
 }
 </style>

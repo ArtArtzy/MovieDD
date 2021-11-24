@@ -1018,6 +1018,7 @@ export default {
     this.loadcatatmovie();
     this.loadpagenumber();
     this.loadseriesdata();
+    this.checkMenuAccess(3);
   }
 };
 </script>

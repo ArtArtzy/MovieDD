@@ -341,6 +341,7 @@ export default {
   },
   mounted() {
     this.loadData();
+    this.checkMenuAccess(1);
   }
 };
 </script>

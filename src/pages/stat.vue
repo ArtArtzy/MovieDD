@@ -591,6 +591,7 @@ export default {
     await this.loadAdsData(); // ดึงค่าในตาราง [viewads]
     await this.loadChartAds(); // สร้างกราฟ
     this.checkTotal();
+    this.checkMenuAccess(5);
   }
 };
 </script>

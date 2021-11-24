@@ -456,6 +456,7 @@ export default {
     this.loadCategory();
     this.loadData();
     this.loadNoPage();
+    this.checkMenuAccess(6);
   }
 };
 </script>

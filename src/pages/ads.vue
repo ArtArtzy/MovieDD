@@ -447,6 +447,7 @@ export default {
   },
   mounted() {
     this.loadData();
+    this.checkMenuAccess(4);
   }
 };
 </script>
