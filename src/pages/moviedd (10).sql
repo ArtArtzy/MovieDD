@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 24, 2021 at 06:06 AM
+-- Generation Time: Nov 29, 2021 at 05:15 PM
 -- Server version: 8.0.17
 -- PHP Version: 7.3.10
 
@@ -73,15 +73,15 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `orderid`, `catname`, `movie`, `series`, `status`) VALUES
-(1, 800, 'ดราม่า', 1, 0, 1),
+(1, 800, 'ดราม่า', 0, 0, 1),
 (2, 3000, 'แอคชั่น', 0, 0, 1),
 (3, 2200, 'สารคดี', 0, 0, 1),
 (4, 200, 'เกาหลี', 0, 0, 1),
 (713, 100, 'การ์ตูน', 0, 0, 1),
 (714, 300, 'ครอบครัว', 0, 0, 1),
-(716, 500, 'ซุปเปอร์ฮีโร่', 1, 0, 1),
+(716, 500, 'ซุปเปอร์ฮีโร่', 0, 0, 1),
 (717, 900, 'ตลก', 1, 0, 1),
-(718, 1000, 'ไทย', 2, 0, 1),
+(718, 1000, 'ไทย', 1, 0, 1),
 (719, 1100, 'ประวัติศาสตร์', 1, 0, 1),
 (721, 1500, 'ยอดนิยม', 0, 0, 1),
 (722, 1600, 'ระทึกขวัญ', 0, 0, 1),
@@ -116,6 +116,13 @@ CREATE TABLE `deletedmovie` (
   `year` int(11) NOT NULL,
   `status` int(11) NOT NULL DEFAULT '0' COMMENT '0=undeleted / 1 = deleted'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `deletedmovie`
+--
+
+INSERT INTO `deletedmovie` (`id`, `title`, `movieCode`, `type`, `month`, `year`, `status`) VALUES
+(13, 'EST2', 'dadqwda', 1, 11, 2021, 1);
 
 -- --------------------------------------------------------
 
@@ -175,8 +182,7 @@ CREATE TABLE `movie` (
 --
 
 INSERT INTO `movie` (`id`, `nameEng`, `nameTh`, `poster`, `year`, `mparate`, `durationHour`, `durationMin`, `type`, `synopsis`, `alertThaiSound`, `alertThaiSub`, `movieCodeEng`, `movieCodeTh`, `trailerCode`, `netflix`, `disney`, `amazon`, `hbo`, `promotion`, `promotionMobilePic`, `promotionTabletPic`, `promotionPCPic`, `new`, `expireddate`, `status`, `timestamp`) VALUES
-(44, 'Test1', '', 1, 2011, 'G', 0, 45, '[717],[718],[719]', '', 1, 1, 'FSEQQ', 'FSDSFS', 'DSDAD', 0, 1, 0, 0, 0, 0, 0, 0, 1, NULL, 0, 1635840167000),
-(45, 'EST2', '', 1, 2022, 'G', 0, 50, '[718],[1],[716]', 'dasda', 0, 0, '', 'dadqwda', 'dasdas', 0, 0, 1, 0, 0, 0, 0, 0, 1, '1637136564233', 0, 1635840564000);
+(44, 'Test1', '', 1, 2011, 'G', 0, 45, '[717],[718],[719]', '', 0, 0, 'FSEQQ', 'FSDSFS', 'DSDAD', 0, 1, 0, 0, 1, 1, 1, 1, 1, NULL, 1, 1635840167000);
 
 -- --------------------------------------------------------
 
@@ -239,8 +245,11 @@ CREATE TABLE `reportproblemmovie` (
 --
 
 INSERT INTO `reportproblemmovie` (`id`, `problemid`, `movieid`, `type`, `userid`, `solved`, `timestamp`) VALUES
-(7, 1, 44, 1, 11, 0, '2021-11-23 03:45:39'),
-(8, 2, 44, 1, 12, 0, '2021-11-23 03:45:39');
+(7, 1, 44, 1, 11, 1, '2021-11-23 03:45:39'),
+(8, 2, 44, 1, 12, 1, '2021-11-23 03:45:39'),
+(9, 2, 44, 2, 25, 1, '2021-11-28 23:02:12'),
+(10, 1, 44, 2, 26, 1, '2021-11-28 23:02:12'),
+(11, 1, 44, 2, 56, 1, '2021-11-28 23:02:21');
 
 -- --------------------------------------------------------
 
@@ -252,6 +261,7 @@ CREATE TABLE `reportproblemmovieetc` (
   `id` int(11) NOT NULL,
   `movieid` int(11) NOT NULL,
   `topic` text NOT NULL,
+  `type` int(11) NOT NULL COMMENT '1=thai sound / 2 = thai sub',
   `solve` int(11) NOT NULL DEFAULT '0',
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -260,9 +270,14 @@ CREATE TABLE `reportproblemmovieetc` (
 -- Dumping data for table `reportproblemmovieetc`
 --
 
-INSERT INTO `reportproblemmovieetc` (`id`, `movieid`, `topic`, `solve`, `timestamp`) VALUES
-(1, 16, 'ทดสอบ1', 0, '2021-10-26 05:52:13'),
-(2, 16, 'ทดสอบ 2', 0, '2021-10-26 05:52:13');
+INSERT INTO `reportproblemmovieetc` (`id`, `movieid`, `topic`, `type`, `solve`, `timestamp`) VALUES
+(1, 44, 'ทดสอบ1', 1, 1, '2021-10-26 05:52:13'),
+(2, 44, 'ทดสอบ 2', 1, 1, '2021-10-26 05:52:13'),
+(3, 44, 'TEST1', 1, 1, '2021-11-28 07:57:22'),
+(5, 44, 'test3', 1, 1, '2021-11-28 07:59:28'),
+(6, 44, 'test4', 1, 1, '2021-11-28 07:59:28'),
+(7, 44, 'test5', 2, 1, '2021-11-28 07:59:59'),
+(8, 44, 'test6', 2, 1, '2021-11-28 07:59:59');
 
 -- --------------------------------------------------------
 
@@ -717,7 +732,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `deletedmovie`
 --
 ALTER TABLE `deletedmovie`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `episode`
@@ -747,13 +762,13 @@ ALTER TABLE `reportbroblemseriesetc`
 -- AUTO_INCREMENT for table `reportproblemmovie`
 --
 ALTER TABLE `reportproblemmovie`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `reportproblemmovieetc`
 --
 ALTER TABLE `reportproblemmovieetc`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `reportproblemseries`

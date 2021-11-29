@@ -746,7 +746,7 @@
         </q-card>
       </q-dialog>
       <!-- promotion -->
-      <q-dialog class="" v-model="dialogPromotion" persistent>
+      <q-dialog v-model="dialogPromotion" persistent>
         <q-card class="promotionBox" style="font-size:24px;" align="center">
           <div class="row q-pt-md">
             <div class="col-2">
@@ -776,6 +776,8 @@
                 checked-icon="check"
                 unchecked-icon="clear"
                 style="margin-top:-40px;"
+                :disable="posterM == null || posterP == null || posterT == null"
+                @input="setPromotion()"
               />
             </div>
             <div class="col" align="center">
@@ -1650,9 +1652,8 @@ export default {
         }
       }
       //update alert in movie table
-      console.log(this.alertOtherProblemShow, this.alertQualityShow);
+
       if (!this.alertOtherProblemShow && !this.alertQualityShow) {
-        console.log("test");
         temp = {
           movieid: id,
           type: 2
@@ -1707,9 +1708,8 @@ export default {
       }
 
       //update alert in movie table
-      console.log(this.alertOtherProblemShow, this.alertQualityShow);
+
       if (!this.alertOtherProblemShow && !this.alertQualityShow) {
-        console.log("test");
         temp = {
           movieid: id,
           type: 1
@@ -2124,7 +2124,6 @@ export default {
         let today = new Date();
         let mi = today.getTime() + 1296000000;
         this.timestamp = mi;
-        console.log(mi);
         let a = new Date(mi);
         this.addmovie.expiredDate =
           a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
@@ -2197,7 +2196,6 @@ export default {
         this.timestamp =
           this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
         this.timestamp = new Date(this.timestamp).getTime();
-        console.log(this.timestamp);
       }
       let data = {
         nameEng: this.addmovie.titleEn,
@@ -2318,7 +2316,6 @@ export default {
       this.promotionMovieNameEng = posterEng;
       this.promotionMovieNameThai = posterThai;
       this.promotionMovieId = posterId;
-      console.log(promotionTabletPic);
       promotionPCPic == 1
         ? (this.posterP =
             this.serverpath +
@@ -2397,6 +2394,8 @@ export default {
       let res = await axios.post(url, data);
       this.greenNotify("Delete completely");
       this.posterM = null;
+      this.promotionOn = false;
+      this.setPromotion();
     },
     //ลบไฟล์ promotion poster tablet file
     async deletePosterTablet() {
@@ -2408,6 +2407,8 @@ export default {
       let res = await axios.post(url, data);
       this.greenNotify("Delete completely");
       this.posterT = null;
+      this.promotionOn = false;
+      this.setPromotion();
     },
     //ลบไฟล์ promotion poster tablet file
     async deletePosterPC() {
@@ -2419,12 +2420,23 @@ export default {
       let res = await axios.post(url, data);
       this.greenNotify("Delete completely");
       this.posterP = null;
+      this.promotionOn = false;
+      this.setPromotion();
     },
     //ปิดหน้า Promotion
     closePromotion() {
       this.loadMovieData();
       this.indexPoster = 1;
       this.dialogPromotion = false;
+    },
+    //เปิดปิดระบบโปรโมชั่น
+    async setPromotion() {
+      let temp = {
+        movieid: Number(this.promotionMovieId),
+        value: this.promotionOn ? 1 : 0
+      };
+      const url = this.serverpath + "bo_updatePromotion.php";
+      let res = await axios.post(url, temp);
     },
     //ปิด alert ลบหนัง
     closeAlertBtn() {
