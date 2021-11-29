@@ -146,6 +146,7 @@
                     v-show="item.movieCodeEng && item.alertThaiSub != 0"
                     class="testMovie cursor-pointer"
                     align="center"
+                    @click="alertEngSound(item.id, item.nameEng)"
                   >
                     TH Sub
                     <img
@@ -1256,20 +1257,150 @@
             dialogReport
         "
       ></div>
-      <!-- Alert -->
+      <!-- Alert Problem -->
       <q-dialog v-model="dialogAlertProblem" persistent>
         <q-card class="alertProblemDialog">
-          <div class="font24 q-pt-md" align="center">
-            {{ alertProblemTitle }}
+          <div class="row q-pt-md">
+            <div class="col-2"></div>
+            <div class="col font24" align="center">
+              {{ alertProblemTitle }}
+            </div>
+            <div class="col-2" align="right">
+              <q-btn
+                class="q-pr-md"
+                icon="far fa-times-circle"
+                flat
+                round
+                size="18px"
+                dense
+                @click="closeAlertProblemDialog()"
+              />
+            </div>
           </div>
           <div align="center">{{ alertProblemType }}</div>
-          <div class="row q-px-lg">
-            <div class="col-9">Movie quality</div>
-            <div class="col-3" align="right">
-              <span class="cursor-pointer" @click="solveProblemQuality()">
-                <u>solved</u></span
-              >
+          <div class="problemInside">
+            <div class="row q-px-lg">
+              <div class="col-9">Movie quality</div>
+              <div class="col-3" align="center">
+                <span
+                  class="cursor-pointer"
+                  v-show="alertQualityShow"
+                  @click="solveProblemQuality()"
+                >
+                  <u>solved</u></span
+                >
+              </div>
             </div>
+            <div
+              v-if="!alertQualityShow"
+              align="center"
+              class="text-h6 q-py-md"
+            >
+              No qualitiy problem
+            </div>
+            <div v-else v-for="(item, index) in alertQualityData">
+              <div class="row q-px-lg ">
+                <div class="col-9">{{ item.problem }}</div>
+                <div class="col-3" align="center">{{ item.nopro }}</div>
+              </div>
+            </div>
+            <div class="q-px-md">
+              <hr />
+            </div>
+            <div class="text-h6 q-px-md">
+              Other problem
+            </div>
+            <div
+              v-if="!alertOtherProblemShow"
+              align="center"
+              class="text-h6 q-py-md"
+            >
+              No other problem
+            </div>
+            <div v-else v-for="(item, index) in alertOtherProblemData">
+              <div class="row q-px-lg">
+                <div class="col-9">{{ item.problem }}</div>
+                <div class="col-3" align="center">
+                  <span
+                    @click="solveOtherProblem(item.problemid)"
+                    class="cursor-pointer"
+                    ><u>solved</u></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- comfirm Dialog Quality problem  -->
+      <q-dialog v-model="confirmSolveProblem" persistent>
+        <q-card class="confirmDiv">
+          <div class="q-pt-lg" align="center">
+            <q-icon
+              name="fas fa-question-circle"
+              size="80px"
+              style="color:#FFC24C"
+              class="q-pt-md"
+            />
+          </div>
+          <div class="q-pt-md" align="center">
+            Did you upload the new movie file?
+          </div>
+          <div class="row justify-center q-pt-md">
+            <div>
+              <div
+                class="btncommon cursor-pointer"
+                @click="btnAlertProblemNo()"
+              >
+                No
+              </div>
+            </div>
+            <div style="width:20px;"></div>
+            <div>
+              <div
+                class="btnyellow cursor-pointer"
+                @click="btnAlertProblemQualityYes()"
+              >
+                Yes
+              </div>
+            </div>
+            <div></div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- comfirm Dialog Other problem  -->
+      <q-dialog v-model="confirmSolveOtherProblem" persistent>
+        <q-card class="confirmDiv">
+          <div class="q-pt-lg" align="center">
+            <q-icon
+              name="fas fa-question-circle"
+              size="80px"
+              style="color:#FFC24C"
+              class="q-pt-md"
+            />
+          </div>
+          <div class="q-pt-md" align="center">
+            Did you solved this problem?
+          </div>
+          <div class="row justify-center q-pt-md">
+            <div>
+              <div
+                class="btncommon cursor-pointer"
+                @click="btnAlertProblemNo()"
+              >
+                No
+              </div>
+            </div>
+            <div style="width:20px;"></div>
+            <div>
+              <div
+                class="btnyellow cursor-pointer"
+                @click="btnAlertProblemOtherYes()"
+              >
+                Yes
+              </div>
+            </div>
+            <div></div>
           </div>
         </q-card>
       </q-dialog>
@@ -1402,14 +1533,141 @@ export default {
       alertProblemTitle: "", //ชื่อเรื่อง
       alertProblemType: "", //ประเภทของหนัง
       alertProblemId: "", //movie id
-      alertQualityShow: false //มีปัญหา movie quality หรือเปล่าว
+      alertQualityShow: false, //มีปัญหา movie quality หรือเปล่าว
+      alertQualityData: [], //ปัญหา movie quality ที่มี
+      alertOtherProblemShow: false, // มีปัญหา Other problem หรือเปล่าว
+      alertOtherProblemData: [], //ปัญหาอื่นที่มี
+      confirmSolveProblem: false, //ยืนยันQualityปัญหาว่าแก้แล้ว
+      confirmSolveOtherProblem: false, //ยืนยัน Other problem
+      alertProblemOtherId: "" //รหัส other problem
     };
   },
   methods: {
+    //ปิดหน้า Alert Problem
+    closeAlertProblemDialog() {
+      this.dialogAlertProblem = false;
+      this.loadMovieData();
+    },
+    //ตอบ Yes ในหน้า alert other problem
+    async btnAlertProblemOtherYes() {
+      this.confirmSolveOtherProblem = false;
+      let temp = {
+        movieid: Number(this.alertProblemId),
+        id: Number(this.alertProblemOtherId),
+        type: this.alertProblemType == "Th sound" ? 1 : 2
+      };
+
+      let url = this.serverpath + "bo_movieproblemothersolved.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      if (res.data == "complete") {
+        this.greenNotify("Save completely");
+        this.dialogAlertProblem = false;
+        if (this.alertProblemType == "Th sound") {
+          this.alertThSound(this.alertProblemId, this.alertProblemTitle);
+        } else {
+          this.alertEngSound(this.alertProblemId, this.alertProblemTitle);
+        }
+      } else {
+        this.redNotify("There are something wrong");
+      }
+    },
+    //ตอบ Yes ในหน้า alert Confirm Movie quality
+    async btnAlertProblemQualityYes() {
+      this.confirmSolveProblem = false;
+      let temp = {
+        id: Number(this.alertProblemId),
+        type: this.alertProblemType == "Th sound" ? 1 : 2
+      };
+      let url = this.serverpath + "bo_movieproblemqualitysolved.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      if (res.data == "complete") {
+        this.greenNotify("Save completely");
+        this.dialogAlertProblem = false;
+        if (this.alertProblemType == "Th sound") {
+          this.alertThSound(this.alertProblemId, this.alertProblemTitle);
+        } else {
+          this.alertEngSound(this.alertProblemId, this.alertProblemTitle);
+        }
+      } else {
+        this.redNotify("There are something wrong");
+      }
+    },
+    //ตอบ No ในหน้า alert Confirm
+    btnAlertProblemNo() {
+      this.confirmSolveProblem = false;
+      this.dialogAlertProblem = true;
+    },
+    //แก้ปัญหาอื่นๆๆ
+    solveOtherProblem(id) {
+      this.alertProblemOtherId = id;
+      this.confirmSolveOtherProblem = true;
+      this.dialogAlertProblem = false;
+    },
     //แก้ปัญหาคุณภาพของ Movie
-    solveProblemQuality() {},
+    solveProblemQuality() {
+      this.dialogAlertProblem = false;
+      this.confirmSolveProblem = true;
+    },
+    //เปิดหน้าต่าง Alert ของ Eng sound
+    async alertEngSound(id, title) {
+      this.alertOtherProblemData = [];
+      this.alertQualityShow = false;
+      this.alertOtherProblemShow = false;
+      this.alertProblemId = id;
+      this.alertProblemTitle = title;
+      this.alertProblemType = "Th Sub";
+      let temp = {
+        movieid: id,
+        type: 2
+      };
+      let url = this.serverpath + "bo_movieproblemqualitylist.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      if (res.data != "no problem") {
+        this.alertQualityShow = true;
+        this.alertQualityData = [];
+        for (let i = 0; i < res.data.length; i++) {
+          let temp = {
+            problem: res.data[i].problem,
+            nopro: res.data[i].noproblem
+          };
+          this.alertQualityData.push(temp);
+        }
+      } else {
+        this.alertQualityShow = false;
+      }
+      let url2 = this.serverpath + "bo_moviereportproblemetc.php";
+      let res2 = await axios.post(url2, JSON.stringify(temp));
+      if (res2.data == "no data") {
+        this.alertOtherProblemShow = false;
+      } else {
+        this.alertOtherProblemShow = true;
+        for (let i = 0; i < res2.data.length; i++) {
+          let temp = {
+            problemid: res2.data[i].id,
+            problem: res2.data[i].topic
+          };
+          this.alertOtherProblemData.push(temp);
+        }
+      }
+      //update alert in movie table
+      console.log(this.alertOtherProblemShow, this.alertQualityShow);
+      if (!this.alertOtherProblemShow && !this.alertQualityShow) {
+        console.log("test");
+        temp = {
+          movieid: id,
+          type: 2
+        };
+        let url3 = this.serverpath + "bo_moviereportproblemclear.php";
+        let res3 = await axios.post(url3, JSON.stringify(temp));
+      }
+
+      this.dialogAlertProblem = true;
+    },
     //เปิดหน้าต่าง Alert ของ TH sound
     async alertThSound(id, title) {
+      this.alertOtherProblemData = [];
+      this.alertQualityShow = false;
+      this.alertOtherProblemShow = false;
       this.alertProblemId = id;
       this.alertProblemTitle = title;
       this.alertProblemType = "Th sound";
@@ -1419,7 +1677,46 @@ export default {
       };
       let url = this.serverpath + "bo_movieproblemqualitylist.php";
       let res = await axios.post(url, JSON.stringify(temp));
-      if (res.data.length) console.log(res.data.length);
+
+      if (res.data != "no problem") {
+        this.alertQualityShow = true;
+        this.alertQualityData = [];
+        for (let i = 0; i < res.data.length; i++) {
+          let temp = {
+            problem: res.data[i].problem,
+            nopro: res.data[i].noproblem
+          };
+          this.alertQualityData.push(temp);
+        }
+      } else {
+        this.alertQualityShow = false;
+      }
+      let url2 = this.serverpath + "bo_moviereportproblemetc.php";
+      let res2 = await axios.post(url2, JSON.stringify(temp));
+      if (res2.data == "no data") {
+        this.alertOtherProblemShow = false;
+      } else {
+        this.alertOtherProblemShow = true;
+        for (let i = 0; i < res2.data.length; i++) {
+          let temp = {
+            problemid: res2.data[i].id,
+            problem: res2.data[i].topic
+          };
+          this.alertOtherProblemData.push(temp);
+        }
+      }
+
+      //update alert in movie table
+      console.log(this.alertOtherProblemShow, this.alertQualityShow);
+      if (!this.alertOtherProblemShow && !this.alertQualityShow) {
+        console.log("test");
+        temp = {
+          movieid: id,
+          type: 1
+        };
+        let url3 = this.serverpath + "bo_moviereportproblemclear.php";
+        let res3 = await axios.post(url3, JSON.stringify(temp));
+      }
       this.dialogAlertProblem = true;
     },
     //updated deleted movie status
@@ -2322,6 +2619,34 @@ export default {
 }
 .alertProblemDialog {
   width: 580px;
-  height: 550px;
+  height: 400px;
+  background-color: #e1eefe;
+  border-radius: 30px;
+}
+.problemInside {
+  height: 300px;
+  overflow-y: auto;
+}
+.confirmDiv {
+  width: 500px;
+  height: 275px;
+  background-color: #e1eefe;
+  border-radius: 30px;
+}
+.btncommon {
+  width: 160px;
+  height: 50px;
+  border: 1px solid black;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 5px;
+}
+.btnyellow {
+  width: 160px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: #ffc24c;
+  border-radius: 5px;
 }
 </style>
