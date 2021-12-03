@@ -106,7 +106,9 @@
                     {{ item.nameEng }}
                   </div>
                   <div
-                    v-show="item.movieCodeTh && item.alertThaiSound == 0"
+                    v-show="
+                      item.movieCodeTh != '' && item.alertThaiSound == '0'
+                    "
                     class="testMovie q-ml-md"
                     align="center"
                   >
@@ -118,7 +120,9 @@
                     />
                   </div>
                   <div
-                    v-show="item.movieCodeTh && item.alertThaiSound != 0"
+                    v-show="
+                      item.movieCodeTh != '' && item.alertThaiSound != '0'
+                    "
                     class="testMovie q-ml-md cursor-pointer"
                     align="center"
                     @click="alertThSound(item.id, item.nameEng)"
@@ -131,8 +135,8 @@
                     />
                   </div>
                   <div
-                    v-show="item.movieCodeEng && item.alertThaiSub == 0"
-                    class="testMovie"
+                    v-show="item.movieCodeEng != '' && item.alertThaiSub == '0'"
+                    class="testMovie q-ml-md "
                     align="center"
                   >
                     TH Sub
@@ -143,8 +147,8 @@
                     />
                   </div>
                   <div
-                    v-show="item.movieCodeEng && item.alertThaiSub != 0"
-                    class="testMovie cursor-pointer"
+                    v-show="item.movieCodeEng != '' && item.alertThaiSub != '0'"
+                    class="testMovie q-ml-md cursor-pointer"
                     align="center"
                     @click="alertEngSound(item.id, item.nameEng)"
                   >
@@ -786,8 +790,14 @@
             <div class="col-2"></div>
           </div>
           <div class="row items-center" aling="center" style="font-size:14px;">
-            <div class="col"></div>
-
+            <div class="col">
+              <div>Turn on promotion must input 3 size poster</div>
+              <div class="row">
+                <div class="col row"></div>
+                <civ class="col row"></civ>
+                <civ class="col row"></civ>
+              </div>
+            </div>
             <div
               v-show="indexPoster == 1"
               class="picPosterBTN q-ma-md cursor-pointer"
@@ -2660,5 +2670,11 @@ export default {
   text-align: center;
   background-color: #ffc24c;
   border-radius: 5px;
+}
+.checkTypePoster {
+  width: 21px;
+  height: 21px;
+  border-radius: 5px;
+  background: #e83939;
 }
 </style>
