@@ -247,7 +247,7 @@
                     )
                   "
                 >
-                  promotion
+                  promote
                 </div>
                 <div
                   v-show="item.promotion == 0"
@@ -264,7 +264,7 @@
                     )
                   "
                 >
-                  promotion
+                  promote
                 </div>
                 <div
                   v-show="item.status == 1"
@@ -754,7 +754,7 @@
         <q-card class="promotionBox" style="font-size:24px;" align="center">
           <div class="row q-pt-md">
             <div class="col-2">
-              Promotion
+              Promote
             </div>
             <div class="col" align="center" style="font-size:36px;">
               {{ promotionMovieNameEng }}
