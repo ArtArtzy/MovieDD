@@ -790,12 +790,37 @@
             <div class="col-2"></div>
           </div>
           <div class="row items-center" aling="center" style="font-size:14px;">
-            <div class="col">
+            <div class="col" align="center">
               <div>Turn on promotion must input 3 size poster</div>
-              <div class="row">
-                <div class="col row"></div>
-                <civ class="col row"></civ>
-                <civ class="col row"></civ>
+              <div class="row justify-evenly">
+                <div class="col-2"></div>
+                <div class="col-3 row">
+                  <div class="checkTypePoster" v-show="posterM == null"></div>
+                  <div
+                    class="checkTypePoster"
+                    v-show="posterM != null"
+                    style="background-color:#00A642;"
+                  ></div>
+                  <div class="q-pl-sm">Mobile</div>
+                </div>
+                <div class="col-3 row">
+                  <div class="checkTypePoster" v-show="posterT == null"></div>
+                  <div
+                    class="checkTypePoster"
+                    v-show="posterT != null"
+                    style="background-color:#00A642;"
+                  ></div>
+                  <div class="q-pl-sm">Tablet</div>
+                </div>
+                <div class="col-3 row">
+                  <div class="checkTypePoster" v-show="posterP == null"></div>
+                  <div
+                    class="checkTypePoster"
+                    v-show="posterP != null"
+                    style="background-color:#00A642;"
+                  ></div>
+                  <div class="q-pl-sm">PC</div>
+                </div>
               </div>
             </div>
             <div
