@@ -791,10 +791,12 @@
           </div>
           <div class="row items-center" aling="center" style="font-size:14px;">
             <div class="col" align="center">
-              <div>Turn on promotion must input 3 size poster</div>
+              <div class="q-pl-xl">
+                Turn on promotion must input 3 size poster
+              </div>
               <div class="row justify-evenly">
-                <div class="col-2"></div>
-                <div class="col-3 row">
+                <div class="col-1"></div>
+                <div class="col-2 row">
                   <div class="checkTypePoster" v-show="posterM == null"></div>
                   <div
                     class="checkTypePoster"
@@ -803,7 +805,7 @@
                   ></div>
                   <div class="q-pl-sm">Mobile</div>
                 </div>
-                <div class="col-3 row">
+                <div class="col-2 row">
                   <div class="checkTypePoster" v-show="posterT == null"></div>
                   <div
                     class="checkTypePoster"
@@ -812,7 +814,7 @@
                   ></div>
                   <div class="q-pl-sm">Tablet</div>
                 </div>
-                <div class="col-3 row">
+                <div class="col-2 row">
                   <div class="checkTypePoster" v-show="posterP == null"></div>
                   <div
                     class="checkTypePoster"
