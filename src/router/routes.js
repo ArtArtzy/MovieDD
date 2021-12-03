@@ -16,7 +16,7 @@ const routes = [
       {
         path: "/movie",
         component: () => import("pages/movie.vue"),
-        mame: "movie"
+        name: "movie"
       },
       {
         path: "/series",

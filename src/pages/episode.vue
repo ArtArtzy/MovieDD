@@ -543,6 +543,7 @@ export default {
       indexPreview: 1, // index สำหรับ dialog preview
       previewMovieThaiSoundCode: "", //Code สำหรับ movie thai sound
       previewMovieThaiSubCode: "", //Code สำหรับ movie thai sub
+
       editSeasonId: "", //แก้ไข Season
       delSeasonId: "", //ลบ Season
       seriesName: "", //ชื่อ Series
@@ -579,8 +580,10 @@ export default {
         movieCodeEng: this.addEpisode.movieCodeEng,
         movieCodeTh: this.addEpisode.movieCodeTh
       };
+      console.log(data);
       let url = this.serverpath + "bo_addserriessub.php";
       let res = await axios.post(url, JSON.stringify(data));
+      console.log(res.data);
       this.greenNotify("Add " + this.addEpisode.name + " Complete");
 
       this.loadEpisodeList();
@@ -895,7 +898,7 @@ export default {
 }
 .newEpisode {
   border-radius: 30px;
-  width: 500px;
+  width: 700px;
   height: 350px;
 }
 .textInput {
