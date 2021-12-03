@@ -33,6 +33,7 @@
               style="width:120px;font-size:16px;"
               emit-value
               map-options
+              @input="loadseriesdata()"
             >
             </q-select>
           </div>
@@ -46,6 +47,7 @@
               :options="moviePage"
               dense
               style="width:50px;font-size:16px;"
+              @input="loadseriesdata()"
             >
             </q-select>
           </div>
@@ -108,7 +110,7 @@
                   </div>
                 </div>
                 <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
-                  {{ item.synopsis }}
+                  {{ item.synopsis }}{{ item.trailer }}
                 </div>
                 <div v-show="item.episode != null">
                   <div class="row">
@@ -146,19 +148,20 @@
                   align="center"
                   @click="gotoEpisode(item.id)"
                 >
-                  Episode
+                  episode
                 </div>
 
                 <div
-                  v-show="item.trilerCode"
+                  v-show="item.trailerCode.length > 0"
                   class="btnMovie bg-primary"
                   align="center"
+                  @click="showTrailer(item.trailerCode, item.nameEng)"
                 >
                   <q-icon class="fas fa-play" />
                   trailer
                 </div>
                 <div
-                  v-show="!item.trilerCode"
+                  v-show="item.trailerCode.length == 0"
                   class="btnMovie bg-grey"
                   align="center"
                 >
@@ -171,7 +174,7 @@
                   align="center"
                   @click="item.promotion = 0"
                 >
-                  Promotion
+                  promote
                 </div>
                 <div
                   v-show="!item.promotion"
@@ -179,21 +182,21 @@
                   align="center"
                   @click="item.promotion = 1"
                 >
-                  Promotion
+                  promote
                 </div>
                 <div
-                  v-show="item.status"
+                  v-show="item.status == '1'"
                   class="btnMovie bg-positive"
                   align="center"
-                  @click="item.status = 0"
+                  @click="updateStatus(0, item.id)"
                 >
                   online
                 </div>
                 <div
-                  v-show="!item.status"
+                  v-show="item.status == '0'"
                   class="btnMovie bg-negative"
                   align="center"
-                  @click="item.status = 1"
+                  @click="updateStatus(1, item.id)"
                 >
                   offline
                 </div>
@@ -205,7 +208,7 @@
         <!-- end series Box  -->
       </div>
       <!-- add series  -->
-      <q-dialog class="" v-model="dialogAddSeries" persistent>
+      <q-dialog v-model="dialogAddSeries" persistent>
         <q-card class="diaBox">
           <div class="q-pt-md" style="font-size:24px;" align="center">
             Add Series
@@ -215,7 +218,6 @@
               <div class="col row items-end">
                 <div class="col-4">Title name(En)</div>
                 <q-input
-                  class=""
                   style="width:260px;"
                   v-model="addmovie.titleEn"
                   dense
@@ -224,7 +226,6 @@
               <div class="col row items-end">
                 <div class="col-4 ">Title name(Th)</div>
                 <q-input
-                  class=""
                   style="width:260px;"
                   v-model="addmovie.titleTh"
                   dense
@@ -234,17 +235,11 @@
             <div class="row ">
               <div class="col row items-end">
                 <div class="col-4">Year</div>
-                <q-input
-                  class=""
-                  style="width:160px;"
-                  v-model="addmovie.year"
-                  dense
-                />
+                <q-input style="width:160px;" v-model="addmovie.year" dense />
               </div>
               <div class="col row items-end">
                 <div class="col-4">Mpa Rating</div>
                 <q-select
-                  class=""
                   color="blue"
                   v-model="addmovie.mpaRating"
                   :options="mpaOpt"
@@ -282,7 +277,6 @@
             <div class=" row items-end">
               <div class="col-2">Trailer code</div>
               <q-input
-                class=""
                 style="width:200px;"
                 v-model="addmovie.trailerCode"
                 dense
@@ -293,7 +287,6 @@
                 Category
               </div>
               <q-select
-                class=""
                 color="teal"
                 v-model="addmovie.category"
                 :options="movieCatOptWithoutAll"
@@ -366,7 +359,7 @@
         </q-card>
       </q-dialog>
       <!-- edit series  -->
-      <q-dialog class="" v-model="dialogEditSeries" persistent>
+      <q-dialog v-model="dialogEditSeries" persistent>
         <q-card class="diaBox">
           <div class="row" align="center">
             <div class="col-1"></div>
@@ -382,7 +375,6 @@
               <div class="col row items-end">
                 <div class="col-4">Title name(En)</div>
                 <q-input
-                  class=""
                   style="width:260px;"
                   v-model="addmovie.titleEn"
                   dense
@@ -541,125 +533,283 @@
           </div>
         </q-card>
       </q-dialog>
-      <!-- Report  -->
-      <q-dialog v-model="dialogReport" persistent>
-        <q-card class="reportDialog">
+      <!-- trailer -->
+      <q-dialog v-model="trailer.dialog" persistent>
+        <q-card class="trailerBox">
           <div class="row q-pa-md" align="center">
             <div class="col-1"></div>
-            <div class="col" style="font-size:24px;">Report</div>
+            <div class="col" style="font-size:24px;margin-top:30px;">
+              {{ trailer.movieName }}
+            </div>
+
             <div class="col-1">
               <q-btn
                 icon="far fa-times-circle"
                 flat
                 round
-                size="md"
+                size="18px"
                 dense
                 v-close-popup
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-1"></div>
-            <div class="col">
-              <div class="row items-end">
-                <div class="col" style="font-size:20px;">Movie qualitiy</div>
-                <div class="cursor-pointer">
-                  <u>solved</u>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">หนังดูไม่ได้</div>
-                <div class="col-3" align="right">x คน</div>
-              </div>
-              <div class="row">
-                <div class="col">ไม่มีเสียง / เสียงไม่ตรง</div>
-                <div class="col-3" align="right">x คน</div>
-              </div>
-              <div class="row">
-                <div class="col">ภาพกระตุก</div>
-                <div class="col-3" align="right">x คน</div>
-              </div>
-              <hr />
-              <div style="font-size:20px;">Etc</div>
+          <div class="q-mt-md">
+            <div style="width:790px;height:443px;margin:auto;">
+              <iframe
+                :src="trailer.movieLink"
+                frameborder="0"
+                scrolling="auto"
+                allowfullscreen
+                style="position:absolute;width:790px;height:443px;"
+              ></iframe>
             </div>
-            <div class="col-1"></div>
           </div>
-          <q-scroll-area style="height:240px;">
-            <div
-              class="row"
-              style="height:40px;"
-              v-for="(item, index) in testReport"
-              :key="index"
-            >
-              <div class="col-1"></div>
-              <div
-                class="col q-pl-sm"
-                :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
-                style="height:40px;line-height: 40px;"
-              >
-                {{ item }}
-              </div>
-              <div
-                class="cursor-pointer q-pr-sm"
-                :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
-                style="height:40px;line-height: 40px;"
-              >
-                <u>solved</u>
-              </div>
-              <div class="col-1"></div>
-            </div>
-          </q-scroll-area>
         </q-card>
       </q-dialog>
+      <!-- promotion -->
+      <!-- <q-dialog v-model="dialogPromotion" persistent>
+        <q-card class="promotionBox" style="font-size:24px;" align="center">
+          <div class="row q-pt-md">
+            <div class="col-2">
+              Promotion
+            </div>
+            <div class="col" align="center" style="font-size:36px;">
+              {{ promotionSeriesNameEng }}
+            </div>
+            <div class="col-2" align="right">
+              <q-btn
+                class="q-pr-md"
+                icon="far fa-times-circle"
+                flat
+                round
+                size="18px"
+                dense
+                @click="closePromotion()"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <q-toggle
+                v-model="promotionOn"
+                color="green"
+                size="xl"
+                checked-icon="check"
+                unchecked-icon="clear"
+                style="margin-top:-40px;"
+                :disable="posterM == null || posterP == null || posterT == null"
+                @input="setPromotion()"
+              />
+            </div>
+            <div class="col" align="center">
+              {{ promotionMovieNameThai }}
+            </div>
+            <div class="col-2"></div>
+          </div>
+          <div class="row items-center" aling="center" style="font-size:14px;">
+            <div class="col"></div>
+
+            <div
+              v-show="indexPoster == 1"
+              class="picPosterBTN q-ma-md cursor-pointer"
+              @click="indexPoster = 1"
+              style="background:#ffc24c;"
+            >
+              Mobile
+            </div>
+            <div
+              v-show="indexPoster != 1"
+              class="picPosterBTN q-ma-md cursor-pointer"
+              @click="indexPoster = 1"
+            >
+              Mobile
+            </div>
+            <div
+              v-show="indexPoster == 2"
+              class="picPosterBTN q-ma-md cursor-pointer"
+              @click="indexPoster = 2"
+              style="background:#ffc24c;"
+            >
+              Tablet
+            </div>
+            <div
+              v-show="indexPoster != 2"
+              class="picPosterBTN q-ma-md cursor-pointer"
+              @click="indexPoster = 2"
+            >
+              Tablet
+            </div>
+            <div
+              v-show="indexPoster == 3"
+              class="picPosterBTN q-ma-md cursor-pointer"
+              @click="indexPoster = 3"
+              style="background:#ffc24c;"
+            >
+              PC
+            </div>
+            <div
+              v-show="indexPoster != 3"
+              class="picPosterBTN q-ma-md cursor-pointer"
+              @click="indexPoster = 3"
+            >
+              PC
+            </div>
+            <div class="col"></div>
+          </div>
+
+          <div class="">
+            <div
+              v-show="indexPoster == 1 && posterM == null"
+              class="q-pa-md col"
+              style="width:360px;height:445px;border-style:dashed;margin-top:40px;"
+              align="center"
+            >
+              <div class="q-py-xl col" style="padding-top:120px;">
+                jpg - 360x445 px
+              </div>
+              <div>
+                <q-file
+                  v-model="promotionMobileFile"
+                  dense
+                  style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
+                  borderless
+                  accept=".jpg"
+                  class="bg-white q-mt-lg"
+                  @input="uploadFilePosterMobile()"
+                >
+                  <template v-slot:prepend>
+                    <div class="absolute-center fit" align="center">
+                      <span class="text-black" style="font-size:12px;"
+                        >upload poster file</span
+                      >
+                    </div>
+                  </template>
+
+                  <template v-slot:file></template>
+                </q-file>
+              </div>
+            </div>
+            <div
+              v-show="indexPoster == 1 && posterM != null"
+              class=" col"
+              style="margin-top:40px;"
+              align="center"
+            >
+              <img :src="posterM" alt="" style="width:360px" />
+              <div @click="deletePosterMobile()" class="cursor-pointer">
+                <u>delete poster</u>
+              </div>
+            </div>
+            <div
+              v-show="indexPoster == 2 && posterT == null"
+              class="q-pa-md col"
+              style="width:770px;height:430px;border-style:dashed;margin-top:60px;"
+              align="center"
+            >
+              <div class="q-py-xl col" style="padding-top:120px;">
+                jpg - 770x430 px
+              </div>
+              <q-file
+                v-model="promotionTabletFile"
+                dense
+                style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
+                borderless
+                accept=".jpg"
+                class="bg-white q-mt-lg"
+                @input="uploadFilePosterTablet()"
+              >
+                <template v-slot:prepend>
+                  <div class="absolute-center fit" align="center">
+                    <span class="text-black" style="font-size:12px;"
+                      >upload poster file</span
+                    >
+                  </div>
+                </template>
+
+                <template v-slot:file></template>
+              </q-file>
+            </div>
+            <div
+              v-show="indexPoster == 2 && posterT != null"
+              class="col"
+              style="margin-top:60px;"
+              align="center"
+            >
+              <img :src="posterT" alt="" style="width:770px;" />
+              <div @click="deletePosterTablet()" class="cursor-pointer">
+                <u>delete poster</u>
+              </div>
+            </div>
+            <div
+              v-show="indexPoster == 3 && posterP == null"
+              class="q-pa-md col"
+              style="width:1200px;height:670px;border-style:dashed;"
+              align="center"
+            >
+              <div class="q-py-xl col" style="padding-top:180px;">
+                jpg - 1200x670 px
+              </div>
+              <q-file
+                v-model="promotionPCFile"
+                dense
+                style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
+                borderless
+                accept=".jpg"
+                class="bg-white q-mt-lg"
+                @input="uploadFilePosterPC()"
+              >
+                <template v-slot:prepend>
+                  <div class="absolute-center fit" align="center">
+                    <span class="text-black" style="font-size:12px;"
+                      >upload poster file</span
+                    >
+                  </div>
+                </template>
+
+                <template v-slot:file></template>
+              </q-file>
+            </div>
+            <div
+              v-show="indexPoster == 3 && posterP != null"
+              class="col"
+              style=""
+              align="center"
+            >
+              <img :src="posterP" alt="" style="width:1200px;" />
+              <div @click="deletePosterPC()" class="cursor-pointer">
+                <u>delete poster</u>
+              </div>
+            </div>
+            <div class="col"></div>
+          </div>
+        </q-card>
+      </q-dialog> -->
       <!-- bg drop  -->
-      <div class="bgDrop fullscreen" v-show="dialogAddSeries"></div>
+      <div
+        class="bgDrop fullscreen"
+        v-show="dialogAddSeries || trailer.dialog"
+      ></div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { async } from "q";
 export default {
   data() {
     return {
-      testReport: [
-        "ชื่อเรื่องสะกดผิด",
-        "เรื่องย่อไม่ตรงกับเรื่องจริง",
-        "ภาพปกคนละภาพ",
-        "เสียงเบา",
-        "s",
-        "sdsa",
-        "dsag",
-        "dsgg",
-        "ghsd",
-        "ชื่อเรื่องสะกดผิด",
-        "เรื่องย่อไม่ตรงกับเรื่องจริง",
-        "ภาพปกคนละภาพ",
-        "เสียงเบา",
-        "s",
-        "sdsa",
-        "dsag",
-        "dsgg",
-        "ghsd",
-        "ชื่อเรื่องสะกดผิด",
-        "เรื่องย่อไม่ตรงกับเรื่องจริง",
-        "ภาพปกคนละภาพ",
-        "เสียงเบา",
-        "s",
-        "sdsa",
-        "dsag",
-        "dsgg",
-        "ghsd"
-      ],
+      //หน้าหลัก
       searchMovie: "",
       movieCat: 0, //ประเภทหนังที่ filter
       movieCatOpt: [], //รายชื่อประเภทของหนัง
       movieCatOptWithoutAll: [], //รายชื่อประเภทของหนังที่ไม่รวมทั้งหมด
-      mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"],
-      movieP: 1,
-      moviePage: [1, 2, 3, 4],
+      movieP: 1, //หน้าปัจจุบันของข้อมูล
+      moviePage: [], //หน้าทั้งหมดที่มี
+      data: [], //ข้อมูลหนังทั้งหมด
+      //เพิ่มและแก้ไขหนังซีรีย์
       labelExpired: "", // คำอธิบาย label สำหรับ New arraival
-      data: [],
+      mpaOpt: ["G", "PG", "PG-13", "R", "NC-17"], //ประเภทหนัง
       addmovie: {
         titleTh: "",
         titleEn: "",
@@ -675,16 +825,26 @@ export default {
         hbo: false,
         newArraival: false,
         expiredDate: ""
-      },
-      editMovieId: "",
+      }, //input สำหรับ เพิ่มและแก้ไขหนังซีรีย์
+      editMovieId: "", //รหัสหน้งที่ทำการแก้ไข
       dialogAddSeries: false,
       dialogEditSeries: false,
-      dialogReport: false
+      //trailer
+      trailer: {
+        movieCode: "", //รหัส trailer
+        movieName: "", //ชื่อหนัง
+        dialog: false, //เปิดหน้าต่าง trailer
+        movieLink: "" //หนังที่เข้ารหัสแล้ว
+      },
+
+      //Promotion
+      dialogPromotion: false, //เปิดหน้าต่าง Promotion
+      promotionSeriesNameEng: "xxx" //ชื่อ Series
     };
   },
   methods: {
-    //ล้างข้อมูล
-    clearData() {
+    //******Lib กลาง *****
+    clraddmovie() {
       this.addmovie.titleTh = "";
       this.addmovie.titleEn = "";
       this.addmovie.year = "";
@@ -698,11 +858,156 @@ export default {
       this.addmovie.amazon = false;
       this.addmovie.hbo = false;
       this.addmovie.newArraival = false;
+      this.addmovie.expiredDate = "";
     },
-    // ปุ่ม Report
-    reportBtn(id) {
-      this.dialogReport = true;
+    //โหลดประเภทหนัง
+    async loadcatatmovie() {
+      this.movieCatOpt = [];
+      this.movieCatOptWithoutAll = [];
+      let url = this.serverpath + "bo_loadcategory.php";
+      let res = await axios.get(url);
+      let temp2 = {
+        label: "ทั้งหมด",
+        value: 0
+      };
+      this.movieCatOpt.push(temp2);
+      let dataTemp = res.data;
+      dataTemp = dataTemp.sort((a, b) => a.orderid - b.orderid);
+      dataTemp.forEach(x => {
+        let temp = {
+          label: x.catname,
+          value: x.id
+        };
+        this.movieCatOpt.push(temp);
+        this.movieCatOptWithoutAll.push(temp);
+      });
+      this.movieCat = this.movieCatOpt[0].value;
     },
+    //แสดงชื่อ Category
+    catName(id) {
+      let temp = this.movieCatOpt.filter(x => x.value == id);
+      return temp[0].label;
+    },
+
+    //******หน้าหลัก******
+    //เปลี่ยนค่า online / offline
+    async updateStatus(status, seriesid) {
+      let temp = {
+        status: Number(status),
+        id: seriesid
+      };
+      let url = this.serverpath + "bo_seriesmainonline.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      this.loadseriesdata();
+    },
+    //ปุ่มเพิ่ม Series
+    addSeriesBtn() {
+      let today = new Date();
+      let mi = today.getTime() + 1296000000;
+      let a = new Date(mi);
+      this.addmovie.expiredDate =
+        a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+      this.labelExpired =
+        "New arrival (expireed date " + this.addmovie.expiredDate + ")";
+      this.clraddmovie();
+      this.dialogAddSeries = true;
+    },
+    //ปุ่มแก้ไข Series
+    editSeriesBtn(item) {
+      this.addmovie.titleTh = item.nameTh;
+      this.addmovie.titleEn = item.nameEng;
+      this.addmovie.year = item.year;
+      this.addmovie.posterFile = item.poster;
+      this.addmovie.mpaRating = item.mparate;
+      this.addmovie.synopsis = item.synopsis;
+      this.addmovie.trailerCode = item.trailerCode;
+      this.addmovie.category = item.type;
+      this.addmovie.netflix = item.netflix == 1 ? true : false;
+      this.addmovie.disney = item.disney == 1 ? true : false;
+      this.addmovie.amazon = item.amazon == 1 ? true : false;
+      this.addmovie.hbo = item.hbo == 1 ? true : false;
+      this.addmovie.newArraival = item.new == 1 ? true : false;
+      this.addmovie.expiredDate = item.expireddate;
+      if (this.addmovie.expiredDate == null) {
+        let today = new Date();
+        let mi = today.getTime() + 1296000000;
+        let a = new Date(mi);
+        this.addmovie.expiredDate =
+          a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+        this.labelExpired =
+          "New arrival (expired date " + this.addmovie.expiredDate + ")";
+      } else {
+        this.labelExpired =
+          "New arrival (expired date " + this.addmovie.expiredDate + ")";
+      }
+      this.editMovieId = item.id;
+
+      this.dialogEditSeries = true;
+    },
+    //หาจำนวนหน้า
+    async loadpagenumber() {
+      let data = {
+        cat: this.movieCat
+      };
+      let url = this.serverpath + "bo_seriespagenumber.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.moviePage = [];
+      for (let i = 1; i <= res.data; i++) {
+        this.moviePage.push(i);
+      }
+    },
+    //ข้อมูลโชว์หน้าแรก
+    async loadseriesdata() {
+      this.loadpagenumber();
+      //โหลดข้อมูลหนัง
+      this.data = [];
+      let data = {
+        catName: this.movieCat,
+        pagedata: this.movieP
+      };
+
+      let url = this.serverpath + "bo_seriesshowdata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      res.data.forEach(x => {
+        //หาวันที่ upload ไป
+
+        let dateUploadTime = x.timestamp * 1000;
+        let dateCurrent = new Date();
+        let dateCurrentTime = dateCurrent.getTime();
+        let dateDiff = dateCurrentTime - dateUploadTime;
+        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
+
+        //จัดการเรื่อง episode
+        if (x.episode != null) {
+          x.episode = x.episode.split(",");
+        }
+
+        let movieType = x.type.split(",");
+        movieType = movieType.map(x => {
+          return x.replace("[", "").replace("]", "");
+        });
+        x.type = movieType;
+
+        this.data.push(x);
+      });
+    },
+    //ปุ่ม Episode
+    gotoEpisode(id) {
+      this.$router.push("episode/" + id);
+    },
+    //แสดงรูปภาพหนัง
+    urlPoster(id) {
+      return (
+        this.serverpath +
+        "poster/series/" +
+        id +
+        ".jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100)
+      );
+    },
+
+    //******เพิ่มข้อมูล******
+
     //ปุ่ม ok ใน add series
     async addMainSeriesBtn() {
       //Check input
@@ -766,65 +1071,18 @@ export default {
       formData.append("id", movieid);
       url = this.serverpath + "bo_uploadseriesmainposter.php";
       let data2 = await axios.post(url, formData);
-      //update cat ในตาราง category
-      for (let catid of this.addmovie.category) {
-        let data3 = {
-          catid: catid
-        };
-        url = this.serverpath + "bo_movieaddcat.php";
-        let res = await axios.post(url, JSON.stringify(data3));
-      }
+
       this.greenNotify("Add new series completely");
       this.dialogAddSeries = false;
       this.loadseriesdata();
     },
-    //หาจำนวนหน้า
-    async loadpagenumber() {
-      let data = {
-        cat: this.movieCat
-      };
-      let url = this.serverpath + "bo_seriespagenumber.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      this.moviePage = [];
-      for (let i = 1; i <= res.data; i++) {
-        this.moviePage.push(i);
-      }
+    //ปิดหน้าต่างเพิ่ม Series
+    closeAddSeriesBtn() {
+      this.clraddmovie();
+      this.dialogAddSeries = false;
     },
-    //ข้อมูลโชว์หน้าแรก
-    async loadseriesdata() {
-      this.loadpagenumber();
-      //โหลดข้อมูลหนัง
-      this.data = [];
-      let data = {
-        catName: this.movieCat,
-        pagedata: this.movieP
-      };
 
-      let url = this.serverpath + "bo_seriesshowdata.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      res.data.forEach(x => {
-        //หาวันที่ upload ไป
-
-        let dateUploadTime = x.timestamp * 1000;
-        let dateCurrent = new Date();
-        let dateCurrentTime = dateCurrent.getTime();
-        let dateDiff = dateCurrentTime - dateUploadTime;
-        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
-
-        //จัดการเรื่อง episode
-        if (x.episode != null) {
-          x.episode = x.episode.split(",");
-        }
-
-        let movieType = x.type.split(",");
-        movieType = movieType.map(x => {
-          return x.replace("[", "").replace("]", "");
-        });
-        x.type = movieType;
-
-        this.data.push(x);
-      });
-    },
+    //******แก้ไขข้อมูล******
     //ปุ่ม ok ใน edit series
     async editMainSeriesBtn() {
       //Check input
@@ -895,6 +1153,12 @@ export default {
       this.dialogEditSeries = false;
       this.loadseriesdata();
     },
+    //ปิดหน้าต่างแก้ไข Series
+    closeEditSeriesBtn() {
+      this.clraddmovie();
+      this.dialogEditSeries = false;
+    },
+
     //Delete poster edit mode
     async deletePosterFileBtn() {
       let data = {
@@ -907,111 +1171,24 @@ export default {
       this.addmovie.posterFile = 0;
       this.greenNotify("deleted poster complete");
     },
-    urlPoster(id) {
-      return (
-        this.serverpath +
-        "/poster/series/" +
-        id +
-        ".jpg?" +
-        Math.floor(Math.random() * (999 - 100 + 1) + 100)
-      );
-    },
-    addSeriesBtn() {
-      let today = new Date();
-      let mi = today.getTime() + 1296000000;
-      let a = new Date(mi);
-      this.addmovie.expiredDate =
-        a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
-      this.labelExpired =
-        "New arrival (expireed date " + this.addmovie.expiredDate + ")";
-      this.clearData();
-      this.dialogAddSeries = true;
-    },
-    editSeriesBtn(item) {
-      this.addmovie.titleTh = item.nameTh;
-      this.addmovie.titleEn = item.nameEng;
-      this.addmovie.year = item.year;
-      this.addmovie.posterFile = item.poster;
-      this.addmovie.mpaRating = item.mparate;
-      this.addmovie.synopsis = item.synopsis;
-      this.addmovie.trailerCode = item.trailerCode;
-      this.addmovie.category = item.type;
-      this.addmovie.netflix = item.netflix == 1 ? true : false;
-      this.addmovie.disney = item.disney == 1 ? true : false;
-      this.addmovie.amazon = item.amazon == 1 ? true : false;
-      this.addmovie.hbo = item.hbo == 1 ? true : false;
-      this.addmovie.newArraival = item.new == 1 ? true : false;
-      this.addmovie.expiredDate = item.expireddate;
-      if (this.addmovie.expiredDate == null) {
-        let today = new Date();
-        let mi = today.getTime() + 1296000000;
-        let a = new Date(mi);
-        this.addmovie.expiredDate =
-          a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
-        this.labelExpired =
-          "New arrival (expired date " + this.addmovie.expiredDate + ")";
-      } else {
-        this.labelExpired =
-          "New arrival (expired date " + this.addmovie.expiredDate + ")";
-      }
-      this.editMovieId = item.id;
 
-      this.dialogEditSeries = true;
-    },
-    closeEditSeriesBtn() {
-      this.clraddmovie();
-      this.dialogEditSeries = false;
-    },
-    closeAddSeriesBtn() {
-      this.clraddmovie();
-      this.dialogAddSeries = false;
-    },
-    clraddmovie() {
-      this.addmovie.titleTh = "";
-      this.addmovie.titleEn = "";
-      this.addmovie.year = "";
-      this.addmovie.mpaRating = "G";
-      this.addmovie.posterFile = null;
-      this.addmovie.synopsis = "";
-      this.addmovie.trailerCode = "";
-      this.addmovie.category = null;
-      this.addmovie.netflix = false;
-      this.addmovie.disney = false;
-      this.addmovie.amazon = false;
-      this.addmovie.hbo = false;
-      this.addmovie.newArraival = false;
-      this.addmovie.expiredDate = "";
-    },
-    gotoEpisode(id) {
-      this.$router.push("episode/" + id);
-    },
-    async loadcatatmovie() {
-      //โหลดประเภทหนัง
-      this.movieCatOpt = [];
-      this.movieCatOptWithoutAll = [];
-      let url = this.serverpath + "bo_loadcategory.php";
-      let res = await axios.get(url);
-      let temp2 = {
-        label: "ทั้งหมด",
-        value: 0
+    //******trailer******
+    //กดเปิด trailer หน้าหลัก
+    async showTrailer(id, movieName) {
+      this.trailer.movieCode = id;
+      this.trailer.movieName = movieName;
+      let data = {
+        movieCode: this.trailer.movieCode
       };
-      this.movieCatOpt.push(temp2);
-      let dataTemp = res.data;
-      dataTemp = dataTemp.sort((a, b) => a.orderid - b.orderid);
-      dataTemp.forEach(x => {
-        let temp = {
-          label: x.catname,
-          value: x.id
-        };
-        this.movieCatOpt.push(temp);
-        this.movieCatOptWithoutAll.push(temp);
-      });
-      this.movieCat = this.movieCatOpt[0].value;
+      let url = this.serverpath + "bo_encodemovie.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.trailer.movieLink = res.data;
+      this.trailer.dialog = true;
     },
-    //แสดงชื่อ Category
-    catName(id) {
-      let temp = this.movieCatOpt.filter(x => x.value == id);
-      return temp[0].label;
+    //******Promotion******
+    //ปิดหน้าต่างโปรโมชั่น
+    closePromotion() {
+      this.dialogPromotion = false;
     }
   },
   mounted() {
@@ -1093,5 +1270,19 @@ export default {
   border-radius: 30px;
   width: 530px;
   height: 500px;
+}
+.promotionBox {
+  max-width: 1400px;
+  width: 1315px;
+  height: 950px;
+  border-radius: 30px;
+  background-color: #edf2fe;
+}
+.trailerBox {
+  max-width: 1000px;
+  width: 975px;
+  height: 600px;
+  border-radius: 30px;
+  background-color: #edf2fe;
 }
 </style>
