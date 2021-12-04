@@ -838,6 +838,9 @@ export default {
       },
 
       //Promotion
+      promotion: {
+        dialog: false
+      },
       dialogPromotion: false, //เปิดหน้าต่าง Promotion
       promotionSeriesNameEng: "xxx" //ชื่อ Series
     };
