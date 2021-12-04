@@ -15,9 +15,6 @@
             style="width:100px;"
           />
           <div class="col"></div>
-          <div class="col-2" v-show="managementSeason == 0">
-            Please add season first ->
-          </div>
           <div class="col-2" align="right" v-show="managementSeason != 0">
             <q-select
               color="orange-13"
@@ -105,8 +102,14 @@
               <u>Edit</u>
             </div>
           </div>
-          <div class="newepdiv cursor-pointer q-mt-md">
+          <div
+            class="newepdiv cursor-pointer q-mt-md"
+            v-show="managementSeason != 0"
+          >
             <u><span @click="addNewEpisodeBtn()">+New episode</span></u>
+          </div>
+          <div class="newepdiv q-mt-md" v-show="managementSeason == 0">
+            Please add season first
           </div>
         </div>
       </div>
@@ -262,7 +265,7 @@
       <q-dialog class="" v-model="dialogAddEpisode" persistent>
         <q-card class="newEpisode">
           <div class="q-pt-md" style="font-size:24px" align="center">
-            New episode -
+            New episode - {{ seasonName }}
           </div>
           <div class="row textInput">
             <div class="col-1"></div>
@@ -547,7 +550,7 @@ export default {
       editSeasonId: "", //แก้ไข Season
       delSeasonId: "", //ลบ Season
       seriesName: "", //ชื่อ Series
-
+      seasonName: "",
       editEpisodeId: "" // สำหรับเก็บ id ตัวแก้ไข Episode
     };
   },
@@ -592,6 +595,8 @@ export default {
     //Add new ep
     addNewEpisodeBtn() {
       this.clraddEpisode();
+      let temp = this.managementSeason.filter(x => x.id == this.selectSeason);
+      this.seasonName = temp[0].name;
       this.dialogAddEpisode = true;
     },
     //เปิดหน้า preview movie
