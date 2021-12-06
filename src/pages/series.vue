@@ -169,18 +169,36 @@
                   trailer
                 </div>
                 <div
-                  v-show="item.promotion"
+                  v-show="item.promotion == 1"
                   class="btnMovie bg-positive"
                   align="center"
-                  @click="item.promotion = 0"
+                  @click="
+                    showPromote(
+                      item.id,
+                      item.nameEng,
+                      item.nameTh,
+                      item.promotionMobilePic,
+                      item.promotionTabletPic,
+                      item.promotionPCPic
+                    )
+                  "
                 >
                   promote
                 </div>
                 <div
-                  v-show="!item.promotion"
+                  v-show="item.promotion == 0"
                   class="btnMovie bg-grey"
                   align="center"
-                  @click="item.promotion = 1"
+                  @click="
+                    showPromote(
+                      item.id,
+                      item.nameEng,
+                      item.nameTh,
+                      item.promotionMobilePic,
+                      item.promotionTabletPic,
+                      item.promotionPCPic
+                    )
+                  "
                 >
                   promote
                 </div>
@@ -567,99 +585,146 @@
         </q-card>
       </q-dialog>
       <!-- promotion -->
-      <!-- <q-dialog v-model="dialogPromotion" persistent>
+      <q-dialog v-model="promote.dialog" persistent>
         <q-card class="promotionBox" style="font-size:24px;" align="center">
+          <!-- Line 1 Header , close btn, Eng name -->
           <div class="row q-pt-md">
             <div class="col-2">
               Promotion
             </div>
             <div class="col" align="center" style="font-size:36px;">
-              {{ promotionSeriesNameEng }}
+              {{ promote.nameEng }}
             </div>
-            <div class="col-2" align="right">
-              <q-btn
-                class="q-pr-md"
-                icon="far fa-times-circle"
-                flat
-                round
-                size="18px"
-                dense
-                @click="closePromotion()"
+            <div class="col-2 q-pr-md" align="right">
+              <q-icon
+                name="far fa-times-circle"
+                @click="closePromote()"
+                size="36px"
+                class="cursor-pointer"
               />
             </div>
           </div>
+          <!-- toggle promote, Thai name -->
           <div class="row">
             <div class="col-2">
               <q-toggle
-                v-model="promotionOn"
+                v-model="promote.active"
                 color="green"
                 size="xl"
                 checked-icon="check"
                 unchecked-icon="clear"
                 style="margin-top:-40px;"
-                :disable="posterM == null || posterP == null || posterT == null"
-                @input="setPromotion()"
+                :disable="
+                  promote.posterMobile == null ||
+                    promote.posterTablet == null ||
+                    promote.posterPC == null
+                "
+                @input="setPromote()"
               />
             </div>
             <div class="col" align="center">
-              {{ promotionMovieNameThai }}
+              {{ promote.nameThai }}
             </div>
             <div class="col-2"></div>
           </div>
+          <!-- Device selector -->
           <div class="row items-center" aling="center" style="font-size:14px;">
-            <div class="col"></div>
+            <div class="col" align="center">
+              <div class="q-pl-xl">
+                Turn on promotion must input 3 size posters.
+              </div>
+              <div class="row justify-evenly">
+                <div class="col-1"></div>
+                <div class="col-2 row">
+                  <div
+                    class="checkTypePoster"
+                    v-show="promote.posterMobile == null"
+                  ></div>
+                  <div
+                    class="checkTypePoster"
+                    v-show="promote.posterMobile != null"
+                    style="background-color:#00A642;"
+                  ></div>
+                  <div class="q-pl-sm">Mobile</div>
+                </div>
+                <div class="col-2 row">
+                  <div
+                    class="checkTypePoster"
+                    v-show="promote.posterTablet == null"
+                  ></div>
+                  <div
+                    class="checkTypePoster"
+                    v-show="promote.posterTablet != null"
+                    style="background-color:#00A642;"
+                  ></div>
+                  <div class="q-pl-sm">Tablet</div>
+                </div>
+                <div class="col-2 row">
+                  <div
+                    class="checkTypePoster"
+                    v-show="promote.posterPC == null"
+                  ></div>
+                  <div
+                    class="checkTypePoster"
+                    v-show="promote.posterPC != null"
+                    style="background-color:#00A642;"
+                  ></div>
+                  <div class="q-pl-sm">PC</div>
+                </div>
+              </div>
+            </div>
 
             <div
-              v-show="indexPoster == 1"
+              v-show="promote.posterShow == 1"
               class="picPosterBTN q-ma-md cursor-pointer"
-              @click="indexPoster = 1"
+              @click="promote.posterShow = 1"
               style="background:#ffc24c;"
             >
               Mobile
             </div>
             <div
-              v-show="indexPoster != 1"
+              v-show="promote.posterShow != 1"
               class="picPosterBTN q-ma-md cursor-pointer"
-              @click="indexPoster = 1"
+              @click="promote.posterShow = 1"
             >
               Mobile
             </div>
             <div
-              v-show="indexPoster == 2"
+              v-show="promote.posterShow == 2"
               class="picPosterBTN q-ma-md cursor-pointer"
-              @click="indexPoster = 2"
+              @click="promote.posterShow = 2"
               style="background:#ffc24c;"
             >
               Tablet
             </div>
             <div
-              v-show="indexPoster != 2"
+              v-show="promote.posterShow != 2"
               class="picPosterBTN q-ma-md cursor-pointer"
-              @click="indexPoster = 2"
+              @click="promote.posterShow = 2"
             >
               Tablet
             </div>
             <div
-              v-show="indexPoster == 3"
+              v-show="promote.posterShow == 3"
               class="picPosterBTN q-ma-md cursor-pointer"
-              @click="indexPoster = 3"
+              @click="promote.posterShow = 3"
               style="background:#ffc24c;"
             >
               PC
             </div>
             <div
-              v-show="indexPoster != 3"
+              v-show="promote.posterShow != 3"
               class="picPosterBTN q-ma-md cursor-pointer"
-              @click="indexPoster = 3"
+              @click="promote.posterShow = 3"
             >
               PC
             </div>
             <div class="col"></div>
           </div>
-
+          <!-- Preview pane -->
           <div class="">
             <div
-              v-show="indexPoster == 1 && posterM == null"
+              v-show="promote.posterShow == 1 && promote.posterMobile == null"
               class="q-pa-md col"
               style="width:360px;height:445px;border-style:dashed;margin-top:40px;"
               align="center"
@@ -669,7 +734,7 @@
               </div>
               <div>
                 <q-file
-                  v-model="promotionMobileFile"
+                  v-model="promote.fileMobile"
                   dense
                   style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
                   borderless
@@ -690,18 +755,18 @@
               </div>
             </div>
             <div
-              v-show="indexPoster == 1 && posterM != null"
+              v-show="promote.posterShow == 1 && promote.posterMobile != null"
               class=" col"
               style="margin-top:40px;"
               align="center"
             >
-              <img :src="posterM" alt="" style="width:360px" />
+              <img :src="promote.posterMobile" alt="" style="width:360px" />
               <div @click="deletePosterMobile()" class="cursor-pointer">
                 <u>delete poster</u>
               </div>
             </div>
             <div
-              v-show="indexPoster == 2 && posterT == null"
+              v-show="promote.posterShow == 2 && promote.posterTablet == null"
               class="q-pa-md col"
               style="width:770px;height:430px;border-style:dashed;margin-top:60px;"
               align="center"
@@ -710,7 +775,7 @@
                 jpg - 770x430 px
               </div>
               <q-file
-                v-model="promotionTabletFile"
+                v-model="promote.fileTablet"
                 dense
                 style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
                 borderless
@@ -730,18 +795,18 @@
               </q-file>
             </div>
             <div
-              v-show="indexPoster == 2 && posterT != null"
+              v-show="promote.posterShow == 2 && promote.posterTablet != null"
               class="col"
               style="margin-top:60px;"
               align="center"
             >
-              <img :src="posterT" alt="" style="width:770px;" />
+              <img :src="promote.posterTablet" alt="" style="width:770px;" />
               <div @click="deletePosterTablet()" class="cursor-pointer">
                 <u>delete poster</u>
               </div>
             </div>
             <div
-              v-show="indexPoster == 3 && posterP == null"
+              v-show="promote.posterShow == 3 && promote.posterPC == null"
               class="q-pa-md col"
               style="width:1200px;height:670px;border-style:dashed;"
               align="center"
@@ -750,7 +815,7 @@
                 jpg - 1200x670 px
               </div>
               <q-file
-                v-model="promotionPCFile"
+                v-model="promote.filePC"
                 dense
                 style="width:200px;overflow:hidden;border:2px solid black;border-radius:5px;"
                 borderless
@@ -770,12 +835,12 @@
               </q-file>
             </div>
             <div
-              v-show="indexPoster == 3 && posterP != null"
+              v-show="promote.posterShow == 3 && promote.posterPC != null"
               class="col"
               style=""
               align="center"
             >
-              <img :src="posterP" alt="" style="width:1200px;" />
+              <img :src="promote.posterPC" alt="" style="width:1200px;" />
               <div @click="deletePosterPC()" class="cursor-pointer">
                 <u>delete poster</u>
               </div>
@@ -783,7 +848,7 @@
             <div class="col"></div>
           </div>
         </q-card>
-      </q-dialog> -->
+      </q-dialog>
       <!-- bg drop  -->
       <div
         class="bgDrop fullscreen"
@@ -838,11 +903,20 @@ export default {
       },
 
       //Promotion
-      promotion: {
-        dialog: false
-      },
-      dialogPromotion: false, //เปิดหน้าต่าง Promotion
-      promotionSeriesNameEng: "xxx" //ชื่อ Series
+      promote: {
+        dialog: false, //เปิดปิดหน้าต่าง Dialog
+        nameEng: "", //ชื่อหนังภาษาอังกฤษ
+        nameThai: "", //ชื่อหนังภาษาไทย
+        movieId: "", //รหัสหน้งที่ทำการ promote
+        posterPC: "", //ภาพ poster ของ PC
+        posterTablet: "", //ภาพ poster ของ Tablet
+        posterMobile: "", //ภาพ poster ของ Mobile
+        active: false, //เปิดปิดการใช้งาน Promote
+        posterShow: 1, //แสดงประเภทที่แสดงหน้าง Poster 1=Mobile,2=tablet,3=PC
+        fileMobile: [], //ไฟล์ของ mobile
+        fileTablet: [], //ไฟล์ของ tablet
+        filePC: [] //ไฟล์ของ PC
+      }
     };
   },
   methods: {
@@ -1190,9 +1264,70 @@ export default {
     },
     //******Promotion******
     //ปิดหน้าต่างโปรโมชั่น
-    closePromotion() {
-      this.dialogPromotion = false;
-    }
+    showPromote(
+      posterId,
+      posterEng,
+      posterThai,
+      promotionMobilePic,
+      promotionTabletPic,
+      promotionPCPic
+    ) {
+      this.promote.nameEng = posterEng;
+      this.promote.nameThai = posterThai;
+      this.promote.movieId = posterId;
+      promotionPCPic == 1
+        ? (this.promote.posterPC =
+            this.serverpath +
+            "/promotion/series/" +
+            this.promote.movieId +
+            "p.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.promote.posterPC = null);
+      promotionTabletPic == 1
+        ? (this.promote.posterTablet =
+            this.serverpath +
+            "/promotion/series/" +
+            this.promote.movieId +
+            "t.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.promote.posterTablet = null);
+      promotionMobilePic == 1
+        ? (this.promote.posterMobile =
+            this.serverpath +
+            "/promotion/series/" +
+            this.promote.movieId +
+            "m.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.promote.posterMobile = null);
+      this.promote.dialog = true;
+    },
+    //ปิดหน้าต่าง Promote
+    closePromote() {
+      this.promote.dialog = false;
+    },
+    //เปิดปิดหน้าต่าง Promote
+    setPromote() {},
+
+    //upload mobile file
+    async uploadFilePosterMobile() {
+      let formData = new FormData();
+      formData.append("file", this.promote.fileMobile);
+      formData.append("id", this.promote.movieId);
+      const url = this.serverpath + "bo_uploadPromotionMobileSeries.php";
+      let data = await axios.post(url, formData);
+      this.promote.posterMobile =
+        this.serverpath +
+        "/promotion/series/" +
+        this.promote.movieId +
+        "m.jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    },
+    //ลบ mobile file
+    deletePosterMobile() {},
+    //upload tabltet file
+    async uploadFilePosterTablet() {},
+    //ลบ tabltet file
+    deletePosterTablet() {}
   },
   mounted() {
     this.loadcatatmovie();
@@ -1287,5 +1422,18 @@ export default {
   height: 600px;
   border-radius: 30px;
   background-color: #edf2fe;
+}
+.picPosterBTN {
+  width: 100px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+.checkTypePoster {
+  width: 21px;
+  height: 21px;
+  border-radius: 5px;
+  background: #e83939;
 }
 </style>

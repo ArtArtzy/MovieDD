@@ -792,7 +792,7 @@
           <div class="row items-center" aling="center" style="font-size:14px;">
             <div class="col" align="center">
               <div class="q-pl-xl">
-                Turn on promotion must input 3 size poster
+                Turn on promotion must input 3 size posters.
               </div>
               <div class="row justify-evenly">
                 <div class="col-1"></div>
