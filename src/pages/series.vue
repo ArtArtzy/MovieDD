@@ -1325,9 +1325,35 @@ export default {
     //ลบ mobile file
     deletePosterMobile() {},
     //upload tabltet file
-    async uploadFilePosterTablet() {},
+    async uploadFilePosterTablet() {
+      let formData = new FormData();
+      formData.append("file", this.promote.fileTablet);
+      formData.append("id", this.promote.movieId);
+      const url = this.serverpath + "bo_uploadPromotionTabletSeries.php";
+      let data = await axios.post(url, formData);
+      this.promote.posterTablet =
+        this.serverpath +
+        "/promotion/series/" +
+        this.promote.movieId +
+        "t.jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    },
     //ลบ tabltet file
-    deletePosterTablet() {}
+    deletePosterTablet() {},
+    //upload PC file
+    async uploadFilePosterPC() {
+      let formData = new FormData();
+      formData.append("file", this.promote.filePC);
+      formData.append("id", this.promote.movieId);
+      const url = this.serverpath + "bo_uploadPromotionPCSeries.php";
+      let data = await axios.post(url, formData);
+      this.promote.posterPC =
+        this.serverpath +
+        "/promotion/series/" +
+        this.promote.movieId +
+        "p.jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    }
   },
   mounted() {
     this.loadcatatmovie();
