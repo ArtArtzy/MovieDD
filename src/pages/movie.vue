@@ -1337,7 +1337,7 @@
             >
               No qualitiy problem
             </div>
-            <div v-else v-for="(item, index) in alertQualityData">
+            <div v-else v-for="(item, index) in alertQualityData" :key="index">
               <div class="row q-px-lg ">
                 <div class="col-9">{{ item.problem }}</div>
                 <div class="col-3" align="center">{{ item.nopro }}</div>
@@ -1356,7 +1356,7 @@
             >
               No other problem
             </div>
-            <div v-else v-for="(item, index) in alertOtherProblemData">
+            <div v-else v-for="(item, index) in alertOtherProblemData" :key="index">
               <div class="row q-px-lg">
                 <div class="col-9">{{ item.problem }}</div>
                 <div class="col-3" align="center">

@@ -861,8 +861,8 @@ export default {
 }
 .diaBox {
   max-width: 900px;
-  width: 450px;
-  height: 250px;
+  width: 600px;
+  height: 450px;
   border-radius: 30px;
 }
 .diaBox2 {

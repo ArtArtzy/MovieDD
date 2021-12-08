@@ -5,7 +5,7 @@
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg q-pb-md">
-          <div class="col-5 q-pl-xl">
+          <div class="col-4 q-pl-xl">
             <q-input
               outlined
               rounded
@@ -14,7 +14,7 @@
               v-model="searchMovie"
               placeholder="Search : film title"
               dense
-              style="width:400px;"
+              style="width:350px;"
             >
               <template v-slot:prepend>
                 <q-icon class="fas fa-search" />
@@ -51,7 +51,18 @@
             >
             </q-select>
           </div>
-          <div class="col" align="left">of {{ moviePage.length }}</div>
+          <!-- <div class="col" align="left">of {{ moviePage.length }}</div> -->
+          <div class="col-2" align="right">
+            <q-btn
+              outline
+              rounded
+              class="cursor-pointer "
+              style="font-size:18px;width:160px;"
+              label="Deleted sries"
+              no-caps
+              @click="showDeletedMovie()"
+            />
+          </div>
           <div class="col-2" align="center">
             <q-btn
               rounded
@@ -89,11 +100,19 @@
                   <div style="font-size:24px;">
                     {{ item.nameEng }}
                   </div>
-                  <div class="q-pl-md" style="font-size:14px;color:blue">
-                    <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
+                  <div class="q-pl-md">
+                    <q-icon name="far fa-bell" size="24px">
+                      <q-badge v-show="item.alert != 0" color="red" floating rounded></q-badge>
+                    </q-icon>
+                    
                   </div>
                 </div>
+                <div class="row">
                 <div style="font-size:18px;">{{ item.nameTh }}</div>
+                <div class="q-pl-md" style="font-size:14px;color:blue">
+                    <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
+                  </div>
+                  </div>
                 <div class="row" style="font-size:14px;">
                   <div class="col-1">{{ item.year }}</div>
                   <div class="col-1">{{ item.mparate }}</div>
@@ -125,22 +144,10 @@
 
               <div class="col-1">
                 <div class="row q-pt-md">
-                  <div class="col" align="left">
-                    <q-btn
-                      dense
-                      round
-                      flat
-                      icon="far fa-bell"
-                      @click="reportBtn(item.id)"
-                    >
-                      <q-badge v-show="item.alert != 0" color="red" floating>{{
-                        item.alert
-                      }}</q-badge>
-                    </q-btn>
-                  </div>
+                  
 
-                  <div class="col cursor-pointer" @click="editSeriesBtn(item)">
-                    <u>Edit</u>
+                  <div class="btnMovie bg-primary  cursor-pointer" @click="editSeriesBtn(item)" align="center">
+                    Edit
                   </div>
                 </div>
                 <div
@@ -179,7 +186,8 @@
                       item.nameTh,
                       item.promotionMobilePic,
                       item.promotionTabletPic,
-                      item.promotionPCPic
+                      item.promotionPCPic,
+                      item.promotion
                     )
                   "
                 >
@@ -196,7 +204,8 @@
                       item.nameTh,
                       item.promotionMobilePic,
                       item.promotionTabletPic,
-                      item.promotionPCPic
+                      item.promotionPCPic,
+                      item.promotion
                     )
                   "
                 >
@@ -1270,11 +1279,13 @@ export default {
       posterThai,
       promotionMobilePic,
       promotionTabletPic,
-      promotionPCPic
+      promotionPCPic,
+      promotion
     ) {
       this.promote.nameEng = posterEng;
       this.promote.nameThai = posterThai;
       this.promote.movieId = posterId;
+      this.promote.active = promotion==1?true:false;
       promotionPCPic == 1
         ? (this.promote.posterPC =
             this.serverpath +
@@ -1304,9 +1315,17 @@ export default {
     //ปิดหน้าต่าง Promote
     closePromote() {
       this.promote.dialog = false;
+      this.loadseriesdata()
     },
     //เปิดปิดหน้าต่าง Promote
-    setPromote() {},
+    async setPromote() {
+       let temp = {
+        movieid: Number(this.promote.movieId),
+        value: this.promote.active ? 1 : 0
+      };
+      const url = this.serverpath + "bo_updatePromotionSeries.php";      
+      let res = await axios.post(url, temp);
+    },
 
     //upload mobile file
     async uploadFilePosterMobile() {
@@ -1323,7 +1342,18 @@ export default {
         Math.floor(Math.random() * (999 - 100 + 1) + 100);
     },
     //ลบ mobile file
-    deletePosterMobile() {},
+    async deletePosterMobile() {
+      let data = {
+        id: this.promote.movieId,
+        type: "m"
+      };
+      const url = this.serverpath + "bo_deletePromotionFileSeries.php";
+      let res = await axios.post(url, data);
+      this.greenNotify("Delete completely");
+      this.promote.posterMobile = null;
+      this.promote.active = false;
+      this.setPromote()
+    },
     //upload tabltet file
     async uploadFilePosterTablet() {
       let formData = new FormData();
@@ -1339,7 +1369,18 @@ export default {
         Math.floor(Math.random() * (999 - 100 + 1) + 100);
     },
     //ลบ tabltet file
-    deletePosterTablet() {},
+    async deletePosterTablet() {
+      let data = {
+        id: this.promote.movieId,
+        type: "t"
+      };
+      const url = this.serverpath + "bo_deletePromotionFileSeries.php";
+      let res = await axios.post(url, data);
+      this.greenNotify("Delete completely");
+      this.promote.posterTablet = null;
+      this.promote.active = false;
+      this.setPromote()
+    },
     //upload PC file
     async uploadFilePosterPC() {
       let formData = new FormData();
@@ -1353,6 +1394,19 @@ export default {
         this.promote.movieId +
         "p.jpg?" +
         Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    },
+    // ลบ PC file
+    async deletePosterPC(){
+      let data = {
+        id: this.promote.movieId,
+        type: "p"
+      };
+      const url = this.serverpath + "bo_deletePromotionFileSeries.php";
+      let res = await axios.post(url, data);
+      this.greenNotify("Delete completely");
+      this.promote.posterPC = null;
+      this.promote.active = false;
+      this.setPromote()
     }
   },
   mounted() {
