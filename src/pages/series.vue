@@ -102,17 +102,21 @@
                   </div>
                   <div class="q-pl-md">
                     <q-icon name="far fa-bell" size="24px">
-                      <q-badge v-show="item.alert != 0" color="red" floating rounded></q-badge>
+                      <q-badge
+                        v-show="item.alert != 0"
+                        color="red"
+                        floating
+                        rounded
+                      ></q-badge>
                     </q-icon>
-                    
                   </div>
                 </div>
                 <div class="row">
-                <div style="font-size:18px;">{{ item.nameTh }}</div>
-                <div class="q-pl-md" style="font-size:14px;color:blue">
+                  <div style="font-size:18px;">{{ item.nameTh }}</div>
+                  <div class="q-pl-md" style="font-size:14px;color:blue">
                     <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
                   </div>
-                  </div>
+                </div>
                 <div class="row" style="font-size:14px;">
                   <div class="col-1">{{ item.year }}</div>
                   <div class="col-1">{{ item.mparate }}</div>
@@ -144,10 +148,13 @@
 
               <div class="col-1">
                 <div class="row q-pt-md">
-                  
-
-                  <div class="btnMovie bg-primary  cursor-pointer" @click="editSeriesBtn(item)" align="center">
-                    Edit
+                  <div
+                    class="btnMovie bg-primary  cursor-pointer"
+                    @click="editSeriesBtn(item)"
+                    align="center"
+                  >
+                    <q-icon class="fas fa-cog" />
+                    edit
                   </div>
                 </div>
                 <div
@@ -167,14 +174,14 @@
                   <q-icon class="fas fa-play" />
                   trailer
                 </div>
-                <div
+                <!-- <div
                   v-show="item.trailerCode.length == 0"
                   class="btnMovie bg-grey"
                   align="center"
                 >
                   <q-icon class="fas fa-play" />
                   trailer
-                </div>
+                </div> -->
                 <div
                   v-show="item.promotion == 1"
                   class="btnMovie bg-positive"
@@ -394,7 +401,13 @@
               Edit Series
             </div>
             <div class="col-1 q-ma-sm">
-              <q-btn dense rounded flat icon="fas fa-trash-alt" />
+              <q-btn
+                dense
+                rounded
+                flat
+                icon="fas fa-trash-alt"
+                @click="deleteMainSeries()"
+              />
             </div>
           </div>
           <div class="q-pa-sm q-ml-lg q-pl-md">
@@ -557,6 +570,36 @@
                 Ok
               </div>
             </div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- delete series alert  -->
+      <q-dialog v-model="deleteSeries.dialog" persistent>
+        <q-card class="alertDialog" align="center">
+          <q-icon
+            class="fas fa-exclamation-triangle q-pt-lg"
+            style="font-size:100px;color:#FFC24C"
+          />
+          <div class="q-py-lg">Do you want to delete this series?</div>
+          <div class="row q-pt-md">
+            <div class="col"></div>
+            <div
+              class="ynBtn q-ma-sm"
+              @click="cancelDeleteSeriesBtn()"
+              align="center"
+            >
+              Cancel
+            </div>
+            <div class="col-1"></div>
+            <div
+              class="ynBtn q-ma-sm"
+              style="background-color:#ffc24c"
+              @click="OKDeleteSeriesBtn()"
+              align="center"
+            >
+              Ok
+            </div>
+            <div class="col"></div>
           </div>
         </q-card>
       </q-dialog>
@@ -925,6 +968,10 @@ export default {
         fileMobile: [], //ไฟล์ของ mobile
         fileTablet: [], //ไฟล์ของ tablet
         filePC: [] //ไฟล์ของ PC
+      },
+      //Delete Series
+      deleteSeries: {
+        dialog: false // เปิดหน้าต่าง Dialog
       }
     };
   },
@@ -974,7 +1021,17 @@ export default {
       let temp = this.movieCatOpt.filter(x => x.value == id);
       return temp[0].label;
     },
-
+    //*********ลบ Series *********/
+    //ปุ่ม Cancel
+    cancelDeleteSeriesBtn() {
+      this.deleteSeries.dialog = false;
+    },
+    OKDeleteSeriesBtn() {
+      console.log("delete Series");
+      this.deleteSeries.dialog = false;
+      this.dialogEditSeries = false;
+      this.loadseriesdata();
+    },
     //******หน้าหลัก******
     //เปลี่ยนค่า online / offline
     async updateStatus(status, seriesid) {
@@ -1244,8 +1301,11 @@ export default {
       this.clraddmovie();
       this.dialogEditSeries = false;
     },
-
-    //Delete poster edit mode
+    //ปุ่มลบในหน้า edit
+    deleteMainSeries() {
+      this.deleteSeries.dialog = true;
+    },
+    //ลบ poster ใน edit mode
     async deletePosterFileBtn() {
       let data = {
         id: this.editMovieId
@@ -1285,7 +1345,7 @@ export default {
       this.promote.nameEng = posterEng;
       this.promote.nameThai = posterThai;
       this.promote.movieId = posterId;
-      this.promote.active = promotion==1?true:false;
+      this.promote.active = promotion == 1 ? true : false;
       promotionPCPic == 1
         ? (this.promote.posterPC =
             this.serverpath +
@@ -1315,15 +1375,15 @@ export default {
     //ปิดหน้าต่าง Promote
     closePromote() {
       this.promote.dialog = false;
-      this.loadseriesdata()
+      this.loadseriesdata();
     },
     //เปิดปิดหน้าต่าง Promote
     async setPromote() {
-       let temp = {
+      let temp = {
         movieid: Number(this.promote.movieId),
         value: this.promote.active ? 1 : 0
       };
-      const url = this.serverpath + "bo_updatePromotionSeries.php";      
+      const url = this.serverpath + "bo_updatePromotionSeries.php";
       let res = await axios.post(url, temp);
     },
 
@@ -1352,7 +1412,7 @@ export default {
       this.greenNotify("Delete completely");
       this.promote.posterMobile = null;
       this.promote.active = false;
-      this.setPromote()
+      this.setPromote();
     },
     //upload tabltet file
     async uploadFilePosterTablet() {
@@ -1379,7 +1439,7 @@ export default {
       this.greenNotify("Delete completely");
       this.promote.posterTablet = null;
       this.promote.active = false;
-      this.setPromote()
+      this.setPromote();
     },
     //upload PC file
     async uploadFilePosterPC() {
@@ -1396,7 +1456,7 @@ export default {
         Math.floor(Math.random() * (999 - 100 + 1) + 100);
     },
     // ลบ PC file
-    async deletePosterPC(){
+    async deletePosterPC() {
       let data = {
         id: this.promote.movieId,
         type: "p"
@@ -1406,7 +1466,7 @@ export default {
       this.greenNotify("Delete completely");
       this.promote.posterPC = null;
       this.promote.active = false;
-      this.setPromote()
+      this.setPromote();
     }
   },
   mounted() {
@@ -1515,5 +1575,10 @@ export default {
   height: 21px;
   border-radius: 5px;
   background: #e83939;
+}
+.alertDialog {
+  border-radius: 30px;
+  width: 455px;
+  height: 288px;
 }
 </style>

@@ -45,11 +45,11 @@
         <div class="q-pt-md" style="width:96%;margin:auto;" align="center">
           <div class="row ">
             <div class="" style="width:30px;">No.</div>
-            <div class="col-1">Order ID</div>
+            <div class="col-1" style="width:150px;">Order ID</div>
             <div class="col " align="left">Episode</div>
             <div class="col-2">Duration</div>
-            <div class="col-1">TH Sound</div>
-            <div class="col-1">TH Sub</div>
+            <div class="col-1" style="width:120px;">TH Sound</div>
+            <div class="col-1" style="width:120px;">TH Sub</div>
             <div class="col-1">Preview</div>
             <div class="col-1">Delete</div>
             <div class="col-1">Edit</div>
@@ -61,18 +61,22 @@
             :key="index"
             :style="index % 2 == 1 ? 'background-color:#cedff2' : ''"
             align="center"
-            style="height:50px;line-height: 50px;"
+            style="height:50px;line-height: 50px;font-size:16px;"
           >
             <div class="" style="width:30px;">{{ index + 1 }}</div>
-            <div class="col-1">{{ item.orderid }}</div>
-            <div class="col q-pl-md" align="left">{{ item.name }}</div>
+            <div class="col-1" style="width:150px;">{{ item.orderid }}</div>
+            <div class="col " align="left">{{ item.name }}</div>
             <div class="col-2 " align="center">
               <span v-show="item.durationHour != 0">
                 {{ item.durationHour }} h
               </span>
               {{ item.durationMin }} min
             </div>
-            <div class="col-1 " v-show="item.movieCodeTh.length == 0">
+            <div
+              class="col-1 "
+              style="width:120px;"
+              v-show="item.movieCodeTh.length == 0"
+            >
               <div
                 class="movieCodeBorder"
                 style="border-color:#C4C4C4;color:#C4C4C4;"
@@ -80,10 +84,18 @@
                 TH Sound
               </div>
             </div>
-            <div class="col-1 " v-show="item.movieCodeTh.length > 0">
+            <div
+              class="col-1 "
+              style="width:120px;"
+              v-show="item.movieCodeTh.length > 0"
+            >
               <div class="movieCodeBorder cursor-pointer">TH Sound</div>
             </div>
-            <div class="col-1 " v-show="item.movieCodeEng.length == 0">
+            <div
+              class="col-1 "
+              style="width:120px;"
+              v-show="item.movieCodeEng.length == 0"
+            >
               <div
                 class="movieCodeBorder"
                 style="border-color:#C4C4C4;color:#C4C4C4;"
@@ -91,13 +103,19 @@
                 TH Sub
               </div>
             </div>
-            <div class="col-1 " v-show="item.movieCodeEng.length > 0">
+            <div
+              class="col-1 "
+              style="width:120px;"
+              v-show="item.movieCodeEng.length > 0"
+            >
               <div class="movieCodeBorder cursor-pointer">TH Sub</div>
             </div>
             <div class="col-1 cursor-pointer" @click="previewMovie(item)">
               <u>Preview</u>
             </div>
-            <div class="col-1 cursor-pointer"><u>Delete</u></div>
+            <div class="col-1 cursor-pointer" @click="deleteEpisodeBtn(item)">
+              <u>Delete</u>
+            </div>
             <div class="col-1 cursor-pointer" @click="editEpisodeBtn(item)">
               <u>Edit</u>
             </div>
@@ -130,21 +148,29 @@
           </div>
           <div v-show="managementSeason != 0" class="seasonDiv">
             <div class="row q-pt-md">
-              <div class="col-3 q-pl-md" align="left">Order ID</div>
-              <div class="col-3 q-pl-md" align="left">Name</div>
-              <div class="col-3" align="center">Edit</div>
-              <div class="col-3" align="center">Delete</div>
+              <div class="col-2 q-pl-md" align="left">Order ID</div>
+              <div class="col q-pl-md" align="left">Name</div>
+              <div class="col-2" align="center">Edit</div>
+              <div class="col-2" align="center">Delete</div>
             </div>
             <div class="q-px-md"><hr /></div>
-            <div class="row" v-for="(item, index) in managementSeason">
-              <div class="col-3  q-pl-md">{{ item.orderid }}</div>
-              <div class="col-3 q-pl-md">{{ item.name }}</div>
-              <div class="col-3" align="center">
+            <div
+              class="row"
+              v-for="(item, index) in managementSeason"
+              :style="
+                index % 2 == 0 ? 'background-color:rgba(114,148,255,0.09);' : ''
+              "
+            >
+              <div class="col-2  q-pl-md" align="left">
+                {{ item.orderid }}
+              </div>
+              <div class="col q-pl-md">{{ item.name }}</div>
+              <div class="col-2" align="center">
                 <span class="cursor-pointer" @click="editSeason(item)"
                   ><u>Edit</u></span
                 >
               </div>
-              <div class="col-3" align="center">
+              <div class="col-2" align="center">
                 <span class="cursor-pointer" @click="delSeason(item)"
                   ><u>Delete</u></span
                 >
@@ -163,13 +189,13 @@
             Add season
           </div>
           <div class="row q-px-md q-pt-md">
-            <div class="col-3 q-pt-sm" align="center">Order ID</div>
+            <div class="col-3 q-pt-sm" align="left">Order ID</div>
             <div class="col">
               <q-input v-model="addSeason.orderid" type="number" dense />
             </div>
           </div>
           <div class="row q-px-md q-pt-sm">
-            <div class="col-3 q-pt-sm" align="center">Name</div>
+            <div class="col-3 q-pt-sm" align="left">Name</div>
             <div class="col">
               <q-input v-model="addSeason.name" dense />
             </div>
@@ -198,13 +224,13 @@
             Edit season
           </div>
           <div class="row q-px-md q-pt-md">
-            <div class="col-3 q-pt-sm" align="center">Order ID</div>
+            <div class="col-3 q-pt-sm" align="left">Order ID</div>
             <div class="col">
               <q-input v-model="addSeason.orderid" type="number" dense />
             </div>
           </div>
           <div class="row q-px-md q-pt-sm">
-            <div class="col-3 q-pt-sm" align="center">Name</div>
+            <div class="col-3 q-pt-sm" align="left">Name</div>
             <div class="col">
               <q-input v-model="addSeason.name" dense />
             </div>
@@ -269,20 +295,21 @@
           </div>
           <div class="row textInput">
             <div class="col-1"></div>
-            <div class="col-2">Title name</div>
-            <div class="col q-pl-md" style="">
-              <q-input dense v-model="addEpisode.name" />
-            </div>
-            <div class="col-1"></div>
-          </div>
-          <div class="row textInput">
-            <div class="col-1"></div>
             <div class="col-2">Order ID</div>
             <div class="col q-pl-md" style="">
               <q-input dense v-model="addEpisode.orderid" />
             </div>
             <div class="col-1"></div>
           </div>
+          <div class="row textInput">
+            <div class="col-1"></div>
+            <div class="col-2">Title name</div>
+            <div class="col q-pl-md" style="">
+              <q-input dense v-model="addEpisode.name" />
+            </div>
+            <div class="col-1"></div>
+          </div>
+
           <div class="row  textInput">
             <div class="col-1"></div>
             <div class="col-2">Duration</div>
@@ -328,7 +355,6 @@
             >
               Ok
             </div>
-            <div style="width:30px;"></div>
           </div>
         </q-card>
       </q-dialog>
@@ -399,12 +425,43 @@
             >
               Ok
             </div>
-            <div style="width:30px;"></div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- delete series alert  -->
+      <q-dialog v-model="dialogdeleteSeries" persistent>
+        <q-card class="alertDialog" align="center">
+          <q-icon
+            class="fas fa-exclamation-triangle q-pt-lg"
+            style="font-size:100px;color:#FFC24C"
+          />
+          <div class="q-py-lg">
+            Do you want to delete "{{ episodeDeleteName }}"?
+          </div>
+          <div class="row q-pt-md">
+            <div class="col"></div>
+            <div
+              class="ynBtn q-ma-sm"
+              @click="cancelDeleteBtn()"
+              align="center"
+            >
+              Cancel
+            </div>
+            <div class="col-1"></div>
+            <div
+              class="ynBtn q-ma-sm"
+              style="background-color:#ffc24c"
+              @click="OKDeleteBtn()"
+              align="center"
+            >
+              Ok
+            </div>
+            <div class="col"></div>
           </div>
         </q-card>
       </q-dialog>
       <!-- Preview  -->
-      <q-dialog v-model="dialogPreview" persistent>
+      <!-- <q-dialog v-model="dialogPreview" persistent>
         <q-card class="preview">
           <div class="row q-pa-md" align="center">
             <div class="col-1"></div>
@@ -495,7 +552,7 @@
             </div>
           </div>
         </q-card>
-      </q-dialog>
+      </q-dialog> -->
       <!-- bg drop  -->
       <div
         class="bgDrop fullscreen"
@@ -551,10 +608,34 @@ export default {
       delSeasonId: "", //ลบ Season
       seriesName: "", //ชื่อ Series
       seasonName: "",
-      editEpisodeId: "" // สำหรับเก็บ id ตัวแก้ไข Episode
+      editEpisodeId: "", // สำหรับเก็บ id ตัวแก้ไข Episode
+      dialogdeleteSeries: false, // เปิดหน้าต่าง confirm การลบ
+      episodeDeleteName: "", //ชื่อตอน
+      episodeDeleteId: "" //รหัสตอนที่จะลบ
     };
   },
   methods: {
+    //ปุ่มตกลงในหน้า Dialog ลบ
+    async OKDeleteBtn() {
+      let data = {
+        id: this.episodeDeleteId
+      };
+      let url = this.serverpath + "bo_deleteepisode.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.loadEpisodeList();
+      this.dialogdeleteSeries = false;
+      this.greenNotify("Delete complete");
+    },
+    //ปุ่มยกเลิกในหน้า Dialog ลบ
+    cancelDeleteBtn() {
+      this.dialogdeleteSeries = false;
+    },
+    //ปุ่มลบ Edpisode
+    deleteEpisodeBtn(item) {
+      this.episodeDeleteName = item.name;
+      this.episodeDeleteId = item.id;
+      this.dialogdeleteSeries = true;
+    },
     // ล้างค่าตัวแปร temp เก็บข้อมูล addEpisode
     clraddEpisode() {
       this.addEpisode.name = "";
@@ -573,6 +654,18 @@ export default {
     },
     // กด OK ใน dailog Add new Ep
     async addNewEpisodeSave() {
+      if (this.addEpisode.orderid == "") {
+        this.redNotify("Please input order ID");
+        return;
+      }
+      if (this.addEpisode.name == "") {
+        this.redNotify("Please input title name");
+        return;
+      }
+      if (this.addEpisode.durationMin == "") {
+        this.redNotify("Please input duration");
+        return;
+      }
       let data = {
         seriesid: this.id,
         seasonid: this.selectSeason,
@@ -583,10 +676,8 @@ export default {
         movieCodeEng: this.addEpisode.movieCodeEng,
         movieCodeTh: this.addEpisode.movieCodeTh
       };
-      console.log(data);
       let url = this.serverpath + "bo_addserriessub.php";
       let res = await axios.post(url, JSON.stringify(data));
-      console.log(res.data);
       this.greenNotify("Add " + this.addEpisode.name + " Complete");
 
       this.loadEpisodeList();
@@ -847,8 +938,10 @@ export default {
   line-height: 72px;
 }
 .seasonDiv {
-  height: 130px;
+  height: 347px;
   overflow-y: scroll;
+  font-size: 18px;
+  line-height: 45px;
 }
 .bgmain {
   background-image: url("../../public/images/bg.jpg");
@@ -866,6 +959,7 @@ export default {
   border-radius: 30px;
 }
 .diaBox2 {
+  font-size: 16px;
   max-width: 900px;
   width: 450px;
   height: 250px;
@@ -904,17 +998,19 @@ export default {
 .newEpisode {
   border-radius: 30px;
   width: 700px;
-  height: 350px;
+  height: 400px;
 }
 .textInput {
   // margin-top: 10px;
-  height: 40px;
-  line-height: 40px;
+  font-size: 16px;
+  height: 50px;
+  line-height: 50px;
 }
 .movieCodeBorder {
+  font-size: 16px;
   height: 35px;
   line-height: 35px;
-  width: 90px;
+  width: 110px;
   border-radius: 5px;
   border: 1px solid #313131;
 }
@@ -941,5 +1037,10 @@ export default {
 }
 .epList {
   border-radius: 10px;
+}
+.alertDialog {
+  border-radius: 30px;
+  width: 455px;
+  height: 288px;
 }
 </style>
