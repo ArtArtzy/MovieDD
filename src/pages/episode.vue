@@ -50,7 +50,6 @@
             <div class="col-2">Duration</div>
             <div class="col-1" style="width:120px;">TH Sound</div>
             <div class="col-1" style="width:120px;">TH Sub</div>
-            <div class="col-1">Preview</div>
             <div class="col-1">Delete</div>
             <div class="col-1">Edit</div>
           </div>
@@ -72,47 +71,117 @@
               </span>
               {{ item.durationMin }} min
             </div>
-            <div
-              class="col-1 "
-              style="width:120px;"
-              v-show="item.movieCodeTh.length == 0"
-            >
-              <div
-                class="movieCodeBorder"
-                style="border-color:#C4C4C4;color:#C4C4C4;"
-              >
-                TH Sound
+
+            <!-- TH Sound -->
+            <div class="col-1 " style="width:120px;">
+              <div class="row q-px-md">
+                <div class="col-6" align="center">
+                  <q-icon
+                    name="fas fa-play"
+                    size="20px"
+                    class="cursor-pointer"
+                    :color="item.movieCodeTh.length == 0 ? 'grey' : ''"
+                    @click="previewThaiSound(item.id)"
+                    :disabled="item.movieCodeTh.length == 0"
+                  />
+                </div>
+                <div class="col-6" align="center">
+                  <q-icon
+                    name="far fa-bell"
+                    size="24px"
+                    class="cursor-pointer"
+                    v-show="item.alertThaiSound != 0"
+                    :disabled="item.movieCodeTh.length == 0"
+                    @click="alertThaiSound(item.id)"
+                  >
+                    <q-badge color="red" floating rounded></q-badge>
+                  </q-icon>
+                  <q-icon
+                    name="far fa-bell"
+                    size="24px"
+                    :color="
+                      item.movieCodeTh.length == 0 || item.alertThaiSound == 0
+                        ? 'grey'
+                        : ''
+                    "
+                    :disabled="item.movieCodeTh.length == 0"
+                    v-show="item.alertThaiSound == 0"
+                  >
+                  </q-icon>
+                </div>
               </div>
             </div>
-            <div
-              class="col-1 "
-              style="width:120px;"
-              v-show="item.movieCodeTh.length > 0"
-            >
-              <div class="movieCodeBorder cursor-pointer">TH Sound</div>
-            </div>
-            <div
-              class="col-1 "
-              style="width:120px;"
-              v-show="item.movieCodeEng.length == 0"
-            >
-              <div
-                class="movieCodeBorder"
-                style="border-color:#C4C4C4;color:#C4C4C4;"
-              >
-                TH Sub
+            <!-- TH Sub -->
+            <div class="col-1 " style="width:120px;">
+              <div class="row q-px-md">
+                <div class="col-6" align="center">
+                  <q-icon
+                    name="fas fa-play"
+                    size="20px"
+                    class="cursor-pointer"
+                    @click="previewThaiSub(item.id)"
+                    :color="item.movieCodeEng.length == 0 ? 'grey' : ''"
+                    :disabled="item.movieCodeEng.length == 0"
+                  />
+                </div>
+                <div class="col-6" align="center">
+                  <q-icon
+                    name="far fa-bell"
+                    size="24px"
+                    class="cursor-pointer"
+                    v-show="item.alertThaiSub != 0"
+                    :disabled="item.movieCodeEng.length == 0"
+                    @click="alertThaiSub(item.id)"
+                  >
+                    <q-badge color="red" floating rounded></q-badge>
+                  </q-icon>
+                  <q-icon
+                    name="far fa-bell"
+                    size="24px"
+                    :disabled="item.movieCodeEng.length == 0"
+                    v-show="item.alertThaiSub == 0"
+                    :color="
+                      item.movieCodeEng.length == 0 || item.alertThaiSub == 0
+                        ? 'grey'
+                        : ''
+                    "
+                  >
+                  </q-icon>
+                </div>
               </div>
             </div>
-            <div
+            <!-- <div
               class="col-1 "
               style="width:120px;"
               v-show="item.movieCodeEng.length > 0"
             >
-              <div class="movieCodeBorder cursor-pointer">TH Sub</div>
-            </div>
-            <div class="col-1 cursor-pointer" @click="previewMovie(item)">
-              <u>Preview</u>
-            </div>
+              <div class="row q-px-md">
+                <div class="col-6" align="center">
+                  <q-icon
+                    name="fas fa-play"
+                    size="20px"
+                    class="cursor-pointer"
+                    @click="previewThaiSub(item.id)"
+                  />
+                </div>
+                <div class="col-6" align="center">
+                  <q-icon
+                    name="far fa-bell"
+                    size="24px"
+                    class="cursor-pointer"
+                    @click="alertThaiSub(itemid)"
+                  >
+                    <q-badge
+                      v-show="item.alertThaiSub != 0"
+                      color="red"
+                      floating
+                      rounded
+                    ></q-badge>
+                  </q-icon>
+                </div>
+              </div>
+            </div> -->
+
             <div class="col-1 cursor-pointer" @click="deleteEpisodeBtn(item)">
               <u>Delete</u>
             </div>
@@ -460,6 +529,10 @@
           </div>
         </q-card>
       </q-dialog>
+      <!-- Problem dialog -->
+      <q-dialog v-model="dialogAlert" persistent>
+        <q-card class="alertDialog" align="center">123 </q-card>
+      </q-dialog>
       <!-- Preview  -->
       <!-- <q-dialog v-model="dialogPreview" persistent>
         <q-card class="preview">
@@ -611,7 +684,9 @@ export default {
       editEpisodeId: "", // สำหรับเก็บ id ตัวแก้ไข Episode
       dialogdeleteSeries: false, // เปิดหน้าต่าง confirm การลบ
       episodeDeleteName: "", //ชื่อตอน
-      episodeDeleteId: "" //รหัสตอนที่จะลบ
+      episodeDeleteId: "", //รหัสตอนที่จะลบ
+
+      dialogAlert: false //หน้าต่างแสดง Alert
     };
   },
   methods: {
