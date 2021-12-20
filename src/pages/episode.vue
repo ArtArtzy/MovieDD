@@ -92,7 +92,7 @@
                     class="cursor-pointer"
                     v-show="item.alertThaiSound != 0"
                     :disabled="item.movieCodeTh.length == 0"
-                    @click="alertThaiSound(item.id)"
+                    @click="alertThaiSound(item.id, item.name)"
                   >
                     <q-badge color="red" floating rounded></q-badge>
                   </q-icon>
@@ -131,7 +131,7 @@
                     class="cursor-pointer"
                     v-show="item.alertThaiSub != 0"
                     :disabled="item.movieCodeEng.length == 0"
-                    @click="alertThaiSub(item.id)"
+                    @click="alertThaiSub(item.id, item.name)"
                   >
                     <q-badge color="red" floating rounded></q-badge>
                   </q-icon>
@@ -150,37 +150,6 @@
                 </div>
               </div>
             </div>
-            <!-- <div
-              class="col-1 "
-              style="width:120px;"
-              v-show="item.movieCodeEng.length > 0"
-            >
-              <div class="row q-px-md">
-                <div class="col-6" align="center">
-                  <q-icon
-                    name="fas fa-play"
-                    size="20px"
-                    class="cursor-pointer"
-                    @click="previewThaiSub(item.id)"
-                  />
-                </div>
-                <div class="col-6" align="center">
-                  <q-icon
-                    name="far fa-bell"
-                    size="24px"
-                    class="cursor-pointer"
-                    @click="alertThaiSub(itemid)"
-                  >
-                    <q-badge
-                      v-show="item.alertThaiSub != 0"
-                      color="red"
-                      floating
-                      rounded
-                    ></q-badge>
-                  </q-icon>
-                </div>
-              </div>
-            </div> -->
 
             <div class="col-1 cursor-pointer" @click="deleteEpisodeBtn(item)">
               <u>Delete</u>
@@ -529,9 +498,84 @@
           </div>
         </q-card>
       </q-dialog>
-      <!-- Problem dialog -->
+      <!-- Alert dialog -->
       <q-dialog v-model="dialogAlert" persistent>
-        <q-card class="alertDialog" align="center">123 </q-card>
+        <q-card class="alertProblemDialog">
+          <div class="row q-pt-md">
+            <div class="col-2"></div>
+            <div class="col font24" align="center">
+              {{ alertTitlePage }}
+            </div>
+            <div class="col-2" align="right">
+              <q-btn
+                class="q-pr-md"
+                icon="far fa-times-circle"
+                flat
+                round
+                size="18px"
+                dense
+                @click="closeAlertProblemDialog()"
+              />
+            </div>
+          </div>
+          <!-- <div align="center">{{ alertProblemType }}</div> -->
+          <!-- <div class="problemInside">
+            <div class="row q-px-lg">
+              <div class="col-9">Movie quality</div>
+              <div class="col-3" align="center">
+                <span
+                  class="cursor-pointer"
+                  v-show="alertQualityShow"
+                  @click="solveProblemQuality()"
+                >
+                  <u>solved</u></span
+                >
+              </div>
+            </div>
+            <div
+              v-if="!alertQualityShow"
+              align="center"
+              class="text-h6 q-py-md"
+            >
+              No qualitiy problem
+            </div>
+            <div v-else v-for="(item, index) in alertQualityData" :key="index">
+              <div class="row q-px-lg ">
+                <div class="col-9">{{ item.problem }}</div>
+                <div class="col-3" align="center">{{ item.nopro }}</div>
+              </div>
+            </div>
+            <div class="q-px-md">
+              <hr />
+            </div>
+            <div class="text-h6 q-px-md">
+              Other problem
+            </div>
+            <div
+              v-if="!alertOtherProblemShow"
+              align="center"
+              class="text-h6 q-py-md"
+            >
+              No other problem
+            </div>
+            <div
+              v-else
+              v-for="(item, index) in alertOtherProblemData"
+              :key="index"
+            >
+              <div class="row q-px-lg">
+                <div class="col-9">{{ item.problem }}</div>
+                <div class="col-3" align="center">
+                  <span
+                    @click="solveOtherProblem(item.problemid)"
+                    class="cursor-pointer"
+                    ><u>solved</u></span
+                  >
+                </div>
+              </div>
+            </div>
+          </div> -->
+        </q-card>
       </q-dialog>
       <!-- Preview  -->
       <!-- <q-dialog v-model="dialogPreview" persistent>
@@ -674,8 +718,8 @@ export default {
         movieCodeTh: ""
       },
       indexPreview: 1, // index สำหรับ dialog preview
-      previewMovieThaiSoundCode: "", //Code สำหรับ movie thai sound
-      previewMovieThaiSubCode: "", //Code สำหรับ movie thai sub
+      previewMovieCode: "", // Code ของหนัง Movie
+      previewMovieType: "", //ประเภทพของ Movie
 
       editSeasonId: "", //แก้ไข Season
       delSeasonId: "", //ลบ Season
@@ -686,10 +730,30 @@ export default {
       episodeDeleteName: "", //ชื่อตอน
       episodeDeleteId: "", //รหัสตอนที่จะลบ
 
-      dialogAlert: false //หน้าต่างแสดง Alert
+      dialogAlert: false, //หน้าต่างแสดง Alert
+      alertTitlePage: "", //หัวข้อหน้า Alert
+      alertPageId: "" //รหัสหน้า Alert
     };
   },
   methods: {
+    previewThaiSub(id) {},
+    previewThaiSound(id) {},
+    alertThaiSub(id) {
+      console.log(id);
+      this.dialogAlert = true;
+    },
+    async alertThaiSound(movieId, titleMovie) {
+      this.alertTitlePage = titleMovie + "-Thai sound";
+      this.alertPageId = movieId;
+      let temp = {
+        movieid: movieId,
+        type: 1 //สำหรับ Thaisound
+      };
+      let url = this.serverpath + "bo_seriesproblemqualitylist.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      console.log(res.data);
+      this.dialogAlert = true;
+    },
     //ปุ่มตกลงในหน้า Dialog ลบ
     async OKDeleteBtn() {
       let data = {
@@ -832,7 +896,6 @@ export default {
         seriesid: this.id,
         seasonid: this.selectSeason
       };
-      console.log(data);
       let url = this.serverpath + "bo_loadseriessub.php";
       let res = await axios.post(url, JSON.stringify(data));
       if (res.data != 0) {
@@ -1113,9 +1176,10 @@ export default {
 .epList {
   border-radius: 10px;
 }
-.alertDialog {
+.alertProblemDialog {
+  width: 580px;
+  height: 400px;
+  background-color: #e1eefe;
   border-radius: 30px;
-  width: 455px;
-  height: 288px;
 }
 </style>
