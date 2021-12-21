@@ -4,23 +4,32 @@
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg">
-          <div class="col-4 q-pl-xl">
-            <q-input
-              outlined
-              rounded
-              clearable
-              clear-icon="close"
-              v-model="searchMovie"
-              placeholder="Search : film title"
-              dense
-              style="width:350px;"
-              @keyup.enter="searchMovieData()"
-              @clear="clearSearch()"
-            >
-              <template v-slot:prepend>
-                <q-icon class="fas fa-search" />
-              </template>
-            </q-input>
+          <div class="col-4  row q-pl-xl">
+            <div>
+              <q-input
+                outlined
+                rounded
+                clearable
+                clear-icon="close"
+                v-model="searchMovie"
+                placeholder="Search : film title"
+                dense
+                style="width:300px;"
+                @keyup.enter="searchFunction()"
+                @clear="clearSearch()"
+              >
+              </q-input>
+            </div>
+            <div class="col"></div>
+            <div>
+              <q-btn
+                outline
+                rounded
+                icon="fas fa-search"
+                style="font-size:12px;height:39px"
+                @click="searchFunction()"
+              />
+            </div>
           </div>
 
           <div class="col-1" align="right">
@@ -2104,7 +2113,9 @@ export default {
     async loadMovieData() {
       this.loadpagenumber();
       //โหลดข้อมูลหนัง
-      this.data = [];
+      while (this.data.length > 0) {
+        this.data.pop();
+      }
       let data = {
         catName: this.movieCat,
         pagedata: this.movieP
@@ -2161,6 +2172,14 @@ export default {
 
         this.data.push(x);
       });
+    },
+    // ดูรูปแบบของ search
+    searchFunction() {
+      if (this.searchMovie.length == 0) {
+        this.loadMovieData();
+      } else {
+        this.searchMovieData();
+      }
     },
     // กด clear search
     clearSearch() {
@@ -2748,4 +2767,15 @@ export default {
   border-radius: 5px;
   background: #e83939;
 }
+// .searchDiv {
+//   cursor: pointer;
+//   border: 1px solid black;
+//   width: 50px;
+//   border-radius: 50px;
+// }
+// .iconSearch {
+//   padding-top: 8px;
+//   padding-left: 14px;
+//   font-size: 20px;
+// }
 </style>
