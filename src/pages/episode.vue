@@ -518,63 +518,56 @@
               />
             </div>
           </div>
-          <!-- <div align="center">{{ alertProblemType }}</div> -->
-          <!-- <div class="problemInside">
+          <div class="row">
+            <div class="col-9 q-px-lg text-h6">Movie quality</div>
+            <div class="col-3" align="center">
+              <span
+                class="cursor-pointer"
+                v-show="alertQualityShow"
+                @click="solveProblemQuality()"
+              >
+                <u>solved</u></span
+              >
+            </div>
+          </div>
+          <div v-if="!alertQualityShow" align="center" class="text-h6 q-py-md">
+            No qualitiy problem
+          </div>
+          <div v-else v-for="(item, index) in alertQualityData" :key="index">
+            <div class="row q-px-lg ">
+              <div class="col-9">{{ item.problem }}</div>
+              <div class="col-3" align="center">{{ item.noproblem }}</div>
+            </div>
+          </div>
+          <div class="q-px-md">
+            <hr />
+          </div>
+          <div class="text-h6 q-px-md">
+            Other problem
+          </div>
+          <div
+            v-if="!alertOtherProblemShow"
+            align="center"
+            class="text-h6 q-py-md"
+          >
+            No other problem
+          </div>
+          <div
+            v-else
+            v-for="(item, index) in alertOtherProblemData"
+            :key="index"
+          >
             <div class="row q-px-lg">
-              <div class="col-9">Movie quality</div>
+              <div class="col-9">{{ item.topic }}</div>
               <div class="col-3" align="center">
                 <span
+                  @click="solveOtherProblem(item.problemid)"
                   class="cursor-pointer"
-                  v-show="alertQualityShow"
-                  @click="solveProblemQuality()"
-                >
-                  <u>solved</u></span
+                  ><u>solved</u></span
                 >
               </div>
             </div>
-            <div
-              v-if="!alertQualityShow"
-              align="center"
-              class="text-h6 q-py-md"
-            >
-              No qualitiy problem
-            </div>
-            <div v-else v-for="(item, index) in alertQualityData" :key="index">
-              <div class="row q-px-lg ">
-                <div class="col-9">{{ item.problem }}</div>
-                <div class="col-3" align="center">{{ item.nopro }}</div>
-              </div>
-            </div>
-            <div class="q-px-md">
-              <hr />
-            </div>
-            <div class="text-h6 q-px-md">
-              Other problem
-            </div>
-            <div
-              v-if="!alertOtherProblemShow"
-              align="center"
-              class="text-h6 q-py-md"
-            >
-              No other problem
-            </div>
-            <div
-              v-else
-              v-for="(item, index) in alertOtherProblemData"
-              :key="index"
-            >
-              <div class="row q-px-lg">
-                <div class="col-9">{{ item.problem }}</div>
-                <div class="col-3" align="center">
-                  <span
-                    @click="solveOtherProblem(item.problemid)"
-                    class="cursor-pointer"
-                    ><u>solved</u></span
-                  >
-                </div>
-              </div>
-            </div>
-          </div> -->
+          </div>
         </q-card>
       </q-dialog>
       <!-- Preview  -->
@@ -732,26 +725,56 @@ export default {
 
       dialogAlert: false, //หน้าต่างแสดง Alert
       alertTitlePage: "", //หัวข้อหน้า Alert
-      alertPageId: "" //รหัสหน้า Alert
+      alertPageId: "", //รหัสหน้า Alert
+      alertQualityData: [], //ข้อมูลสำหรับแสดงผลในส่วน quality
+      alertQualityShow: false, //แสดงส่วน movie quality
+      alertOtherProblemShow: false, //แสดงส่วน other problem
+      alertOtherProblemData: [] //ข้อมูลสำหรับแสดงผลในส่วน other problem
     };
   },
   methods: {
     previewThaiSub(id) {},
     previewThaiSound(id) {},
+    //ปิดหน้าต่าง alert
+    closeAlertProblemDialog() {
+      this.dialogAlert = false;
+    },
+    //กดปุ่ม alert ThaiSub ใน episode
     alertThaiSub(id) {
       console.log(id);
       this.dialogAlert = true;
     },
+
+    //กดปุ่ม alert ThaiSound ใน episode
     async alertThaiSound(movieId, titleMovie) {
+      this.alertQualityShow = false;
       this.alertTitlePage = titleMovie + "-Thai sound";
+
+      //สำหรับ Movie quality
       this.alertPageId = movieId;
       let temp = {
-        movieid: movieId,
+        episodeid: movieId,
         type: 1 //สำหรับ Thaisound
       };
       let url = this.serverpath + "bo_seriesproblemqualitylist.php";
       let res = await axios.post(url, JSON.stringify(temp));
-      console.log(res.data);
+      if (res.data != "no problem") {
+        this.alertQualityShow = true;
+        this.alertQualityData = res.data;
+      }
+
+      //สำหรับ Other proble,
+      this.alertOtherProblemShow = false;
+      let dataSend = {
+        episodeid: movieId,
+        type: 1
+      };
+      let url2 = this.serverpath + "bo_seriesreportproblemetc.php";
+      let res2 = await axios.post(url2, JSON.stringify(dataSend));
+      if (res2.data != "no data") {
+        this.alertOtherProblemShow = true;
+        this.alertOtherProblemData = res2.data;
+      }
       this.dialogAlert = true;
     },
     //ปุ่มตกลงในหน้า Dialog ลบ
