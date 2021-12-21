@@ -4,21 +4,32 @@
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg">
-          <div class="col-4 q-pl-xl">
-            <q-input
-              outlined
-              rounded
-              clearable
-              clear-icon="close"
-              v-model="searchMovie"
-              placeholder="Search : film title"
-              dense
-              style="width:350px;"
-            >
-              <template v-slot:prepend>
-                <q-icon class="fas fa-search" />
-              </template>
-            </q-input>
+          <div class="col-4  row q-pl-xl">
+            <div>
+              <q-input
+                outlined
+                rounded
+                clearable
+                clear-icon="close"
+                v-model="searchMovie"
+                placeholder="Search : film title"
+                dense
+                style="width:300px;"
+                @keyup.enter="searchFunction()"
+                @clear="clearSearch()"
+              >
+              </q-input>
+            </div>
+            <div class="col"></div>
+            <div>
+              <q-btn
+                outline
+                rounded
+                icon="fas fa-search"
+                style="font-size:12px;height:39px"
+                @click="searchFunction()"
+              />
+            </div>
           </div>
 
           <div class="col-1" align="right">
@@ -194,17 +205,16 @@
                   {{ item.synopsis }}
                 </div>
               </div>
-              <div class="col-1 btndiv">
-                <div class="row q-pt-md">
-                  <div
-                    class="btnMovie bg-primary"
-                    align="center"
-                    @click="editMovieBtn(item)"
-                  >
-                    <q-icon class="fas fa-cog" />
-                    edit
-                  </div>
+              <div class="col-1 btndiv q-pt-sm">
+                <div
+                  class="btnMovie bg-primary "
+                  align="center"
+                  @click="editMovieBtn(item)"
+                >
+                  <q-icon class="fas fa-cog" />
+                  edit
                 </div>
+
                 <div
                   v-show="item.movieCodeTh || item.movieCodeEng"
                   class="btnMovie bg-primary"
@@ -243,7 +253,8 @@
                       item.nameTh,
                       item.promotionMobilePic,
                       item.promotionTabletPic,
-                      item.promotionPCPic
+                      item.promotionPCPic,
+                      item.promotion
                     )
                   "
                 >
@@ -260,7 +271,8 @@
                       item.nameTh,
                       item.promotionMobilePic,
                       item.promotionTabletPic,
-                      item.promotionPCPic
+                      item.promotionPCPic,
+                      item.promotion
                     )
                   "
                 >
@@ -400,7 +412,7 @@
                 <q-input
                   class=""
                   style="width:200px;"
-                  v-model="addmovie.movieCodeThaiSound"
+                  v-model.trim="addmovie.movieCodeThaiSound"
                   dense
                 />
               </div>
@@ -409,7 +421,7 @@
                 <q-input
                   class=""
                   style="width:200px;"
-                  v-model="addmovie.movieCodeThaiSub"
+                  v-model.trim="addmovie.movieCodeThaiSub"
                   dense
                 />
               </div>
@@ -419,7 +431,7 @@
               <q-input
                 class=""
                 style="width:200px;"
-                v-model="addmovie.trailerCode"
+                v-model.trim="addmovie.trailerCode"
                 dense
               />
             </div>
@@ -625,7 +637,7 @@
                 <q-input
                   class=""
                   style="width:200px;"
-                  v-model="addmovie.movieCodeThaiSound"
+                  v-model.trim="addmovie.movieCodeThaiSound"
                   dense
                 />
               </div>
@@ -634,7 +646,7 @@
                 <q-input
                   class=""
                   style="width:200px;"
-                  v-model="addmovie.movieCodeThaiSub"
+                  v-model.trim="addmovie.movieCodeThaiSub"
                   dense
                 />
               </div>
@@ -644,7 +656,7 @@
               <q-input
                 class=""
                 style="width:200px;"
-                v-model="addmovie.trailerCode"
+                v-model.trim="addmovie.trailerCode"
                 dense
               />
             </div>
@@ -1039,7 +1051,7 @@
             <div
               class="picPosterBTN cursor-pointer q-mx-lg"
               v-show="previewMovieThaiSoundCode != '' && indexPoster != 1"
-              @click="indexPoster = 1"
+              @click="previewThaiSoundBtn()"
             >
               TH sound
             </div>
@@ -1059,31 +1071,16 @@
             <div
               class="picPosterBTN cursor-pointer q-mx-lg"
               v-show="previewMovieThaiSubCode != '' && indexPoster != 2"
-              @click="indexPoster = 2"
+              @click="previewThaiSubBtn()"
             >
               TH sub
             </div>
             <div class="col"></div>
           </div>
           <div class="q-mt-md">
-            <div
-              style="width:790px;height:443px;margin:auto;"
-              v-show="indexPoster == 1"
-            >
+            <div style="width:790px;height:443px;margin:auto;">
               <iframe
-                :src="previewThaiSoundLink"
-                frameborder="0"
-                scrolling="auto"
-                allowfullscreen
-                style="position:absolute;width:790px;height:443px;"
-              ></iframe>
-            </div>
-            <div
-              style="width:790px;height:443px;margin:auto;"
-              v-show="indexPoster == 2"
-            >
-              <iframe
-                :src="previewThaiSubLink"
+                :src="previewiFramelink"
                 frameborder="0"
                 scrolling="auto"
                 allowfullscreen
@@ -1356,7 +1353,11 @@
             >
               No other problem
             </div>
-            <div v-else v-for="(item, index) in alertOtherProblemData" :key="index">
+            <div
+              v-else
+              v-for="(item, index) in alertOtherProblemData"
+              :key="index"
+            >
               <div class="row q-px-lg">
                 <div class="col-9">{{ item.problem }}</div>
                 <div class="col-3" align="center">
@@ -1519,6 +1520,7 @@ export default {
       indexPoster: 1, //1 Preview Thai sound, 2 Preview Thai sub
       previewThaiSoundLink: "", //Link สำหรับ Thaisound
       previewThaiSubLink: "", //Link สำหรับ ThaiSub
+      previewiFramelink: "",
 
       dialogtrailer: false, // เปิดหน้าต่าง trailer
       trailerTitle: "", //ชื่อเรื่อง trailer
@@ -2111,7 +2113,9 @@ export default {
     async loadMovieData() {
       this.loadpagenumber();
       //โหลดข้อมูลหนัง
-      this.data = [];
+      while (this.data.length > 0) {
+        this.data.pop();
+      }
       let data = {
         catName: this.movieCat,
         pagedata: this.movieP
@@ -2135,6 +2139,51 @@ export default {
 
         this.data.push(x);
       });
+    },
+    // กด search หนัง
+    async searchMovieData() {
+      this.moviePage = [];
+      this.moviePage.push(1);
+      this.movieP = 1;
+
+      //โหลดข้อมูลหนัง
+      this.data = [];
+      let data = {
+        catid: this.movieCat,
+        searchtext: this.searchMovie
+      };
+
+      let url = this.serverpath + "bo_movie_search.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      res.data.forEach(x => {
+        //หาวันที่ upload ไป
+
+        let dateCurrent = new Date();
+        let dateCurrentTime = dateCurrent.getTime();
+        let dateDiff = dateCurrentTime - x.timestamp;
+        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
+
+        let movieType = x.type.split(",");
+        movieType = movieType.map(x => {
+          return x.replace("[", "").replace("]", "");
+        });
+        x.type = movieType;
+
+        this.data.push(x);
+      });
+    },
+    // ดูรูปแบบของ search
+    searchFunction() {
+      if (this.searchMovie.length == 0) {
+        this.loadMovieData();
+      } else {
+        this.searchMovieData();
+      }
+    },
+    // กด clear search
+    clearSearch() {
+      this.loadMovieData();
     },
     //เปิดหน้าแก้ไขหนัง
     editMovieBtn(item) {
@@ -2313,8 +2362,6 @@ export default {
         let url = this.serverpath + "bo_encodemovie.php";
         let res = await axios.post(url, JSON.stringify(data));
         this.previewThaiSoundLink = res.data;
-      } else {
-        this.indexPoster = 2;
       }
       this.previewMovieThaiSubCode = item.movieCodeEng;
       if (item.movieCodeEng != "") {
@@ -2324,10 +2371,24 @@ export default {
         let url = this.serverpath + "bo_encodemovie.php";
         let res = await axios.post(url, JSON.stringify(data));
         this.previewThaiSubLink = res.data;
-      } else {
+        this.previewiFramelink = this.previewThaiSubLink;
+      }
+      if (item.movieCodeTh != "") {
+        this.previewiFramelink = this.previewThaiSoundLink;
         this.indexPoster = 1;
+      } else {
+        this.previewiFramelink = this.previewThaiSubLink;
+        this.indexPoster = 2;
       }
       this.dialogPreview = true;
+    },
+    previewThaiSoundBtn() {
+      this.previewiFramelink = this.previewThaiSoundLink;
+      this.indexPoster = 1;
+    },
+    previewThaiSubBtn() {
+      this.previewiFramelink = this.previewThaiSubLink;
+      this.indexPoster = 2;
     },
     // เปิด dialog trailer
     async previewtrailer(item) {
@@ -2347,12 +2408,14 @@ export default {
       posterThai,
       promotionMobilePic,
       promotionTabletPic,
-      promotionPCPic
+      promotionPCPic,
+      promotion
     ) {
       //กดปุ่ม Promotion จากหน้าหลัก ส่ง id, MovieEng, MovieThai
       this.promotionMovieNameEng = posterEng;
       this.promotionMovieNameThai = posterThai;
       this.promotionMovieId = posterId;
+      this.promotionOn = promotion == 1 ? true : false;
       promotionPCPic == 1
         ? (this.posterP =
             this.serverpath +
@@ -2704,4 +2767,15 @@ export default {
   border-radius: 5px;
   background: #e83939;
 }
+// .searchDiv {
+//   cursor: pointer;
+//   border: 1px solid black;
+//   width: 50px;
+//   border-radius: 50px;
+// }
+// .iconSearch {
+//   padding-top: 8px;
+//   padding-left: 14px;
+//   font-size: 20px;
+// }
 </style>
