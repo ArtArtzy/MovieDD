@@ -400,7 +400,7 @@
       <q-dialog class="" v-model="dialogEditEpisode" persistent>
         <q-card class="newEpisode">
           <div class="q-pt-md" style="font-size:24px" align="center">
-            New episode -
+            Edit episode
           </div>
           <div class="row textInput">
             <div class="col-1"></div>
@@ -468,10 +468,10 @@
       </q-dialog>
       <!-- delete series alert  -->
       <q-dialog v-model="dialogdeleteSeries" persistent>
-        <q-card class="alertDialog" align="center">
+        <q-card class="confirmDiv" align="center">
           <q-icon
             class="fas fa-exclamation-triangle q-pt-lg"
-            style="font-size:100px;color:#FFC24C"
+            style="font-size:80px;color:#FFC24C"
           />
           <div class="q-py-lg">
             Do you want to delete "{{ episodeDeleteName }}"?
@@ -498,7 +498,7 @@
           </div>
         </q-card>
       </q-dialog>
-      <!-- Alert dialog -->
+      <!-- Alert problem dialog -->
       <q-dialog v-model="dialogAlert" persistent>
         <q-card class="alertProblemDialog">
           <div class="row q-pt-md">
@@ -518,8 +518,8 @@
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-9 q-px-lg text-h6">Movie quality</div>
+          <div class="row q-px-lg ">
+            <div class="col-9 text-h6">Movie quality</div>
             <div class="col-3" align="center">
               <span
                 class="cursor-pointer"
@@ -560,13 +560,83 @@
             <div class="row q-px-lg">
               <div class="col-9">{{ item.topic }}</div>
               <div class="col-3" align="center">
-                <span
-                  @click="solveOtherProblem(item.problemid)"
-                  class="cursor-pointer"
+                <span @click="solveOtherProblem(item.id)" class="cursor-pointer"
                   ><u>solved</u></span
                 >
               </div>
             </div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- comfirm Dialog Other problem  -->
+      <q-dialog v-model="confirmSolveOtherProblem" persistent>
+        <q-card class="confirmDiv">
+          <div class="q-pt-lg" align="center">
+            <q-icon
+              name="fas fa-question-circle"
+              size="80px"
+              style="color:#FFC24C"
+              class="q-pt-md"
+            />
+          </div>
+          <div class="q-pt-md" align="center">
+            Did you solved this problem?
+          </div>
+          <div class="row justify-center q-pt-md">
+            <div>
+              <div
+                class="btncommon cursor-pointer"
+                @click="btnAlertProblemNo()"
+              >
+                No
+              </div>
+            </div>
+            <div style="width:20px;"></div>
+            <div>
+              <div
+                class="btnyellow cursor-pointer"
+                @click="btnAlertProblemOtherYes()"
+              >
+                Yes
+              </div>
+            </div>
+            <div></div>
+          </div>
+        </q-card>
+      </q-dialog>
+      <!-- comfirm Dialog Quality problem  -->
+      <q-dialog v-model="confirmSolveProblem" persistent>
+        <q-card class="confirmDiv">
+          <div class="q-pt-lg" align="center">
+            <q-icon
+              name="fas fa-question-circle"
+              size="80px"
+              style="color:#FFC24C"
+              class="q-pt-md"
+            />
+          </div>
+          <div class="q-pt-md" align="center">
+            Did you upload the new movie file?
+          </div>
+          <div class="row justify-center q-pt-md">
+            <div>
+              <div
+                class="btncommon cursor-pointer"
+                @click="btnAlertProblemNo()"
+              >
+                No
+              </div>
+            </div>
+            <div style="width:20px;"></div>
+            <div>
+              <div
+                class="btnyellow cursor-pointer"
+                @click="btnAlertProblemQualityYes()"
+              >
+                Yes
+              </div>
+            </div>
+            <div></div>
           </div>
         </q-card>
       </q-dialog>
@@ -725,28 +795,121 @@ export default {
 
       dialogAlert: false, //หน้าต่างแสดง Alert
       alertTitlePage: "", //หัวข้อหน้า Alert
+      alertTitleMovie: "", //ชื่อ episode
       alertPageId: "", //รหัสหน้า Alert
+      alertProblemType: 1, //ประเภทของปัญหา 1 = th sound , 2 =th sub
       alertQualityData: [], //ข้อมูลสำหรับแสดงผลในส่วน quality
       alertQualityShow: false, //แสดงส่วน movie quality
       alertOtherProblemShow: false, //แสดงส่วน other problem
-      alertOtherProblemData: [] //ข้อมูลสำหรับแสดงผลในส่วน other problem
+      alertOtherProblemData: [], //ข้อมูลสำหรับแสดงผลในส่วน other problem
+      confirmSolveOtherProblem: false, //หน้าต่างยืนยันการ solve other problem
+      alertOtherProblemId: "", //รหัสปัญหาอื่นๆที่จะทำการ solve
+
+      confirmSolveProblem: false //หน้าต่างยืนยันการ solve quality problem
     };
   },
   methods: {
     previewThaiSub(id) {},
     previewThaiSound(id) {},
+    //ปุ่มตกลงแก้ปัญหา Quality
+    async btnAlertProblemQualityYes() {
+      this.confirmSolveProblem = false;
+      let temp = {
+        episodeid: Number(this.alertPageId),
+        type: this.alertProblemType
+      };
+      let url = this.serverpath + "bo_seriesproblemqualitysolved.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      this.greenNotify("Save completely");
+      if (this.alertProblemType == 1) {
+        this.alertThaiSound(this.alertPageId, this.alertTitleMovie);
+      } else {
+        this.alertThaiSub(this.alertPageId, this.alertTitleMovie);
+      }
+    },
+    //แก้ปัญหา movie quality
+    solveProblemQuality() {
+      this.confirmSolveProblem = true;
+      this.dialogAlert = false;
+    },
+    //ปุ่ม yes ในการ solve problem ของ other problem
+    async btnAlertProblemOtherYes() {
+      let temp = {
+        problemid: Number(this.alertOtherProblemId)
+      };
+
+      let url = this.serverpath + "bo_seriesproblemothersolved.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      this.greenNotify("Save completely");
+      this.confirmSolveOtherProblem = false;
+      if (this.alertProblemType == 1) {
+        this.alertThaiSound(this.alertPageId, this.alertTitleMovie);
+      } else {
+        this.alertThaiSub(this.alertPageId, this.alertTitleMovie);
+      }
+    },
+    //ปุ่มยกเลิกการ solve problem ของ other problem
+    btnAlertProblemNo() {
+      this.confirmSolveProblem = false;
+      this.confirmSolveOtherProblem = false;
+      this.dialogAlert = true;
+    },
+    //ปุ่ม solve other problem
+    solveOtherProblem(id) {
+      this.alertOtherProblemId = id;
+      this.dialogAlert = false;
+      this.confirmSolveOtherProblem = true;
+    },
     //ปิดหน้าต่าง alert
     closeAlertProblemDialog() {
+      this.loadEpisodeList();
       this.dialogAlert = false;
     },
     //กดปุ่ม alert ThaiSub ใน episode
-    alertThaiSub(id) {
-      console.log(id);
+    async alertThaiSub(movieId, titleMovie) {
+      this.alertProblemType = 2;
+      this.alertTitleMovie = titleMovie;
+      this.alertQualityShow = false;
+      this.alertTitlePage = titleMovie + "-Thai sub";
+      //สำหรับ Movie quality
+      this.alertPageId = movieId;
+      let temp = {
+        episodeid: movieId,
+        type: 2 //สำหรับ Thaisound
+      };
+      let url = this.serverpath + "bo_seriesproblemqualitylist.php";
+      let res = await axios.post(url, JSON.stringify(temp));
+      if (res.data != "no problem") {
+        this.alertQualityShow = true;
+        this.alertQualityData = res.data;
+      }
+
+      //สำหรับ Other problem,
+      this.alertOtherProblemShow = false;
+      let dataSend = {
+        episodeid: movieId,
+        type: 2
+      };
+      let url2 = this.serverpath + "bo_seriesreportproblemetc.php";
+      let res2 = await axios.post(url2, JSON.stringify(dataSend));
+      if (res2.data != "no data") {
+        this.alertOtherProblemShow = true;
+        this.alertOtherProblemData = res2.data;
+      }
+      if (
+        this.alertQualityShow == false &&
+        this.alertOtherProblemShow == false
+      ) {
+        let url3 = this.serverpath + "bo_seriesalertclear.php";
+        let res3 = await axios.post(url3, JSON.stringify(dataSend));
+      }
       this.dialogAlert = true;
     },
 
     //กดปุ่ม alert ThaiSound ใน episode
     async alertThaiSound(movieId, titleMovie) {
+      this.alertProblemType = 1;
+      this.alertTitleMovie = titleMovie;
       this.alertQualityShow = false;
       this.alertTitlePage = titleMovie + "-Thai sound";
 
@@ -763,7 +926,7 @@ export default {
         this.alertQualityData = res.data;
       }
 
-      //สำหรับ Other proble,
+      //สำหรับ Other problem,
       this.alertOtherProblemShow = false;
       let dataSend = {
         episodeid: movieId,
@@ -774,6 +937,13 @@ export default {
       if (res2.data != "no data") {
         this.alertOtherProblemShow = true;
         this.alertOtherProblemData = res2.data;
+      }
+      if (
+        this.alertQualityShow == false &&
+        this.alertOtherProblemShow == false
+      ) {
+        let url3 = this.serverpath + "bo_seriesalertclear.php";
+        let res3 = await axios.post(url3, JSON.stringify(dataSend));
       }
       this.dialogAlert = true;
     },
@@ -1204,5 +1374,27 @@ export default {
   height: 400px;
   background-color: #e1eefe;
   border-radius: 30px;
+}
+.confirmDiv {
+  width: 500px;
+  height: 275px;
+  background-color: #e1eefe;
+  border-radius: 30px;
+}
+.btncommon {
+  width: 160px;
+  height: 50px;
+  border: 1px solid black;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 5px;
+}
+.btnyellow {
+  width: 160px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: #ffc24c;
+  border-radius: 5px;
 }
 </style>

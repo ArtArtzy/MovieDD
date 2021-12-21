@@ -58,7 +58,7 @@
               rounded
               class="cursor-pointer "
               style="font-size:18px;width:160px;"
-              label="Deleted sries"
+              label="Deleted series"
               no-caps
               @click="showDeletedMovie()"
             />
