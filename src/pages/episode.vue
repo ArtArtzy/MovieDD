@@ -81,7 +81,9 @@
                     size="20px"
                     class="cursor-pointer"
                     :color="item.movieCodeTh.length == 0 ? 'grey' : ''"
-                    @click="previewThaiSound(item.id)"
+                    @click="
+                      previewVDO(item.id, item.name, item.movieCodeTh, type)
+                    "
                     :disabled="item.movieCodeTh.length == 0"
                   />
                 </div>
@@ -119,7 +121,9 @@
                     name="fas fa-play"
                     size="20px"
                     class="cursor-pointer"
-                    @click="previewThaiSub(item.id)"
+                    @click="
+                      previewVDO(item.id, item.name, item.movieCodeEng, 2)
+                    "
                     :color="item.movieCodeEng.length == 0 ? 'grey' : ''"
                     :disabled="item.movieCodeEng.length == 0"
                   />
@@ -641,12 +645,12 @@
         </q-card>
       </q-dialog>
       <!-- Preview  -->
-      <!-- <q-dialog v-model="dialogPreview" persistent>
+      <q-dialog v-model="dialogPreview" persistent>
         <q-card class="preview">
           <div class="row q-pa-md" align="center">
             <div class="col-1"></div>
             <div class="col" style="font-size:24px;margin-top:30px;">
-              {{ seriesName }}
+              {{ previewTitle }}
             </div>
 
             <div class="col-1">
@@ -661,69 +665,10 @@
             </div>
           </div>
 
-          <div class="row" align="center">
-            <div class="col"></div>
-            <div
-              class="noMovieCode q-mx-lg"
-              v-show="previewMovieThaiSoundCode == ''"
-            >
-              TH sound
-            </div>
-            <div
-              class="borderMovieCodePreview cursor-pointer q-mx-lg"
-              v-show="previewMovieThaiSoundCode != '' && indexPreview == 1"
-              style="background-color:#ffc24c"
-            >
-              TH sound
-            </div>
-            <div
-              class="borderMovieCodePreview cursor-pointer q-mx-lg"
-              v-show="previewMovieThaiSoundCode != '' && indexPreview != 1"
-              @click="indexPreview = 1"
-            >
-              TH sound
-            </div>
-            <div
-              class="noMovieCode q-mx-lg"
-              v-show="previewMovieThaiSubCode == ''"
-            >
-              TH sub
-            </div>
-            <div
-              class="borderMovieCodePreview cursor-pointer q-mx-lg"
-              v-show="previewMovieThaiSubCode != '' && indexPreview == 2"
-              style="background-color:#ffc24c"
-            >
-              TH sub
-            </div>
-            <div
-              class="borderMovieCodePreview cursor-pointer q-mx-lg"
-              v-show="previewMovieThaiSubCode != '' && indexPreview != 2"
-              @click="indexPreview = 2"
-            >
-              TH sub
-            </div>
-            <div class="col"></div>
-          </div>
           <div class="q-mt-md">
-            <div
-              style="width:790px;height:443px;margin:auto;"
-              v-show="indexPreview == 1"
-            >
+            <div style="width:790px;height:443px;margin:auto;">
               <iframe
-                :src="previewThaiSoundLink"
-                frameborder="0"
-                scrolling="auto"
-                allowfullscreen
-                style="position:absolute;width:790px;height:443px;"
-              ></iframe>
-            </div>
-            <div
-              style="width:790px;height:443px;margin:auto;"
-              v-show="indexPreview == 2"
-            >
-              <iframe
-                :src="previewThaiSubLink"
+                :src="previewSource"
                 frameborder="0"
                 scrolling="auto"
                 allowfullscreen
@@ -732,7 +677,7 @@
             </div>
           </div>
         </q-card>
-      </q-dialog> -->
+      </q-dialog>
       <!-- bg drop  -->
       <div
         class="bgDrop fullscreen"
@@ -780,9 +725,6 @@ export default {
         movieCodeEng: "",
         movieCodeTh: ""
       },
-      indexPreview: 1, // index สำหรับ dialog preview
-      previewMovieCode: "", // Code ของหนัง Movie
-      previewMovieType: "", //ประเภทพของ Movie
 
       editSeasonId: "", //แก้ไข Season
       delSeasonId: "", //ลบ Season
@@ -804,13 +746,35 @@ export default {
       alertOtherProblemData: [], //ข้อมูลสำหรับแสดงผลในส่วน other problem
       confirmSolveOtherProblem: false, //หน้าต่างยืนยันการ solve other problem
       alertOtherProblemId: "", //รหัสปัญหาอื่นๆที่จะทำการ solve
+      confirmSolveProblem: false, //หน้าต่างยืนยันการ solve quality problem
 
-      confirmSolveProblem: false //หน้าต่างยืนยันการ solve quality problem
+      dialogPreview: false, //เปิดปิดหน้าต่าง Preview
+      previewSource: "", //Link VDO
+      previewTitle: "" // Preview Title
     };
   },
   methods: {
-    previewThaiSub(id) {},
-    previewThaiSound(id) {},
+    //**************Preview Dialog **************/
+
+    //ปุ่ม Preview  จาก Main list
+    async previewVDO(id, title, code, type) {
+      this.dialogPreview = true;
+      if (type == 1) {
+        this.previewTitle = title + " - Thai Sound";
+      } else {
+        this.previewTitle = title + " - Thai Sub";
+      }
+
+      let data = {
+        movieCode: code
+      };
+      let url = this.serverpath + "bo_encodemovie.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.previewSource = res.data;
+    },
+    //************End of Preview Dialog *********/
+
+    //************Alert Problem Dialog **********/
     //ปุ่มตกลงแก้ปัญหา Quality
     async btnAlertProblemQualityYes() {
       this.confirmSolveProblem = false;
@@ -947,6 +911,9 @@ export default {
       }
       this.dialogAlert = true;
     },
+    //*****************End of Problem Dialog ************/
+
+    //*****************Delete episode ******************/
     //ปุ่มตกลงในหน้า Dialog ลบ
     async OKDeleteBtn() {
       let data = {
@@ -968,6 +935,8 @@ export default {
       this.episodeDeleteId = item.id;
       this.dialogdeleteSeries = true;
     },
+    //*****************End of Delete episode *************/
+
     // ล้างค่าตัวแปร temp เก็บข้อมูล addEpisode
     clraddEpisode() {
       this.addEpisode.name = "";
@@ -1024,30 +993,30 @@ export default {
     },
     //เปิดหน้า preview movie
     async previewMovie(item) {
-      this.previewTitleEn = item.nameEng;
-      this.previewMovieThaiSoundCode = item.movieCodeTh;
-      if (item.movieCodeTh != "") {
-        let data = {
-          movieCode: item.movieCodeTh
-        };
-        let url = this.serverpath + "bo_encodemovie.php";
-        let res = await axios.post(url, JSON.stringify(data));
-        this.previewThaiSoundLink = res.data;
-      } else {
-        this.indexPreview = 2;
-      }
-      this.previewMovieThaiSubCode = item.movieCodeEng;
-      if (item.movieCodeEng != "") {
-        let data = {
-          movieCode: item.movieCodeEng
-        };
-        let url = this.serverpath + "bo_encodemovie.php";
-        let res = await axios.post(url, JSON.stringify(data));
-        this.previewThaiSubLink = res.data;
-      } else {
-        this.indexPreview = 1;
-      }
-      this.dialogPreview = true;
+      // this.previewTitleEn = item.nameEng;
+      // this.previewMovieThaiSoundCode = item.movieCodeTh;
+      // if (item.movieCodeTh != "") {
+      //   let data = {
+      //     movieCode: item.movieCodeTh
+      //   };
+      //   let url = this.serverpath + "bo_encodemovie.php";
+      //   let res = await axios.post(url, JSON.stringify(data));
+      //   this.previewThaiSoundLink = res.data;
+      // } else {
+      //   this.indexPreview = 2;
+      // }
+      // this.previewMovieThaiSubCode = item.movieCodeEng;
+      // if (item.movieCodeEng != "") {
+      //   let data = {
+      //     movieCode: item.movieCodeEng
+      //   };
+      //   let url = this.serverpath + "bo_encodemovie.php";
+      //   let res = await axios.post(url, JSON.stringify(data));
+      //   this.previewThaiSubLink = res.data;
+      // } else {
+      //   this.indexPreview = 1;
+      // }
+      // this.dialogPreview = true;
     },
     // กดปุ่ม Edit ของ Episode
     editEpisodeBtn(item) {
