@@ -755,7 +755,6 @@ export default {
   },
   methods: {
     //**************Preview Dialog **************/
-
     //ปุ่ม Preview  จาก Main list
     async previewVDO(id, title, code, type) {
       this.dialogPreview = true;
@@ -937,6 +936,8 @@ export default {
     },
     //*****************End of Delete episode *************/
 
+    //*****************Add new episode ******************/
+
     // ล้างค่าตัวแปร temp เก็บข้อมูล addEpisode
     clraddEpisode() {
       this.addEpisode.name = "";
@@ -991,33 +992,9 @@ export default {
       this.seasonName = temp[0].name;
       this.dialogAddEpisode = true;
     },
-    //เปิดหน้า preview movie
-    async previewMovie(item) {
-      // this.previewTitleEn = item.nameEng;
-      // this.previewMovieThaiSoundCode = item.movieCodeTh;
-      // if (item.movieCodeTh != "") {
-      //   let data = {
-      //     movieCode: item.movieCodeTh
-      //   };
-      //   let url = this.serverpath + "bo_encodemovie.php";
-      //   let res = await axios.post(url, JSON.stringify(data));
-      //   this.previewThaiSoundLink = res.data;
-      // } else {
-      //   this.indexPreview = 2;
-      // }
-      // this.previewMovieThaiSubCode = item.movieCodeEng;
-      // if (item.movieCodeEng != "") {
-      //   let data = {
-      //     movieCode: item.movieCodeEng
-      //   };
-      //   let url = this.serverpath + "bo_encodemovie.php";
-      //   let res = await axios.post(url, JSON.stringify(data));
-      //   this.previewThaiSubLink = res.data;
-      // } else {
-      //   this.indexPreview = 1;
-      // }
-      // this.dialogPreview = true;
-    },
+    //******************End of add new episode *************/
+
+    //*****************Edit episode **********************/
     // กดปุ่ม Edit ของ Episode
     editEpisodeBtn(item) {
       this.editEpisodeId = item.id;
@@ -1051,6 +1028,8 @@ export default {
     cancelEditEpisodeBtn() {
       this.dialogEditEpisode = false;
     },
+    //*********************End of edit episode *************/
+
     // โหลดรายละเอียด Episode ย่อยของ series>season
     async loadEpisodeList() {
       this.episodeList = [];
