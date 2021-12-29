@@ -1026,11 +1026,16 @@ export default {
     cancelDeleteSeriesBtn() {
       this.deleteSeries.dialog = false;
     },
-    OKDeleteSeriesBtn() {
-      console.log("delete Series");
+    async OKDeleteSeriesBtn() {
+      let dataSend = {
+        id: this.editMovieId
+      };
+      let url = this.serverpath + "bo_deletemainseries.php";
+      let res = await axios.post(url, JSON.stringify(dataSend));
       this.deleteSeries.dialog = false;
       this.dialogEditSeries = false;
       this.loadseriesdata();
+      this.greenNotify("Delete complete");
     },
     //******หน้าหลัก******
     //เปลี่ยนค่า online / offline

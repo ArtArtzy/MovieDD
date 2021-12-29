@@ -4,35 +4,32 @@
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg">
-          <div class="col-4  row q-pl-xl">
-            <div>
-              <q-input
-                outlined
-                rounded
-                clearable
-                clear-icon="close"
-                v-model="searchMovie"
-                placeholder="Search : film title"
-                dense
-                style="width:300px;"
-                @keyup.enter="searchFunction()"
-                @clear="clearSearch()"
-              >
-              </q-input>
-            </div>
-            <div class="col"></div>
-            <div>
-              <q-btn
-                outline
-                rounded
-                icon="fas fa-search"
-                style="font-size:12px;height:39px"
-                @click="searchFunction()"
-              />
-            </div>
+          <div class="q-pl-xl">
+            <q-input
+              outlined
+              rounded
+              clearable
+              clear-icon="close"
+              v-model="searchMovie"
+              placeholder="Search : film title"
+              dense
+              style="width:250px;"
+              @keyup.enter="searchFunction()"
+              @clear="clearSearch()"
+            >
+            </q-input>
+          </div>
+          <div style="width:90px;" class="q-px-md brx">
+            <q-btn
+              outline
+              rounded
+              icon="fas fa-search"
+              style="font-size:12px;height:39px"
+              @click="searchFunction()"
+            />
           </div>
 
-          <div class="col-1" align="right">
+          <div align="right">
             Category
           </div>
 
@@ -49,7 +46,7 @@
             >
             </q-select>
           </div>
-          <div class="col-1" align="right">
+          <div align="right">
             Page
           </div>
           <div class="q-pl-sm">
@@ -99,13 +96,10 @@
                   alt=""
                 />
               </div>
-              <div class=" q-ma-md q-mt-lg pospic" v-if="item.poster == 1">
-                <img
-                  class="picMovie shadow-2"
-                  :src="serverpath + 'poster/movie/' + item.id + '.jpg'"
-                />
+              <div class=" q-ma-md q-mt-lg pospic" v-if="item.poster == '1'">
+                <img class="picMovie shadow-2" :src="posterMovie(item.id)" />
               </div>
-              <div class="q-ma-md q-mt-lg pospic" v-if="item.poster == 0">
+              <div class="q-ma-md q-mt-lg pospic" v-else>
                 <img
                   class="picMovie shadow-2"
                   :src="serverpath + 'poster/movie/nophoto.jpg'"
@@ -387,6 +381,7 @@
                       label="Pick one file"
                     >
                     </q-file>
+                    <div>123</div>
                   </div>
                 </div>
               </div>
@@ -445,7 +440,6 @@
                 multiple
                 counter
                 max-values="6"
-                hint="3-6 categories"
                 dense
                 emit-value
                 map-options
@@ -597,7 +591,7 @@
                   <div class="col-4">Poster file</div>
                   <div class="col " align="left">
                     <div
-                      v-if="addmovie.posterFile == 1"
+                      v-if="addmovie.posterFile == '1'"
                       class="cursor-pointer q-pl-sm"
                       @click="deletePosterFileBtn()"
                     >
@@ -1252,7 +1246,13 @@
               <div class="col-3" align="center">{{ item.movieCode }}</div>
               <div class="col-3" align="center">{{ item.title }}</div>
               <div class="col-3" align="center">
-                {{ item.type == 1 ? "Thai sound" : "Thai sub" }}
+                {{
+                  item.type == 1
+                    ? "Thai sound"
+                    : item.type == 2
+                    ? "Thai sub"
+                    : "Trailer"
+                }}
               </div>
               <div
                 class="col-3 q-pt-xs"
@@ -1584,6 +1584,16 @@ export default {
     };
   },
   methods: {
+    //แสดงไฟล์ poster หนัง
+    posterMovie(id) {
+      return (
+        this.serverpath +
+        "poster/movie/" +
+        id +
+        ".jpg?" +
+        Math.floor(Math.random() * (999 - 100 + 1) + 100)
+      );
+    },
     //ปิดหน้า Alert Problem
     closeAlertProblemDialog() {
       this.dialogAlertProblem = false;
@@ -1904,6 +1914,7 @@ export default {
       data = {
         id: this.editMovieId
       };
+      console.log(data);
       url = this.serverpath + "bo_moviedeldata.php";
       res = await axios.post(url, JSON.stringify(data));
       this.movieP = 1;
@@ -2348,6 +2359,7 @@ export default {
       let res = await axios.post(url, JSON.stringify(data));
 
       this.addmovie.posterFile = 0;
+      this.loadMovieData();
       this.greenNotify("deleted poster complete");
     },
 

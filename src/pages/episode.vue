@@ -978,7 +978,7 @@ export default {
         movieCodeEng: this.addEpisode.movieCodeEng,
         movieCodeTh: this.addEpisode.movieCodeTh
       };
-      let url = this.serverpath + "bo_addserriessub.php";
+      let url = this.serverpath + "bo_addseriessub.php";
       let res = await axios.post(url, JSON.stringify(data));
       this.greenNotify("Add " + this.addEpisode.name + " Complete");
 

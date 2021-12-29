@@ -32,8 +32,8 @@ import axios from "axios";
 Vue.mixin({
   data() {
     return {
-      serverpath: "https://www.yaksaconcept.com/netgigapi/",
-      // serverpath: "http://localhost/moviedd/",
+      // serverpath: "https://www.yaksaconcept.com/netgigapi/",
+      serverpath: "http://localhost/moviedd/",
       // serverpath: "http://192.168.2.147/moviedd/",
       startDate: "09-06-2021"
     };

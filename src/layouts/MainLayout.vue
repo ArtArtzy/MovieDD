@@ -10,17 +10,19 @@
           <div style="height:calc(100vh - 50px); position:absolute;">
             <!-- Header -->
             <div class="row fontEdit items-center">
-              <img
-                src="../../public/images/logo.png"
-                style="width:88px;"
-                alt=""
-              />
+              <div class="q-px-md">
+                <img
+                  src="../../public/images/logo.png"
+                  style="width:70px;"
+                  alt=""
+                />
+              </div>
               <div class="q-pl-sm">
                 <div>{{ userName }}</div>
               </div>
             </div>
             <!-- Category -->
-            <div v-show="accessMenu.category == 1">
+            <div v-show="accessMenu.category == 1" style="height:75px;">
               <div class="setMenu" v-show="menu == 1">
                 <img src="../../public/images/menu1red.png" alt="" />
               </div>
@@ -33,7 +35,7 @@
               </div>
             </div>
             <!-- Movie -->
-            <div v-show="accessMenu.movie == 1">
+            <div v-show="accessMenu.movie == 1" style="height:75px;">
               <div class="setMenu" v-show="menu == 2">
                 <img src="../../public/images/menu2red.png" alt="" />
               </div>
@@ -46,7 +48,7 @@
               </div>
             </div>
             <!-- Series -->
-            <div v-show="accessMenu.series == 1">
+            <div v-show="accessMenu.series == 1" style="height:75px;">
               <div class="setMenu" v-show="menu == 3">
                 <img src="../../public/images/menu3red.png" alt="" />
               </div>
@@ -59,7 +61,7 @@
               </div>
             </div>
             <!-- Ads -->
-            <div v-show="accessMenu.ads == 1">
+            <div v-show="accessMenu.ads == 1" style="height:75px;">
               <div class="setMenu" v-show="menu == 4">
                 <img src="../../public/images/menu4red.png" alt="" />
               </div>
@@ -72,7 +74,7 @@
               </div>
             </div>
             <!-- Analytic -->
-            <div v-show="accessMenu.stat == 1">
+            <div v-show="accessMenu.stat == 1" style="height:75px;">
               <div class="setMenu" v-show="menu == 5">
                 <img src="../../public/images/menu5red.png" alt="" />
               </div>
@@ -85,7 +87,7 @@
               </div>
             </div>
             <!-- user -->
-            <div v-show="accessMenu.user == 1">
+            <div v-show="accessMenu.user == 1" style="height:75px;">
               <div class="setMenu" v-show="menu == 6">
                 <img src="../../public/images/menu6red.png" alt="" />
               </div>
@@ -251,9 +253,9 @@ export default {
   width: 100%;
 }
 .fontEdit {
-  padding-bottom: 20px;
+  padding-bottom: 10px;
   font-size: 22px;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 .setMenu {
   position: relative;
