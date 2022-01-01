@@ -5,7 +5,7 @@
       <div class="boxWhite ">
         <!-- header  -->
         <div class="row items-center q-pt-lg q-pb-md">
-          <div class="col-4 q-pl-xl">
+          <div class="q-pl-xl">
             <q-input
               outlined
               rounded
@@ -14,12 +14,20 @@
               v-model="searchMovie"
               placeholder="Search : film title"
               dense
-              style="width:350px;"
+              style="width:250px;"
+              @keyup.enter="searchFunction()"
+              @clear="clearSearch()"
             >
-              <template v-slot:prepend>
-                <q-icon class="fas fa-search" />
-              </template>
             </q-input>
+          </div>
+          <div style="width:90px;" class="q-px-md">
+            <q-btn
+              outline
+              rounded
+              icon="fas fa-search"
+              style="font-size:12px;height:39px"
+              @click="searchFunction()"
+            />
           </div>
           <div class="col-1" align="right">
             Category

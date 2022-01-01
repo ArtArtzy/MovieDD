@@ -3,7 +3,7 @@
     <div class="contentDiv">
       <div class="boxWhite ">
         <!-- header  -->
-        <div class="row items-center q-pt-lg">
+        <div class="row items-center q-pt-lg font14">
           <div class="q-pl-xl">
             <q-input
               outlined
@@ -19,7 +19,7 @@
             >
             </q-input>
           </div>
-          <div style="width:90px;" class="q-px-md brx">
+          <div style="width:90px;" class="q-px-md">
             <q-btn
               outline
               rounded
@@ -59,6 +59,10 @@
               @input="loadMovieData()"
             >
             </q-select>
+          </div>
+          <div class="col q-pl-md">
+            <div class="">item in this page: {{ data.length }}</div>
+            <div class="">total item: {{ totalData }}</div>
           </div>
           <div class="col-2" align="right">
             <q-btn
@@ -300,11 +304,11 @@
       <!------------------ dialog  ---------------->
       <!-- add movie box  -->
       <q-dialog v-model="dialogAddMovie" persistent>
-        <q-card class="diaBox">
+        <q-card class="diaBox font14">
           <div class="q-pt-md" style="font-size:24px;" align="center">
             Add movie
           </div>
-          <div class="q-pa-sm q-ml-lg">
+          <div class="q-ml-lg">
             <div class="row ">
               <div class="col row items-end">
                 <div class="col-4">Title name(En)</div>
@@ -349,44 +353,58 @@
               </div>
             </div>
             <div class="row">
-              <div class="col row items-end q-py-sm">
-                <div class="col-4">Duration</div>
-                <div class="">
-                  <q-input
-                    class="q-pl-sm"
-                    style="width:70px;"
-                    v-model="addmovie.durationHour"
-                    dense
-                  />
-                </div>
-                <div>h:</div>
-                <div class="">
-                  <q-input
-                    class="q-pl-sm"
-                    style="width:74px;"
-                    v-model="addmovie.durationMin"
-                    dense
-                  />
-                </div>
-                <div>m</div>
-              </div>
-              <div class="col row items-center" style="padding-top:20px;">
-                <div class="row " style="width: 300px;">
-                  <div class="col">Poster file</div>
-                  <div class="col posterFilePos">
-                    <q-file
-                      v-model="addmovie.posterFile"
+              <div class="col-6 row items-start ">
+                <div class="row items-end " style="width: 400px;">
+                  <div class="col-4">Duration</div>
+                  <div class="">
+                    <q-input
+                      class="q-pl-sm"
+                      style="width:70px;"
+                      v-model="addmovie.durationHour"
                       dense
-                      accept=".jpg"
-                      label="Pick one file"
+                    />
+                  </div>
+                  <div>h:</div>
+                  <div class="">
+                    <q-input
+                      class="q-pl-sm"
+                      style="width:70px;"
+                      v-model="addmovie.durationMin"
+                      dense
+                    />
+                  </div>
+                  <div>m</div>
+                </div>
+              </div>
+              <div
+                class="col row items-start"
+                style="padding-top:10px;height:80px;"
+              >
+                <div class="row " style="width: 400px;">
+                  <div class="col-4 q-pt-sm">Poster file</div>
+                  <div class="col " align="left">
+                    <div
+                      v-if="addmovie.posterFile == '1'"
+                      class="cursor-pointer q-pl-sm"
+                      @click="deletePosterFileBtn()"
                     >
-                    </q-file>
-                    <div>123</div>
+                      <u>delete poster file</u>
+                    </div>
+                    <div v-else>
+                      <q-file
+                        v-model="addmovie.posterFile"
+                        dense
+                        accept=".jpg"
+                        label="Pick one file"
+                      >
+                      </q-file>
+                      <div>Image size: 225 x 300 px</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="q-pt-md">Synopsis</div>
+            <div>Synopsis</div>
             <div class="q-pt-sm">
               <q-input
                 counter
@@ -506,7 +524,7 @@
       </q-dialog>
       <!-- edit movie box -->
       <q-dialog v-model="dialogEditMovie" persistent>
-        <q-card class="diaBox">
+        <q-card class="diaBox font14">
           <div class="row q-pt-md" align="center">
             <div class="col-1"></div>
             <div class="col" style="font-size:24px;">
@@ -520,7 +538,7 @@
               />
             </div>
           </div>
-          <div class="q-pa-sm q-ml-lg">
+          <div class="q-ml-lg">
             <div class="row ">
               <div class="col row items-end">
                 <div class="col-4">Title name(En)</div>
@@ -564,31 +582,36 @@
                 </q-select>
               </div>
             </div>
-            <div class="row">
-              <div class="col row items-end q-py-sm">
-                <div class="col-4">Duration</div>
-                <div class="">
-                  <q-input
-                    class="q-pl-sm"
-                    style="width:70px;"
-                    v-model="addmovie.durationHour"
-                    dense
-                  />
+            <div class="row ">
+              <div class="col-6 row items-start ">
+                <div class="row items-end " style="width: 400px;">
+                  <div class="col-4">Duration</div>
+                  <div class="">
+                    <q-input
+                      class="q-pl-sm"
+                      style="width:70px;"
+                      v-model="addmovie.durationHour"
+                      dense
+                    />
+                  </div>
+                  <div>h:</div>
+                  <div class="">
+                    <q-input
+                      class="q-pl-sm"
+                      style="width:70px;"
+                      v-model="addmovie.durationMin"
+                      dense
+                    />
+                  </div>
+                  <div>m</div>
                 </div>
-                <div>h:</div>
-                <div class="">
-                  <q-input
-                    class="q-pl-sm"
-                    style="width:74px;"
-                    v-model="addmovie.durationMin"
-                    dense
-                  />
-                </div>
-                <div>m</div>
               </div>
-              <div class="col row items-center" style="padding-top:20px;">
+              <div
+                class="col row items-start"
+                style="padding-top:10px;height:80px;"
+              >
                 <div class="row " style="width: 400px;">
-                  <div class="col-4">Poster file</div>
+                  <div class="col-4 q-pt-sm">Poster file</div>
                   <div class="col " align="left">
                     <div
                       v-if="addmovie.posterFile == '1'"
@@ -605,12 +628,13 @@
                         label="Pick one file"
                       >
                       </q-file>
+                      <div>Image size: 225 x 300 px</div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="q-pt-md">Synopsis</div>
+            <div class="q-pt-sm">Synopsis</div>
             <div class="q-pt-sm">
               <q-input
                 counter
@@ -709,7 +733,7 @@
               color="positive"
             />
 
-            <div class="row ynDia">
+            <div class="row  q-pt-md " style="width:300px;margin:auto;">
               <div
                 class="ynBtn q-ma-sm"
                 @click="closeEditMovieBtn()"
@@ -1474,6 +1498,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      totalData: 0, // จำนวนข้อมูลทั้งหมด
       searchMovie: "",
       movieCat: 0, //ประเภทหนังที่ filter
       movieCatOpt: [], //รายชื่อประเภทของหนัง
@@ -2131,7 +2156,10 @@ export default {
         catName: this.movieCat,
         pagedata: this.movieP
       };
-
+      //หา total itmes
+      let url2 = this.serverpath + "bo_movietotal.php";
+      let res2 = await axios.post(url2, JSON.stringify(data));
+      this.totalData = res2.data;
       let url = this.serverpath + "bo_movieshowdata.php";
       let res = await axios.post(url, JSON.stringify(data));
       res.data.forEach(x => {
@@ -2653,7 +2681,7 @@ export default {
   background-color: rgba($color: #000000, $alpha: 0.6);
 }
 .diaBox {
-  height: 756px;
+  height: 720px;
   max-width: 1200px;
   width: 920px;
   border-radius: 30px;

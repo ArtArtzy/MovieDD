@@ -920,6 +920,7 @@ export default {
       };
       let url = this.serverpath + "bo_deleteepisode.php";
       let res = await axios.post(url, JSON.stringify(data));
+      this.loadTotalEp();
       this.loadEpisodeList();
       this.dialogdeleteSeries = false;
       this.greenNotify("Delete complete");
@@ -981,7 +982,7 @@ export default {
       let url = this.serverpath + "bo_addseriessub.php";
       let res = await axios.post(url, JSON.stringify(data));
       this.greenNotify("Add " + this.addEpisode.name + " Complete");
-
+      this.loadTotalEp();
       this.loadEpisodeList();
       this.dialogAddEpisode = false;
     },
@@ -1020,6 +1021,7 @@ export default {
       };
       let url = this.serverpath + "bo_editepisode.php";
       let res = await axios.post(url, JSON.stringify(data));
+      this.loadTotalEp();
       this.loadEpisodeList();
       this.greenNotify("Edit " + data.name + " complete");
       this.dialogEditEpisode = false;
@@ -1030,6 +1032,14 @@ export default {
     },
     //*********************End of edit episode *************/
 
+    //โหลดข้อมูล season และ  ep เพื่อใช้ในการ update ข้อมูล
+    async loadTotalEp() {
+      let dataSend = {
+        id: this.id
+      };
+      let url = this.serverpath + "bo_seriestotalep.php";
+      let res = await axios.post(url, JSON.stringify(dataSend));
+    },
     // โหลดรายละเอียด Episode ย่อยของ series>season
     async loadEpisodeList() {
       this.episodeList = [];
