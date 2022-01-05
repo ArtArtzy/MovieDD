@@ -1200,6 +1200,7 @@ export default {
       let res = await axios.post(url, JSON.stringify(temp));
       this.loadseriesdata();
     },
+
     //ปุ่มเพิ่ม Series
     addSeriesBtn() {
       let today = new Date();
@@ -1305,7 +1306,51 @@ export default {
         Math.floor(Math.random() * (999 - 100 + 1) + 100)
       );
     },
+    // กด search หนัง
+    async searchMovieData() {
+      this.moviePage = [];
+      this.moviePage.push(1);
+      this.movieP = 1;
 
+      //โหลดข้อมูลหนัง
+      this.data = [];
+      let data = {
+        catid: this.movieCat,
+        searchtext: this.searchMovie
+      };
+
+      let url = this.serverpath + "bo_series_search.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      res.data.forEach(x => {
+        //หาวันที่ upload ไป
+
+        let dateCurrent = new Date();
+        let dateCurrentTime = dateCurrent.getTime();
+        let dateDiff = dateCurrentTime - x.timestamp;
+        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
+
+        let movieType = x.type.split(",");
+        movieType = movieType.map(x => {
+          return x.replace("[", "").replace("]", "");
+        });
+        x.type = movieType;
+
+        this.data.push(x);
+      });
+    },
+    // ดูรูปแบบของ search
+    searchFunction() {
+      if (this.searchMovie.length == 0) {
+        this.loadseriesdata();
+      } else {
+        this.searchMovieData();
+      }
+    },
+    // กด clear search
+    clearSearch() {
+      this.loadseriesdata();
+    },
     //******เพิ่มข้อมูล******
 
     //ปุ่ม ok ใน add series
