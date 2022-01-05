@@ -2100,7 +2100,6 @@ export default {
       };
       let url = this.serverpath + "bo_moviedelcat.php";
       let res = await axios.post(url, JSON.stringify(data));
-
       //ลบข้อมูลออกจาก movie และทำการลบรูป
       data = {
         id: this.editMovieId

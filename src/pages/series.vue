@@ -916,7 +916,7 @@
         </q-card>
       </q-dialog>
       <!-- deleted series list -->
-      <q-dialog v-model="deleteList.dialog">
+      <q-dialog v-model="deleteList.dialog" persistent>
         <q-card class="deletedListBox q-pa-md">
           <div class="row">
             <div class="col-1"></div>
