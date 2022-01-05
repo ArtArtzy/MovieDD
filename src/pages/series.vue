@@ -915,6 +915,110 @@
           </div>
         </q-card>
       </q-dialog>
+      <!-- deleted series list -->
+      <q-dialog v-model="deleteList.dialog">
+        <q-card class="deletedListBox q-pa-md">
+          <div class="row">
+            <div class="col-1"></div>
+            <div class="col font24" align="center">Deleted Series</div>
+            <div class="col-1">
+              <q-btn
+                icon="far fa-times-circle"
+                flat
+                round
+                size="18px"
+                dense
+                @click="deleteList.dialog = false"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4 q-px-lg">
+              <q-select
+                v-model="deleteList.monthSelected"
+                :options="deleteList.monthOption"
+                emit-value
+                map-options
+                label="month"
+                @input="loadDeletedData()"
+              />
+            </div>
+            <div class="col-4 q-px-lg">
+              <q-select
+                v-model="deleteList.yearSelected"
+                :options="deleteList.yearOption"
+                label="year"
+                @input="loadDeletedData()"
+              />
+            </div>
+            <div class="col-4 q-px-md">
+              <q-select
+                v-model="deleteList.typeSelected"
+                :options="deleteList.typeOption"
+                label="type"
+                @input="loadDeletedData()"
+              />
+            </div>
+          </div>
+          <div class="contentDelDiv">
+            <div class="row font18 q-pt-md">
+              <div class="" style="width:140px" align="center">Code</div>
+              <div class="col" align="center">Title</div>
+              <div class="" style="width:120px" align="center">Type</div>
+              <div class="" style="width:120px" align="center">
+                JW deleted
+              </div>
+            </div>
+            <div
+              v-for="(item, index) in deleteList.deletedListShow"
+              :key="index"
+              class="row font14 q-pt-md"
+              :style="index % 2 == 0 ? 'background-color:#cedff2' : ''"
+            >
+              <div class="" style="width:140px" align="center">
+                {{ item.movieCode }}
+              </div>
+              <div class="col" align="left">
+                {{ item.seriesName }} : {{ item.seasonName }} :
+                {{ item.episodeName }}
+              </div>
+              <div class="" style="width:120px" align="center">
+                {{
+                  item.type == 1
+                    ? "Thai sound"
+                    : item.type == 2
+                    ? "Thai sub"
+                    : "Trailer"
+                }}
+              </div>
+              <div
+                class=" q-pt-xs"
+                align="center"
+                style="width:120px"
+                v-show="item.status == 0"
+              >
+                <span
+                  @click="updateDeletedMovie(1, item.id)"
+                  class="cursor-pointer"
+                  ><img src="../../public/images/block.svg" alt=""
+                /></span>
+              </div>
+              <div
+                class="  q-pt-xs"
+                align="center"
+                style="width:120px"
+                v-show="item.status == 1"
+              >
+                <span
+                  @click="updateDeletedMovie(0, item.id)"
+                  class="cursor-pointer"
+                >
+                  <img src="../../public/images/blockwithcheck.svg" alt=""
+                /></span>
+              </div>
+            </div>
+          </div> </q-card
+      ></q-dialog>
       <!-- bg drop  -->
       <div
         class="bgDrop fullscreen"
@@ -926,7 +1030,6 @@
 
 <script>
 import axios from "axios";
-import { async } from "q";
 export default {
   data() {
     return {
@@ -986,6 +1089,41 @@ export default {
       //Delete Series
       deleteSeries: {
         dialog: false // เปิดหน้าต่าง Dialog
+      },
+      deleteList: {
+        dialog: false,
+        monthOption: [
+          { value: 1, label: "Jan" },
+          { value: 2, label: "Feb" },
+          { value: 3, label: "Mar" },
+          { value: 4, label: "Apr" },
+          { value: 5, label: "May" },
+          { value: 6, label: "Jun" },
+          { value: 7, label: "Jul" },
+          { value: 8, label: "Aug" },
+          { value: 9, label: "Sep" },
+          { value: 10, label: "Oct" },
+          { value: 11, label: "Nov" },
+          { value: 12, label: "Dec" }
+        ], //ข้อมูลเดือนสำหรับ Deleted movie
+        yearOption: [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025,
+          2026,
+          2027,
+          2028,
+          2029,
+          2030
+        ], //ข้อมูลปีสำหรับ Deleted movie
+        typeOption: ["All movie", "Deleted movie", "Undeleted movie"], //ประเภทสำหรับ Deleted movie
+        monthSelected: "", //เดือนที่ถูกเลือกใน deleted movie
+        yearSelected: "", //ปีที่ถูกเลือกใน deleted movie
+        typeSelected: "All movie", //ประเภทที่ถูกเลือกใน deleted movie
+        deletedListRaw: [], //List ของ Deleted movie
+        deletedListShow: [] //List ของ Deleted movie ที่แสดง
       }
     };
   },
@@ -1486,6 +1624,42 @@ export default {
       this.promote.posterPC = null;
       this.promote.active = false;
       this.setPromote();
+    },
+    //********* deleted list series  ********/
+    // show deleted list
+    showDeletedMovie() {
+      let today = new Date();
+      this.deleteList.yearSelected = today.getFullYear();
+      this.deleteList.monthSelected = Number(today.getMonth()) + 1;
+      this.loadDeletedData();
+      this.deleteList.dialog = true;
+    },
+    // load ข้อมูล deleted data
+    async loadDeletedData() {
+      this.deleteList.deletedListRaw = [];
+      let data = {
+        month: this.deleteList.monthSelected,
+        year: this.deleteList.yearSelected
+      };
+      let url = this.serverpath + "bo_seriesdeleted.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      console.log(res.data);
+      this.deleteList.deletedListRaw = res.data;
+      this.filterDeletedMovie();
+    },
+    // filter Type of Deleted Movie
+    filterDeletedMovie() {
+      if (this.deleteList.typeSelected == "Deleted movie") {
+        this.deleteList.deletedListShow = this.deleteList.deletedListRaw.filter(
+          x => x.status == 1
+        );
+      } else if (this.deleteList.typeSelected == "All movie") {
+        this.deleteList.deletedListShow = this.deleteList.deletedListRaw;
+      } else {
+        this.deleteList.deletedListShow = this.deleteList.deletedListRaw.filter(
+          x => x.status == 0
+        );
+      }
     }
   },
   mounted() {
@@ -1599,5 +1773,16 @@ export default {
   border-radius: 30px;
   width: 455px;
   height: 288px;
+}
+.deletedListBox {
+  background: #edf2fe;
+  max-width: 1000px;
+  width: 830px;
+  height: 500px;
+  border-radius: 30px;
+}
+.contentDelDiv {
+  height: 350px;
+  overflow-y: auto;
 }
 </style>
