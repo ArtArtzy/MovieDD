@@ -1609,6 +1609,7 @@ export default {
     };
   },
   methods: {
+    //****** หน้าหลัก *******/
     //แสดงไฟล์ poster หนัง
     posterMovie(id) {
       return (
@@ -1619,6 +1620,11 @@ export default {
         Math.floor(Math.random() * (999 - 100 + 1) + 100)
       );
     },
+    //****** หน้า add movie */
+
+    //******หน้า edit movie */
+
+    //**** alert problem */
     //ปิดหน้า Alert Problem
     closeAlertProblemDialog() {
       this.dialogAlertProblem = false;
@@ -1793,6 +1799,9 @@ export default {
       }
       this.dialogAlertProblem = true;
     },
+    //********จบ alert problem */
+
+    //***** Delete Movie  */
     //updated deleted movie status
     async updateDeletedMovie(value, id) {
       let data = {
@@ -1833,6 +1842,8 @@ export default {
       this.loadDeletedData();
       this.dialogDeletedMovie = true;
     },
+    //******จบหน้า Delete Movie */
+
     calCurrentWeek() {
       let currentTime = new Date().getTime();
       let startTime = new Date(this.startDate).getTime();
