@@ -251,7 +251,7 @@
       </div>
       <!-- add series  -->
       <q-dialog v-model="dialogAddSeries" persistent>
-        <q-card class="diaBox">
+        <q-card class="diaBox font14">
           <div class="q-pt-md" style="font-size:24px;" align="center">
             Add Series
           </div>
@@ -291,10 +291,13 @@
                 </q-select>
               </div>
             </div>
-            <div class="col row items-center" style="padding-top:20px;">
-              <div class="row " style="width: 300px;">
-                <div class="col">Poster file</div>
-                <div class="col posterFilePos">
+            <div class="col row " style="padding-top:20px;">
+              <div class="row " style="width: 400px;">
+                <div style="width:140px">Poster file</div>
+                <div
+                  class="col posterFilePos"
+                  style="position:relative;top:-10px"
+                >
                   <q-file
                     v-model="addmovie.posterFile"
                     dense
@@ -302,6 +305,8 @@
                     label="Pick one file"
                   >
                   </q-file>
+
+                  <div>Image size: 225 x 300 px</div>
                 </div>
               </div>
             </div>
@@ -402,7 +407,7 @@
       </q-dialog>
       <!-- edit series  -->
       <q-dialog v-model="dialogEditSeries" persistent>
-        <q-card class="diaBox">
+        <q-card class="diaBox font14">
           <div class="row" align="center">
             <div class="col-1"></div>
             <div class="col q-pt-md" style="font-size:24px;">
@@ -463,7 +468,7 @@
             </div>
             <div class="col row items-center" style="padding-top:20px;">
               <div class="row " style="width: 400px;">
-                <div class="col-4">Poster file</div>
+                <div class="col-4 ">Poster file</div>
                 <div class="col " align="left">
                   <div
                     v-if="addmovie.posterFile == 1"
@@ -472,7 +477,7 @@
                   >
                     <u>delete poster file</u>
                   </div>
-                  <div v-else>
+                  <div v-else style="position:relative; top:-10px">
                     <q-file
                       v-model="addmovie.posterFile"
                       dense
@@ -480,6 +485,7 @@
                       label="Pick one file"
                     >
                     </q-file>
+                    <div>Image size: 225 x 300 px</div>
                   </div>
                 </div>
               </div>

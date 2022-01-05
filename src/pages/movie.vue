@@ -1620,11 +1620,602 @@ export default {
         Math.floor(Math.random() * (999 - 100 + 1) + 100)
       );
     },
+    //แสดงเวลาที่หนัง
+    calCurrentWeek() {
+      let currentTime = new Date().getTime();
+      let startTime = new Date(this.startDate).getTime();
+      this.currentWeek = Math.floor(
+        (currentTime - startTime) / (1000 * 60 * 60 * 24 * 7)
+      );
+    },
+    //แสดง chart ของหนังเรื่องนั้น
+    async showChart(item) {
+      this.calCurrentWeek();
+      this.xValueView = [];
+      this.yValueView = [];
+      let weekOnProcess = 0;
+      if (20 >= this.currentWeek) {
+        weekOnProcess = this.currentWeek - 1;
+      } else {
+        weekOnProcess = 20;
+      }
+      for (let i = 1; i <= weekOnProcess; i++) {
+        let weekx = this.currentWeek - i;
+        this.xValueView.push(weekx);
+      }
+      this.xValueView.reverse();
+
+      let data = {
+        id: item.id
+      };
+      let url = this.serverpath + "bo_loadmovieview.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.viewData = res.data;
+      this.xValueView.forEach(x => {
+        let yRawData = this.viewData.filter(y => y.week == x);
+
+        if (yRawData.length == 0) {
+          this.yValueView.push(0);
+        } else {
+          this.yValueView.push(Number(yRawData[0].view));
+        }
+      });
+      let titleChart = "Movie view per week";
+      Highcharts.chart("container1", {
+        chart: {
+          type: "line",
+          width: 600,
+          height: 320,
+          backgroundColor: "#edf2fe"
+        },
+        title: {
+          text: titleChart
+        },
+        exporting: { enabled: false },
+        xAxis: {
+          categories: this.xValueView,
+          lineColor: "#00CEFA",
+          lineWidth: 2
+        },
+
+        yAxis: {
+          title: {
+            text: titleChart
+          },
+          lineColor: "#00CEFA",
+          lineWidth: 2,
+          min: 0,
+          softMax: 100
+        },
+        tooltip: {
+          useHTML: true,
+          headerFormat: "",
+          pointFormat: "{point.y:,.f} views"
+        },
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          areaspline: {
+            fillOpacity: 0.5
+          },
+          line: {
+            softThreshold: false
+          }
+        },
+        series: [
+          {
+            showInLegend: false,
+            name: "Movie/Series watching",
+            data: this.yValueView
+          }
+        ]
+      });
+      this.titleView = item.nameEng;
+      this.dialogChart = true;
+    },
+    //ปุ่มเพิ่ม Movie
+    showAddMovieBtn() {
+      // expired date    this.addmovie.titleTh = "";
+      this.addmovie.titleEn = "";
+      this.addmovie.year = "";
+      this.addmovie.mpaRating = "G";
+      this.addmovie.durationHour = "";
+      this.addmovie.durationMin = "";
+      this.addmovie.posterFile = null;
+      this.addmovie.synopsis = "";
+      this.addmovie.movieCodeThaiSound = "";
+      this.addmovie.movieCodeThaiSub = "";
+      this.addmovie.trailerCode = "";
+      this.addmovie.category = null;
+      this.addmovie.netflix = false;
+      this.addmovie.disney = false;
+      this.addmovie.amazon = false;
+      this.addmovie.hbo = false;
+      this.addmovie.newArraival = false;
+      let today = new Date();
+      let mi = today.getTime() + 1296000000;
+
+      let a = new Date(mi);
+      this.addmovie.expiredDate =
+        a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+      this.labelExpired =
+        "New arrival (expired date " + this.addmovie.expiredDate + ")";
+      this.addmovie.titleTh = "";
+      this.dialogAddMovie = true;
+    },
+    //เปลี่ยน Category
+    refreshCat() {
+      this.movieP = 1;
+      this.loadMovieData();
+    },
+    //หาจำนวนหน้าทั้งหมดและใส่หน้าใน List
+    async loadpagenumber() {
+      let data = {
+        cat: this.movieCat
+      };
+      let url = this.serverpath + "bo_moviepagenumber.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.moviePage = [];
+      for (let i = 1; i <= res.data; i++) {
+        this.moviePage.push(i);
+      }
+    },
+    //โหลดประเภทหนัง
+    async loadcatatmovie() {
+      this.movieCatOpt = [];
+      this.movieCatOptWithoutAll = [];
+      let url = this.serverpath + "bo_loadcategory.php";
+      let res = await axios.get(url);
+      let temp2 = {
+        label: "ทั้งหมด",
+        value: 0
+      };
+      this.movieCatOpt.push(temp2);
+      let dataTemp = res.data;
+      dataTemp = dataTemp.sort((a, b) => a.orderid - b.orderid);
+      dataTemp.forEach(x => {
+        let temp = {
+          label: x.catname,
+          value: x.id
+        };
+        this.movieCatOpt.push(temp);
+        this.movieCatOptWithoutAll.push(temp);
+      });
+      this.movieCat = this.movieCatOpt[0].value;
+    },
+    //แสดงชื่อ Category
+    catName(id) {
+      let temp = this.movieCatOpt.filter(x => x.value == id);
+      return temp[0].label;
+    },
+    //แสดงข้อมูลหนังในหน้าหลัก
+    async loadMovieData() {
+      this.loadpagenumber();
+      //โหลดข้อมูลหนัง
+      while (this.data.length > 0) {
+        this.data.pop();
+      }
+      let data = {
+        catName: this.movieCat,
+        pagedata: this.movieP
+      };
+      //หา total itmes
+      let url2 = this.serverpath + "bo_movietotal.php";
+      let res2 = await axios.post(url2, JSON.stringify(data));
+      this.totalData = res2.data;
+      let url = this.serverpath + "bo_movieshowdata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      res.data.forEach(x => {
+        //หาวันที่ upload ไป
+
+        let dateCurrent = new Date();
+        let dateCurrentTime = dateCurrent.getTime();
+        let dateDiff = dateCurrentTime - x.timestamp;
+        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
+
+        let movieType = x.type.split(",");
+        movieType = movieType.map(x => {
+          return x.replace("[", "").replace("]", "");
+        });
+        x.type = movieType;
+
+        this.data.push(x);
+      });
+    },
+    // กด search หนัง
+    async searchMovieData() {
+      this.moviePage = [];
+      this.moviePage.push(1);
+      this.movieP = 1;
+
+      //โหลดข้อมูลหนัง
+      this.data = [];
+      let data = {
+        catid: this.movieCat,
+        searchtext: this.searchMovie
+      };
+
+      let url = this.serverpath + "bo_movie_search.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      res.data.forEach(x => {
+        //หาวันที่ upload ไป
+
+        let dateCurrent = new Date();
+        let dateCurrentTime = dateCurrent.getTime();
+        let dateDiff = dateCurrentTime - x.timestamp;
+        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
+
+        let movieType = x.type.split(",");
+        movieType = movieType.map(x => {
+          return x.replace("[", "").replace("]", "");
+        });
+        x.type = movieType;
+
+        this.data.push(x);
+      });
+    },
+    // ดูรูปแบบของ search
+    searchFunction() {
+      if (this.searchMovie.length == 0) {
+        this.loadMovieData();
+      } else {
+        this.searchMovieData();
+      }
+    },
+    // กด clear search
+    clearSearch() {
+      this.loadMovieData();
+    },
+    //เปิดหน้าแก้ไขหนัง
+    editMovieBtn(item) {
+      this.addmovie.titleTh = item.nameTh;
+      this.addmovie.titleEn = item.nameEng;
+      this.addmovie.year = item.year;
+      this.addmovie.mpaRating = item.mparate;
+      this.addmovie.durationHour = item.durationHour;
+      this.addmovie.durationMin = item.durationMin;
+      this.addmovie.posterFile = item.poster;
+      this.addmovie.synopsis = item.synopsis;
+      this.addmovie.movieCodeThaiSound = item.movieCodeTh;
+      this.addmovie.movieCodeThaiSub = item.movieCodeEng;
+      this.addmovie.trailerCode = item.trailerCode;
+      this.addmovie.category = item.type;
+      this.addmovie.netflix = item.netflix == 1 ? true : false;
+      this.addmovie.disney = item.disney == 1 ? true : false;
+      this.addmovie.amazon = item.amazon == 1 ? true : false;
+      this.addmovie.hbo = item.hbo == 1 ? true : false;
+      this.addmovie.newArraival = item.new == 1 ? true : false;
+      this.addmovie.expiredDate = item.expireddate;
+      this.editMovieId = item.id;
+      if (this.addmovie.expiredDate == null || this.addmovie.expiredDate == 0) {
+        let today = new Date();
+        let mi = today.getTime() + 1296000000;
+        this.timestamp = mi;
+        let a = new Date(mi);
+        this.addmovie.expiredDate =
+          a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
+        this.labelExpired =
+          "New arrival (expired date " + this.addmovie.expiredDate + ")";
+      } else {
+        let temp = new Date(this.addmovie.expiredDate * 1);
+        let temp2 =
+          temp.getDate() +
+          "/" +
+          (temp.getMonth() + 1) +
+          "/" +
+          temp.getFullYear();
+        this.labelExpired = "New arrival (expired date " + temp2 + ")";
+      }
+
+      this.dialogEditMovie = true;
+    },
+    //เปลี่ยน status online/offline ของหนัง
+    async changeStatus(item, index) {
+      let sta = 0;
+      if (item.status == 0) sta = 1;
+      else sta = 0;
+      let data = {
+        id: item.id,
+        status: sta
+      };
+      let url = this.serverpath + "bo_changestatusmovie.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      if (sta == 0) {
+        this.redNotify(item.nameEng + " status change to offline");
+      } else {
+        this.greenNotify(item.nameEng + " status change to online");
+      }
+      this.data[index].status = sta;
+      //this.loadMovieData();
+    },
+    // เปิด dialog trailer
+    async previewtrailer(item) {
+      this.dialogtrailer = true;
+      this.trailerTitle = item.nameEng;
+      let data = {
+        movieCode: item.trailerCode
+      };
+      let url = this.serverpath + "bo_encodemovie.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.trailerLink = res.data;
+    },
+    //เปิด promotion
+    promotionBTN(
+      posterId,
+      posterEng,
+      posterThai,
+      promotionMobilePic,
+      promotionTabletPic,
+      promotionPCPic,
+      promotion
+    ) {
+      //กดปุ่ม Promotion จากหน้าหลัก ส่ง id, MovieEng, MovieThai
+      this.promotionMovieNameEng = posterEng;
+      this.promotionMovieNameThai = posterThai;
+      this.promotionMovieId = posterId;
+      this.promotionOn = promotion == 1 ? true : false;
+      promotionPCPic == 1
+        ? (this.posterP =
+            this.serverpath +
+            "/promotion/movie/" +
+            this.promotionMovieId +
+            "p.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.posterP = null);
+      promotionTabletPic == 1
+        ? (this.posterT =
+            this.serverpath +
+            "/promotion/movie/" +
+            this.promotionMovieId +
+            "t.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.posterT = null);
+      promotionMobilePic == 1
+        ? (this.posterM =
+            this.serverpath +
+            "/promotion/movie/" +
+            this.promotionMovieId +
+            "m.jpg?" +
+            Math.floor(Math.random() * (999 - 100 + 1) + 100))
+        : (this.posterM = null);
+      this.dialogPromotion = true;
+    },
+    //******จบหน้าหลัก***** */
+
     //****** หน้า add movie */
+    // ปิดปุ่ม add movie
+    closeAddMovieBtn() {
+      this.dialogAddMovie = false;
+    },
+    //ปุ่ม saves หนัง ใน add movie
+    async addMovieBtn() {
+      //Check input
+      if (this.addmovie.titleEn.length == 0) {
+        this.redNotify("Please input Title name (En)");
+        return;
+      }
+      if (this.addmovie.year.length == 0) {
+        this.redNotify("Please input year");
+        return;
+      }
+      if (
+        this.addmovie.durationHour.length == 0 &&
+        this.addmovie.durationMin.length == 0
+      ) {
+        this.redNotify("Please input duration");
+        return;
+      }
+      if (
+        this.addmovie.movieCodeThaiSub == 0 &&
+        this.addmovie.movieCodeThaiSound == 0
+      ) {
+        this.redNotify("Please input Movie Code");
+        return;
+      }
+      if (this.addmovie.category == null) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      } else if (this.addmovie.category.length < 3) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      }
+
+      if (this.addmovie.posterFile == null) {
+        this.redNotify("Please pick poster file");
+        return;
+      }
+      if (this.addmovie.synopsis.length >= 300) {
+        this.redNotify("Maximum synopsis 300 characters");
+        return;
+      }
+      //ปรับรูปแบบของ category
+      let categoryData = "";
+      this.addmovie.category.forEach(x => {
+        categoryData += "[" + x + "],";
+      });
+      categoryData = categoryData.slice(0, -1);
+
+      //Convert expirteddate เป็น microtime
+      if (this.addmovie.newArraival) {
+        let today = new Date();
+        this.timestamp = today.getTime() + 1296000000;
+        // this.timestamp = this.addmovie.expiredDate;
+        // this.timestamp = this.timestamp.split("/");
+        // this.timestamp =
+        //   this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
+        // this.timestamp = new Date(this.timestamp).getTime();
+      }
+
+      let data = {
+        nameEng: this.addmovie.titleEn,
+        nameTh: this.addmovie.titleTh,
+        year: this.addmovie.year,
+        mparate: this.addmovie.mpaRating,
+        durationHour: this.addmovie.durationHour,
+        durationMin: this.addmovie.durationMin,
+        type: categoryData,
+        synopsis: this.addmovie.synopsis,
+        movieCodeEng: this.addmovie.movieCodeThaiSub,
+        movieCodeTh: this.addmovie.movieCodeThaiSound,
+        trailerCode: this.addmovie.trailerCode,
+        netflix: this.addmovie.netflix ? 1 : 0,
+        disney: this.addmovie.disney ? 1 : 0,
+        amazon: this.addmovie.amazon ? 1 : 0,
+        hbo: this.addmovie.hbo ? 1 : 0,
+        new: this.addmovie.newArraival ? 1 : 0,
+        expiredDate: this.addmovie.newArraival ? this.timestamp : 0
+      };
+
+      let url = this.serverpath + "bo_movieadddata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      let movieid = res.data;
+      //ทำการ upload  รูปภาพ
+      let formData = new FormData();
+      formData.append("file", this.addmovie.posterFile);
+      formData.append("id", movieid);
+      url = this.serverpath + "bo_uploadmovieposter.php";
+      let data2 = await axios.post(url, formData);
+      //update cat ในตาราง category
+      for (let catid of this.addmovie.category) {
+        let data3 = {
+          catid: catid
+        };
+        url = this.serverpath + "bo_movieaddcat.php";
+        let res = await axios.post(url, JSON.stringify(data3));
+      }
+      this.greenNotify("Add new movie completely");
+      this.dialogAddMovie = false;
+      this.loadMovieData();
+    },
 
     //******หน้า edit movie */
+    //ปุ่ม OK ยืนยันการลบ
+    async delMovieBtn() {
+      //ลบข้อมูลออกจาก category
+      let data = {
+        cat: this.addmovie.category
+      };
+      let url = this.serverpath + "bo_moviedelcat.php";
+      let res = await axios.post(url, JSON.stringify(data));
+
+      //ลบข้อมูลออกจาก movie และทำการลบรูป
+      data = {
+        id: this.editMovieId
+      };
+      console.log(data);
+      url = this.serverpath + "bo_moviedeldata.php";
+      res = await axios.post(url, JSON.stringify(data));
+      this.movieP = 1;
+      this.loadMovieData();
+      this.deleteMovieAlert = false;
+      this.dialogEditMovie = false;
+    },
+    // ปิดปุ่ม edit movie
+    closeEditMovieBtn() {
+      this.dialogEditMovie = false;
+    },
+    //บันทึกแก้ไขหนัง
+    async saveEditMovieBtn() {
+      //Check input
+      if (this.addmovie.titleEn.length == 0) {
+        this.redNotify("Please input Title name (En)");
+        return;
+      }
+      if (this.addmovie.year.length == 0) {
+        this.redNotify("Please input year");
+        return;
+      }
+      if (
+        this.addmovie.durationHour.length == 0 &&
+        this.addmovie.durationMin.length == 0
+      ) {
+        this.redNotify("Please input duration");
+        return;
+      }
+      if (
+        this.addmovie.movieCodeThaiSub == 0 &&
+        this.addmovie.movieCodeThaiSound == 0
+      ) {
+        this.redNotify("Please input Movie Code");
+        return;
+      }
+      if (this.addmovie.category == null) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      } else if (this.addmovie.category.length < 3) {
+        this.redNotify("Please pick category at least 3");
+        return;
+      }
+
+      if (this.addmovie.posterFile == null) {
+        this.redNotify("Please pick poster file");
+        return;
+      }
+      if (this.addmovie.synopsis.length >= 300) {
+        this.redNotify("Maximum synopsis 300 characters");
+        return;
+      }
+      //ปรับรูปแบบของ category
+      let categoryData = "";
+      this.addmovie.category.forEach(x => {
+        categoryData += "[" + x + "],";
+      });
+      categoryData = categoryData.slice(0, -1);
+      // Convert ExpiredDate to timestamp
+      if (this.addmovie.newArraival == 1) {
+        this.timestamp = this.addmovie.expiredDate + 1296000000;
+        this.timestamp = this.timestamp.split("/");
+        this.timestamp =
+          this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
+        this.timestamp = new Date(this.timestamp).getTime();
+      }
+      let data = {
+        nameEng: this.addmovie.titleEn,
+        nameTh: this.addmovie.titleTh,
+        year: this.addmovie.year,
+        mparate: this.addmovie.mpaRating,
+        durationHour: this.addmovie.durationHour,
+        durationMin: this.addmovie.durationMin,
+        type: categoryData,
+        synopsis: this.addmovie.synopsis,
+        movieCodeEng: this.addmovie.movieCodeThaiSub,
+        movieCodeTh: this.addmovie.movieCodeThaiSound,
+        trailerCode: this.addmovie.trailerCode,
+        netflix: this.addmovie.netflix ? 1 : 0,
+        disney: this.addmovie.disney ? 1 : 0,
+        amazon: this.addmovie.amazon ? 1 : 0,
+        hbo: this.addmovie.hbo ? 1 : 0,
+        new: this.addmovie.newArraival ? 1 : 0,
+        expiredDate: this.addmovie.newArraival ? this.timestamp : 0,
+        id: this.editMovieId
+      };
+
+      let url = this.serverpath + "bo_movieeditdata.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      //Check file delete
+      if (this.addmovie.posterFile != 1) {
+        //ทำการ upload  รูปภาพ
+        let formData = new FormData();
+        formData.append("file", this.addmovie.posterFile);
+        formData.append("id", this.editMovieId);
+        url = this.serverpath + "bo_uploadmovieposter.php";
+        let data2 = await axios.post(url, formData);
+      }
+      this.greenNotify("update movie completely");
+      this.dialogEditMovie = false;
+      this.loadMovieData();
+    },
+    //ปิด alert ลบหนัง
+    closeAlertBtn() {
+      this.deleteMovieAlert = false;
+    },
+    //******จบหน้า edit movie */
 
     //**** alert problem */
+
     //ปิดหน้า Alert Problem
     closeAlertProblemDialog() {
       this.dialogAlertProblem = false;
@@ -1844,551 +2435,8 @@ export default {
     },
     //******จบหน้า Delete Movie */
 
-    calCurrentWeek() {
-      let currentTime = new Date().getTime();
-      let startTime = new Date(this.startDate).getTime();
-      this.currentWeek = Math.floor(
-        (currentTime - startTime) / (1000 * 60 * 60 * 24 * 7)
-      );
-    },
-    //แสดง chart ของหนังเรื่องนั้น
-    async showChart(item) {
-      this.calCurrentWeek();
-      this.xValueView = [];
-      this.yValueView = [];
-      let weekOnProcess = 0;
-      if (20 >= this.currentWeek) {
-        weekOnProcess = this.currentWeek - 1;
-      } else {
-        weekOnProcess = 20;
-      }
-      for (let i = 1; i <= weekOnProcess; i++) {
-        let weekx = this.currentWeek - i;
-        this.xValueView.push(weekx);
-      }
-      this.xValueView.reverse();
+    //***** หน้า promote */
 
-      let data = {
-        id: item.id
-      };
-      let url = this.serverpath + "bo_loadmovieview.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      this.viewData = res.data;
-      this.xValueView.forEach(x => {
-        let yRawData = this.viewData.filter(y => y.week == x);
-
-        if (yRawData.length == 0) {
-          this.yValueView.push(0);
-        } else {
-          this.yValueView.push(Number(yRawData[0].view));
-        }
-      });
-      let titleChart = "Movie view per week";
-      Highcharts.chart("container1", {
-        chart: {
-          type: "line",
-          width: 600,
-          height: 320,
-          backgroundColor: "#edf2fe"
-        },
-        title: {
-          text: titleChart
-        },
-        exporting: { enabled: false },
-        xAxis: {
-          categories: this.xValueView,
-          lineColor: "#00CEFA",
-          lineWidth: 2
-        },
-
-        yAxis: {
-          title: {
-            text: titleChart
-          },
-          lineColor: "#00CEFA",
-          lineWidth: 2,
-          min: 0,
-          softMax: 100
-        },
-        tooltip: {
-          useHTML: true,
-          headerFormat: "",
-          pointFormat: "{point.y:,.f} views"
-        },
-        credits: {
-          enabled: false
-        },
-        plotOptions: {
-          areaspline: {
-            fillOpacity: 0.5
-          },
-          line: {
-            softThreshold: false
-          }
-        },
-        series: [
-          {
-            showInLegend: false,
-            name: "Movie/Series watching",
-            data: this.yValueView
-          }
-        ]
-      });
-      this.titleView = item.nameEng;
-      this.dialogChart = true;
-    },
-    //ปุ่ม OK ยืนยันการลบ
-    async delMovieBtn() {
-      //ลบข้อมูลออกจาก category
-      let data = {
-        cat: this.addmovie.category
-      };
-      let url = this.serverpath + "bo_moviedelcat.php";
-      let res = await axios.post(url, JSON.stringify(data));
-
-      //ลบข้อมูลออกจาก movie และทำการลบรูป
-      data = {
-        id: this.editMovieId
-      };
-      console.log(data);
-      url = this.serverpath + "bo_moviedeldata.php";
-      res = await axios.post(url, JSON.stringify(data));
-      this.movieP = 1;
-      this.loadMovieData();
-      this.deleteMovieAlert = false;
-      this.dialogEditMovie = false;
-    },
-    // ปุ่ม Report
-    async reportBtn(id) {
-      this.problemList = [];
-      this.problemListetc = [];
-      let data = {
-        id: id
-      };
-      let url = this.serverpath + "bo_moviereportproblem.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      this.problemList = res.data;
-      url = this.serverpath + "bo_moviereportproblemetc.php";
-      res = await axios.post(url, JSON.stringify(data));
-      this.problemListetc = res.data;
-      this.dialogReport = true;
-    },
-    //ปุ่มเพิ่ม Movie
-    showAddMovieBtn() {
-      // expired date    this.addmovie.titleTh = "";
-      this.addmovie.titleEn = "";
-      this.addmovie.year = "";
-      this.addmovie.mpaRating = "G";
-      this.addmovie.durationHour = "";
-      this.addmovie.durationMin = "";
-      this.addmovie.posterFile = null;
-      this.addmovie.synopsis = "";
-      this.addmovie.movieCodeThaiSound = "";
-      this.addmovie.movieCodeThaiSub = "";
-      this.addmovie.trailerCode = "";
-      this.addmovie.category = null;
-      this.addmovie.netflix = false;
-      this.addmovie.disney = false;
-      this.addmovie.amazon = false;
-      this.addmovie.hbo = false;
-      this.addmovie.newArraival = false;
-      let today = new Date();
-      let mi = today.getTime() + 1296000000;
-
-      let a = new Date(mi);
-      this.addmovie.expiredDate =
-        a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
-      this.labelExpired =
-        "New arrival (expired date " + this.addmovie.expiredDate + ")";
-      this.addmovie.titleTh = "";
-      this.dialogAddMovie = true;
-    },
-    // ปิดปุ่ม add movie
-    closeAddMovieBtn() {
-      this.dialogAddMovie = false;
-    },
-    // ปิดปุ่ม edit movie
-    closeEditMovieBtn() {
-      this.dialogEditMovie = false;
-    },
-    //ปุ่ม saves หนัง ใน add movie
-    async addMovieBtn() {
-      //Check input
-      if (this.addmovie.titleEn.length == 0) {
-        this.redNotify("Please input Title name (En)");
-        return;
-      }
-      if (this.addmovie.year.length == 0) {
-        this.redNotify("Please input year");
-        return;
-      }
-      if (
-        this.addmovie.durationHour.length == 0 &&
-        this.addmovie.durationMin.length == 0
-      ) {
-        this.redNotify("Please input duration");
-        return;
-      }
-      if (
-        this.addmovie.movieCodeThaiSub == 0 &&
-        this.addmovie.movieCodeThaiSound == 0
-      ) {
-        this.redNotify("Please input Movie Code");
-        return;
-      }
-      if (this.addmovie.category == null) {
-        this.redNotify("Please pick category at least 3");
-        return;
-      } else if (this.addmovie.category.length < 3) {
-        this.redNotify("Please pick category at least 3");
-        return;
-      }
-
-      if (this.addmovie.posterFile == null) {
-        this.redNotify("Please pick poster file");
-        return;
-      }
-      if (this.addmovie.synopsis.length >= 300) {
-        this.redNotify("Maximum synopsis 300 characters");
-        return;
-      }
-      //ปรับรูปแบบของ category
-      let categoryData = "";
-      this.addmovie.category.forEach(x => {
-        categoryData += "[" + x + "],";
-      });
-      categoryData = categoryData.slice(0, -1);
-
-      //Convert expirteddate เป็น microtime
-      if (this.addmovie.newArraival) {
-        let today = new Date();
-        this.timestamp = today.getTime() + 1296000000;
-        // this.timestamp = this.addmovie.expiredDate;
-        // this.timestamp = this.timestamp.split("/");
-        // this.timestamp =
-        //   this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
-        // this.timestamp = new Date(this.timestamp).getTime();
-      }
-
-      let data = {
-        nameEng: this.addmovie.titleEn,
-        nameTh: this.addmovie.titleTh,
-        year: this.addmovie.year,
-        mparate: this.addmovie.mpaRating,
-        durationHour: this.addmovie.durationHour,
-        durationMin: this.addmovie.durationMin,
-        type: categoryData,
-        synopsis: this.addmovie.synopsis,
-        movieCodeEng: this.addmovie.movieCodeThaiSub,
-        movieCodeTh: this.addmovie.movieCodeThaiSound,
-        trailerCode: this.addmovie.trailerCode,
-        netflix: this.addmovie.netflix ? 1 : 0,
-        disney: this.addmovie.disney ? 1 : 0,
-        amazon: this.addmovie.amazon ? 1 : 0,
-        hbo: this.addmovie.hbo ? 1 : 0,
-        new: this.addmovie.newArraival ? 1 : 0,
-        expiredDate: this.addmovie.newArraival ? this.timestamp : 0
-      };
-
-      let url = this.serverpath + "bo_movieadddata.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      let movieid = res.data;
-      //ทำการ upload  รูปภาพ
-      let formData = new FormData();
-      formData.append("file", this.addmovie.posterFile);
-      formData.append("id", movieid);
-      url = this.serverpath + "bo_uploadmovieposter.php";
-      let data2 = await axios.post(url, formData);
-      //update cat ในตาราง category
-      for (let catid of this.addmovie.category) {
-        let data3 = {
-          catid: catid
-        };
-        url = this.serverpath + "bo_movieaddcat.php";
-        let res = await axios.post(url, JSON.stringify(data3));
-      }
-      this.greenNotify("Add new movie completely");
-      this.dialogAddMovie = false;
-      this.loadMovieData();
-    },
-    //เปลี่ยน Category
-    refreshCat() {
-      this.movieP = 1;
-      this.loadMovieData();
-    },
-    //หาจำนวนหน้าทั้งหมดและใส่หน้าใน List
-    async loadpagenumber() {
-      let data = {
-        cat: this.movieCat
-      };
-      let url = this.serverpath + "bo_moviepagenumber.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      this.moviePage = [];
-      for (let i = 1; i <= res.data; i++) {
-        this.moviePage.push(i);
-      }
-    },
-    //โหลดประเภทหนัง
-    async loadcatatmovie() {
-      this.movieCatOpt = [];
-      this.movieCatOptWithoutAll = [];
-      let url = this.serverpath + "bo_loadcategory.php";
-      let res = await axios.get(url);
-      let temp2 = {
-        label: "ทั้งหมด",
-        value: 0
-      };
-      this.movieCatOpt.push(temp2);
-      let dataTemp = res.data;
-      dataTemp = dataTemp.sort((a, b) => a.orderid - b.orderid);
-      dataTemp.forEach(x => {
-        let temp = {
-          label: x.catname,
-          value: x.id
-        };
-        this.movieCatOpt.push(temp);
-        this.movieCatOptWithoutAll.push(temp);
-      });
-      this.movieCat = this.movieCatOpt[0].value;
-    },
-    //แสดงชื่อ Category
-    catName(id) {
-      let temp = this.movieCatOpt.filter(x => x.value == id);
-      return temp[0].label;
-    },
-    //แสดงข้อมูลหนังในหน้าหลัก
-    async loadMovieData() {
-      this.loadpagenumber();
-      //โหลดข้อมูลหนัง
-      while (this.data.length > 0) {
-        this.data.pop();
-      }
-      let data = {
-        catName: this.movieCat,
-        pagedata: this.movieP
-      };
-      //หา total itmes
-      let url2 = this.serverpath + "bo_movietotal.php";
-      let res2 = await axios.post(url2, JSON.stringify(data));
-      this.totalData = res2.data;
-      let url = this.serverpath + "bo_movieshowdata.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      res.data.forEach(x => {
-        //หาวันที่ upload ไป
-
-        let dateCurrent = new Date();
-        let dateCurrentTime = dateCurrent.getTime();
-        let dateDiff = dateCurrentTime - x.timestamp;
-        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
-
-        let movieType = x.type.split(",");
-        movieType = movieType.map(x => {
-          return x.replace("[", "").replace("]", "");
-        });
-        x.type = movieType;
-
-        this.data.push(x);
-      });
-    },
-    // กด search หนัง
-    async searchMovieData() {
-      this.moviePage = [];
-      this.moviePage.push(1);
-      this.movieP = 1;
-
-      //โหลดข้อมูลหนัง
-      this.data = [];
-      let data = {
-        catid: this.movieCat,
-        searchtext: this.searchMovie
-      };
-
-      let url = this.serverpath + "bo_movie_search.php";
-      let res = await axios.post(url, JSON.stringify(data));
-
-      res.data.forEach(x => {
-        //หาวันที่ upload ไป
-
-        let dateCurrent = new Date();
-        let dateCurrentTime = dateCurrent.getTime();
-        let dateDiff = dateCurrentTime - x.timestamp;
-        x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
-
-        let movieType = x.type.split(",");
-        movieType = movieType.map(x => {
-          return x.replace("[", "").replace("]", "");
-        });
-        x.type = movieType;
-
-        this.data.push(x);
-      });
-    },
-    // ดูรูปแบบของ search
-    searchFunction() {
-      if (this.searchMovie.length == 0) {
-        this.loadMovieData();
-      } else {
-        this.searchMovieData();
-      }
-    },
-    // กด clear search
-    clearSearch() {
-      this.loadMovieData();
-    },
-    //เปิดหน้าแก้ไขหนัง
-    editMovieBtn(item) {
-      this.addmovie.titleTh = item.nameTh;
-      this.addmovie.titleEn = item.nameEng;
-      this.addmovie.year = item.year;
-      this.addmovie.mpaRating = item.mparate;
-      this.addmovie.durationHour = item.durationHour;
-      this.addmovie.durationMin = item.durationMin;
-      this.addmovie.posterFile = item.poster;
-      this.addmovie.synopsis = item.synopsis;
-      this.addmovie.movieCodeThaiSound = item.movieCodeTh;
-      this.addmovie.movieCodeThaiSub = item.movieCodeEng;
-      this.addmovie.trailerCode = item.trailerCode;
-      this.addmovie.category = item.type;
-      this.addmovie.netflix = item.netflix == 1 ? true : false;
-      this.addmovie.disney = item.disney == 1 ? true : false;
-      this.addmovie.amazon = item.amazon == 1 ? true : false;
-      this.addmovie.hbo = item.hbo == 1 ? true : false;
-      this.addmovie.newArraival = item.new == 1 ? true : false;
-      this.addmovie.expiredDate = item.expireddate;
-      this.editMovieId = item.id;
-      if (this.addmovie.expiredDate == null || this.addmovie.expiredDate == 0) {
-        let today = new Date();
-        let mi = today.getTime() + 1296000000;
-        this.timestamp = mi;
-        let a = new Date(mi);
-        this.addmovie.expiredDate =
-          a.getDate() + "/" + (a.getMonth() + 1) + "/" + a.getFullYear();
-        this.labelExpired =
-          "New arrival (expired date " + this.addmovie.expiredDate + ")";
-      } else {
-        let temp = new Date(this.addmovie.expiredDate * 1);
-        let temp2 =
-          temp.getDate() +
-          "/" +
-          (temp.getMonth() + 1) +
-          "/" +
-          temp.getFullYear();
-        this.labelExpired = "New arrival (expired date " + temp2 + ")";
-      }
-
-      this.dialogEditMovie = true;
-    },
-    //บันทึกแก้ไขหนัง
-    async saveEditMovieBtn() {
-      //Check input
-      if (this.addmovie.titleEn.length == 0) {
-        this.redNotify("Please input Title name (En)");
-        return;
-      }
-      if (this.addmovie.year.length == 0) {
-        this.redNotify("Please input year");
-        return;
-      }
-      if (
-        this.addmovie.durationHour.length == 0 &&
-        this.addmovie.durationMin.length == 0
-      ) {
-        this.redNotify("Please input duration");
-        return;
-      }
-      if (
-        this.addmovie.movieCodeThaiSub == 0 &&
-        this.addmovie.movieCodeThaiSound == 0
-      ) {
-        this.redNotify("Please input Movie Code");
-        return;
-      }
-      if (this.addmovie.category == null) {
-        this.redNotify("Please pick category at least 3");
-        return;
-      } else if (this.addmovie.category.length < 3) {
-        this.redNotify("Please pick category at least 3");
-        return;
-      }
-
-      if (this.addmovie.posterFile == null) {
-        this.redNotify("Please pick poster file");
-        return;
-      }
-      if (this.addmovie.synopsis.length >= 300) {
-        this.redNotify("Maximum synopsis 300 characters");
-        return;
-      }
-      //ปรับรูปแบบของ category
-      let categoryData = "";
-      this.addmovie.category.forEach(x => {
-        categoryData += "[" + x + "],";
-      });
-      categoryData = categoryData.slice(0, -1);
-      // Convert ExpiredDate to timestamp
-      if (this.addmovie.newArraival == 1) {
-        this.timestamp = this.addmovie.expiredDate + 1296000000;
-        this.timestamp = this.timestamp.split("/");
-        this.timestamp =
-          this.timestamp[3] + "-" + this.timestamp[2] + "-" + this.timestamp[1];
-        this.timestamp = new Date(this.timestamp).getTime();
-      }
-      let data = {
-        nameEng: this.addmovie.titleEn,
-        nameTh: this.addmovie.titleTh,
-        year: this.addmovie.year,
-        mparate: this.addmovie.mpaRating,
-        durationHour: this.addmovie.durationHour,
-        durationMin: this.addmovie.durationMin,
-        type: categoryData,
-        synopsis: this.addmovie.synopsis,
-        movieCodeEng: this.addmovie.movieCodeThaiSub,
-        movieCodeTh: this.addmovie.movieCodeThaiSound,
-        trailerCode: this.addmovie.trailerCode,
-        netflix: this.addmovie.netflix ? 1 : 0,
-        disney: this.addmovie.disney ? 1 : 0,
-        amazon: this.addmovie.amazon ? 1 : 0,
-        hbo: this.addmovie.hbo ? 1 : 0,
-        new: this.addmovie.newArraival ? 1 : 0,
-        expiredDate: this.addmovie.newArraival ? this.timestamp : 0,
-        id: this.editMovieId
-      };
-
-      let url = this.serverpath + "bo_movieeditdata.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      //Check file delete
-      if (this.addmovie.posterFile != 1) {
-        //ทำการ upload  รูปภาพ
-        let formData = new FormData();
-        formData.append("file", this.addmovie.posterFile);
-        formData.append("id", this.editMovieId);
-        url = this.serverpath + "bo_uploadmovieposter.php";
-        let data2 = await axios.post(url, formData);
-      }
-      this.greenNotify("update movie completely");
-      this.dialogEditMovie = false;
-      this.loadMovieData();
-    },
-    //เปลี่ยน status online/offline ของหนัง
-    async changeStatus(item, index) {
-      let sta = 0;
-      if (item.status == 0) sta = 1;
-      else sta = 0;
-      let data = {
-        id: item.id,
-        status: sta
-      };
-      let url = this.serverpath + "bo_changestatusmovie.php";
-      let res = await axios.post(url, JSON.stringify(data));
-
-      if (sta == 0) {
-        this.redNotify(item.nameEng + " status change to offline");
-      } else {
-        this.greenNotify(item.nameEng + " status change to online");
-      }
-      this.data[index].status = sta;
-      //this.loadMovieData();
-    },
     //ลบ poster file
     async deletePosterFileBtn() {
       let data = {
@@ -2400,98 +2448,6 @@ export default {
       this.addmovie.posterFile = 0;
       this.loadMovieData();
       this.greenNotify("deleted poster complete");
-    },
-
-    //เปิดหน้า preview movie
-    async previewMovie(item) {
-      this.previewTitleEn = item.nameEng;
-      this.previewMovieThaiSoundCode = item.movieCodeTh;
-      if (item.movieCodeTh != "") {
-        let data = {
-          movieCode: item.movieCodeTh
-        };
-        let url = this.serverpath + "bo_encodemovie.php";
-        let res = await axios.post(url, JSON.stringify(data));
-        this.previewThaiSoundLink = res.data;
-      }
-      this.previewMovieThaiSubCode = item.movieCodeEng;
-      if (item.movieCodeEng != "") {
-        let data = {
-          movieCode: item.movieCodeEng
-        };
-        let url = this.serverpath + "bo_encodemovie.php";
-        let res = await axios.post(url, JSON.stringify(data));
-        this.previewThaiSubLink = res.data;
-        this.previewiFramelink = this.previewThaiSubLink;
-      }
-      if (item.movieCodeTh != "") {
-        this.previewiFramelink = this.previewThaiSoundLink;
-        this.indexPoster = 1;
-      } else {
-        this.previewiFramelink = this.previewThaiSubLink;
-        this.indexPoster = 2;
-      }
-      this.dialogPreview = true;
-    },
-    previewThaiSoundBtn() {
-      this.previewiFramelink = this.previewThaiSoundLink;
-      this.indexPoster = 1;
-    },
-    previewThaiSubBtn() {
-      this.previewiFramelink = this.previewThaiSubLink;
-      this.indexPoster = 2;
-    },
-    // เปิด dialog trailer
-    async previewtrailer(item) {
-      this.dialogtrailer = true;
-      this.trailerTitle = item.nameEng;
-      let data = {
-        movieCode: item.trailerCode
-      };
-      let url = this.serverpath + "bo_encodemovie.php";
-      let res = await axios.post(url, JSON.stringify(data));
-      this.trailerLink = res.data;
-    },
-    //เปิด promotion
-    promotionBTN(
-      posterId,
-      posterEng,
-      posterThai,
-      promotionMobilePic,
-      promotionTabletPic,
-      promotionPCPic,
-      promotion
-    ) {
-      //กดปุ่ม Promotion จากหน้าหลัก ส่ง id, MovieEng, MovieThai
-      this.promotionMovieNameEng = posterEng;
-      this.promotionMovieNameThai = posterThai;
-      this.promotionMovieId = posterId;
-      this.promotionOn = promotion == 1 ? true : false;
-      promotionPCPic == 1
-        ? (this.posterP =
-            this.serverpath +
-            "/promotion/movie/" +
-            this.promotionMovieId +
-            "p.jpg?" +
-            Math.floor(Math.random() * (999 - 100 + 1) + 100))
-        : (this.posterP = null);
-      promotionTabletPic == 1
-        ? (this.posterT =
-            this.serverpath +
-            "/promotion/movie/" +
-            this.promotionMovieId +
-            "t.jpg?" +
-            Math.floor(Math.random() * (999 - 100 + 1) + 100))
-        : (this.posterT = null);
-      promotionMobilePic == 1
-        ? (this.posterM =
-            this.serverpath +
-            "/promotion/movie/" +
-            this.promotionMovieId +
-            "m.jpg?" +
-            Math.floor(Math.random() * (999 - 100 + 1) + 100))
-        : (this.posterM = null);
-      this.dialogPromotion = true;
     },
     //อัพโหลด  promotion poster mobile file
     async uploadFilePosterMobile() {
@@ -2589,10 +2545,51 @@ export default {
       const url = this.serverpath + "bo_updatePromotion.php";
       let res = await axios.post(url, temp);
     },
-    //ปิด alert ลบหนัง
-    closeAlertBtn() {
-      this.deleteMovieAlert = false;
+
+    //*****จบหน้า promote */
+
+    //*****หน้าแสดงผล movie */
+    //เปิดหน้า preview movie
+    async previewMovie(item) {
+      this.previewTitleEn = item.nameEng;
+      this.previewMovieThaiSoundCode = item.movieCodeTh;
+      if (item.movieCodeTh != "") {
+        let data = {
+          movieCode: item.movieCodeTh
+        };
+        let url = this.serverpath + "bo_encodemovie.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        this.previewThaiSoundLink = res.data;
+      }
+      this.previewMovieThaiSubCode = item.movieCodeEng;
+      if (item.movieCodeEng != "") {
+        let data = {
+          movieCode: item.movieCodeEng
+        };
+        let url = this.serverpath + "bo_encodemovie.php";
+        let res = await axios.post(url, JSON.stringify(data));
+        this.previewThaiSubLink = res.data;
+        this.previewiFramelink = this.previewThaiSubLink;
+      }
+      if (item.movieCodeTh != "") {
+        this.previewiFramelink = this.previewThaiSoundLink;
+        this.indexPoster = 1;
+      } else {
+        this.previewiFramelink = this.previewThaiSubLink;
+        this.indexPoster = 2;
+      }
+      this.dialogPreview = true;
+    },
+    previewThaiSoundBtn() {
+      this.previewiFramelink = this.previewThaiSoundLink;
+      this.indexPoster = 1;
+    },
+    previewThaiSubBtn() {
+      this.previewiFramelink = this.previewThaiSubLink;
+      this.indexPoster = 2;
     }
+
+    //*****จบหน้าแสดงผล movie */
   },
   computed: {
     isValid() {
