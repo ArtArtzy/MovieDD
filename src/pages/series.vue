@@ -4,7 +4,7 @@
       <!-- Main page -->
       <div class="boxWhite ">
         <!-- header  -->
-        <div class="row items-center q-pt-lg q-pb-md">
+        <div class="row items-center q-pt-lg q-pb-md font14">
           <div class="q-pl-xl">
             <q-input
               outlined
@@ -29,7 +29,7 @@
               @click="searchFunction()"
             />
           </div>
-          <div class="col-1" align="right">
+          <div class="">
             Category
           </div>
           <div class="q-pl-sm">
@@ -45,7 +45,7 @@
             >
             </q-select>
           </div>
-          <div class="col-1" align="right">
+          <div class="">
             Page
           </div>
           <div class="q-pl-sm">
@@ -59,7 +59,11 @@
             >
             </q-select>
           </div>
-          <!-- <div class="col" align="left">of {{ moviePage.length }}</div> -->
+          <!-- item -->
+          <div class="col q-pl-md">
+            <div class="">item in this page: {{ data.length }}</div>
+            <div class="">total item: {{ totalData }}</div>
+          </div>
           <div class="col-2" align="right">
             <q-btn
               outline
@@ -1034,6 +1038,7 @@ export default {
   data() {
     return {
       //หน้าหลัก
+      totalData: 0, //จำนวน series ทั้งหมด
       searchMovie: "",
       movieCat: 0, //ประเภทหนังที่ filter
       movieCatOpt: [], //รายชื่อประเภทของหนัง
@@ -1266,7 +1271,9 @@ export default {
         catName: this.movieCat,
         pagedata: this.movieP
       };
-
+      let url2 = this.serverpath + "bo_seriestotal.php";
+      let res2 = await axios.post(url2, JSON.stringify(data));
+      this.totalData = res2.data;
       let url = this.serverpath + "bo_seriesshowdata.php";
       let res = await axios.post(url, JSON.stringify(data));
       res.data.forEach(x => {

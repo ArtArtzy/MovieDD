@@ -1076,6 +1076,7 @@ export default {
       let url = this.serverpath + "bo_deleteseason.php";
       let res = await axios.post(url, JSON.stringify(data));
       this.greenNotify("Delete completely");
+      this.loadTotalEp();
       this.loadSeason();
       this.closeDelSeason();
     },
