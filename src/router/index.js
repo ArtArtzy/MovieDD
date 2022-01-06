@@ -35,7 +35,9 @@ Vue.mixin({
       // serverpath: "https://www.yaksaconcept.com/netgigapi/",
       serverpath: "http://localhost/moviedd/",
       // serverpath: "http://192.168.2.147/moviedd/",
-      startDate: "09-06-2021"
+      startDate: "09-06-2021",
+      version: "1.00.00",
+      updatedDate: "6/1/2022"
     };
   },
   methods: {

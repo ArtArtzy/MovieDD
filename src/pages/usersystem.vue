@@ -58,7 +58,7 @@
             <div class="col-1" style="width:80px;">Edit</div>
           </div>
           <hr />
-          <div class="contextDiv">
+          <div class="contextDiv ">
             <div
               class="row q-px-sm"
               v-for="(item, index) in data"
@@ -147,6 +147,9 @@
                 <u>Edit</u>
               </div>
             </div>
+          </div>
+          <div class="versionNote">
+            version: {{ version }} :: updated date: {{ updatedDate }}
           </div>
         </div>
       </div>
@@ -744,7 +747,7 @@ export default {
 
 <style lang="scss" scoped>
 .contextDiv {
-  height: calc(100vh - 250px);
+  height: calc(100vh - 300px);
   overflow-y: auto;
 }
 .bgmain {
@@ -805,5 +808,10 @@ export default {
   border-radius: 20px;
   width: 460px;
   height: 235px;
+}
+.versionNote {
+  font-size: 14px;
+  text-align: right;
+  color: #313131;
 }
 </style>
