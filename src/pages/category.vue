@@ -8,6 +8,17 @@
           <div class="col-2" align="center">
             <q-btn
               rounded
+              outlined
+              class="cursor-pointer"
+              style="border:2px solid #FFC24C;font-size:18px;width:160px"
+              label="Update Data"
+              no-caps=""
+              @click="updateDataBtn()"
+            />
+          </div>
+          <div class="col-2" align="center">
+            <q-btn
+              rounded
               class="cursor-pointer"
               style="background-color:#FFC24C;font-size:18px;width:160px"
               label="+ Category"
@@ -337,6 +348,12 @@ export default {
       let res = await axios.get(url);
       this.data = res.data;
       this.data.sort((a, b) => a.orderid - b.orderid);
+    },
+    async updateDataBtn() {
+      let url = this.serverpath + "bo_updatecategory.php";
+      let res = await axios.get(url);
+      this.greenNotify("update movie/series data completely");
+      this.loadData();
     }
   },
   mounted() {

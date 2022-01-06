@@ -2078,14 +2078,14 @@ export default {
       formData.append("id", movieid);
       url = this.serverpath + "bo_uploadmovieposter.php";
       let data2 = await axios.post(url, formData);
-      //update cat ในตาราง category
-      for (let catid of this.addmovie.category) {
-        let data3 = {
-          catid: catid
-        };
-        url = this.serverpath + "bo_movieaddcat.php";
-        let res = await axios.post(url, JSON.stringify(data3));
-      }
+      // //update cat ในตาราง category
+      // for (let catid of this.addmovie.category) {
+      //   let data3 = {
+      //     catid: catid
+      //   };
+      //   url = this.serverpath + "bo_movieaddcat.php";
+      //   let res = await axios.post(url, JSON.stringify(data3));
+      // }
       this.greenNotify("Add new movie completely");
       this.dialogAddMovie = false;
       this.loadMovieData();
@@ -2098,8 +2098,8 @@ export default {
       let data = {
         cat: this.addmovie.category
       };
-      let url = this.serverpath + "bo_moviedelcat.php";
-      let res = await axios.post(url, JSON.stringify(data));
+      // let url = this.serverpath + "bo_moviedelcat.php";
+      // let res = await axios.post(url, JSON.stringify(data));
       //ลบข้อมูลออกจาก movie และทำการลบรูป
       data = {
         id: this.editMovieId

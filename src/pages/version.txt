@@ -1,0 +1,3 @@
+***version 1.00.01***
+- เพิ่มปุ่ม update data ในหน้า category เพื่อหาจำนวน movie / series
+- ยกเลิกการ update ข้อมูลเกี่ยวกับ category ในหน้า add/update/delete movie/series
