@@ -147,7 +147,7 @@
                 <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
                   {{ item.synopsis }}{{ item.trailer }}
                 </div>
-                <div v-show="item.episode != null">
+                <div>
                   <div class="row">
                     <div v-for="(item2, index2) in item.episode" :key="index2">
                       <div class="epBox q-mt-sm">
@@ -1286,6 +1286,9 @@ export default {
         x.dateUpload = Math.floor(dateDiff / 1000 / 60 / 60 / 24);
 
         //จัดการเรื่อง episode
+        if (x.episode == "") {
+          x.episode = null;
+        }
         if (x.episode != null) {
           x.episode = x.episode.split(",");
         }
