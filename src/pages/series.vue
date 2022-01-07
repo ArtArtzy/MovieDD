@@ -89,8 +89,15 @@
         <!-- end header  -->
         <!-- series Box  -->
         <q-scroll-area class="" style="height:88vh; max-width: 90vw;">
-          <div v-for="(item, index) in data" :key="index">
+          <div v-for="(item, index) in data" :key="index" align="center">
             <div class="seriesBox row ">
+              <div v-show="item.new == 1" class="newarrivaldiv">
+                <img
+                  src="../../public/images/new.svg"
+                  style="width:88px; height:75px"
+                  alt=""
+                />
+              </div>
               <div class="q-ma-md" v-if="item.poster == 1">
                 <img
                   class="shadow-4"
@@ -107,7 +114,7 @@
                   style="width:100px;"
                 />
               </div>
-              <div class="col q-pt-md">
+              <div class="col q-pt-md" align="left">
                 <div class="row" style="line-height:30px;">
                   <div style="font-size:24px;">
                     {{ item.nameEng }}
@@ -144,7 +151,11 @@
                     </div>
                   </div>
                 </div>
-                <div class="q-pt-sm-" style="max-width:860px;font-size:14px;">
+                <div
+                  class=""
+                  style="max-width:860px;font-size:14px;"
+                  align="left"
+                >
                   {{ item.synopsis }}{{ item.trailer }}
                 </div>
                 <div>
@@ -158,17 +169,16 @@
                 </div>
               </div>
 
-              <div class="col-1">
-                <div class="row q-pt-md">
-                  <div
-                    class="btnMovie bg-primary  cursor-pointer"
-                    @click="editSeriesBtn(item)"
-                    align="center"
-                  >
-                    <q-icon class="fas fa-cog" />
-                    edit
-                  </div>
+              <div class="col-1 absolute-right q-ma-sm">
+                <div
+                  class="btnMovie bg-primary"
+                  @click="editSeriesBtn(item)"
+                  align="center"
+                >
+                  <q-icon class="fas fa-cog" />
+                  edit
                 </div>
+
                 <div
                   class="btnMovie bg-primary"
                   align="center"
@@ -186,14 +196,7 @@
                   <q-icon class="fas fa-play" />
                   trailer
                 </div>
-                <!-- <div
-                  v-show="item.trailerCode.length == 0"
-                  class="btnMovie bg-grey"
-                  align="center"
-                >
-                  <q-icon class="fas fa-play" />
-                  trailer
-                </div> -->
+
                 <div
                   v-show="item.promotion == 1"
                   class="btnMovie bg-positive"
@@ -1698,7 +1701,7 @@ export default {
       };
       let url = this.serverpath + "bo_seriesdeleted.php";
       let res = await axios.post(url, JSON.stringify(data));
-      console.log(res.data);
+
       this.deleteList.deletedListRaw = res.data;
       this.filterDeletedMovie();
     },
@@ -1715,6 +1718,15 @@ export default {
           x => x.status == 0
         );
       }
+    },
+    async updateDeletedMovie(value, id) {
+      let data = {
+        value: value,
+        id: id
+      };
+      let url = this.serverpath + "bo_updatedeletedseries.php";
+      let res = await axios.post(url, JSON.stringify(data));
+      this.loadDeletedData();
     }
   },
   mounted() {
@@ -1737,11 +1749,12 @@ export default {
   background-color: rgba($color: #000000, $alpha: 0.6);
 }
 .seriesBox {
-  margin: auto;
+  position: relative;
   background-color: #c6d6ff;
   border-radius: 5px;
   max-width: 1220px;
-  width: calc(100vw - 380px);
+  width: 95%;
+  // width: calc(100vw - 380px);
   height: 200px;
 }
 .btnMovie {
@@ -1839,5 +1852,9 @@ export default {
 .contentDelDiv {
   height: 350px;
   overflow-y: auto;
+}
+.newarrivaldiv {
+  position: absolute;
+  z-index: 100;
 }
 </style>

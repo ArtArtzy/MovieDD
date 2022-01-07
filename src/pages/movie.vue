@@ -173,11 +173,7 @@
                   <div class="q-pr-md" v-show="item.nameTh">
                     {{ item.nameTh }}
                   </div>
-                  <div
-                    style="font-size:14px;color:#2F7EF5"
-                    class="cursor-pointer"
-                    @click="showChart(item)"
-                  >
+                  <div style="font-size:14px;color:#2F7EF5" class="">
                     <u>{{ item.dateUpload }} days | {{ item.view }} views</u>
                   </div>
                 </div>

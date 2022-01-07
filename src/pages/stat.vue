@@ -1,7 +1,8 @@
 <template>
   <div style="max-width:1600px; width:100%; margin:auto;" class="bgmain">
     <div class="contentDiv">
-      <div class="boxWhite ">
+      <!-- stat and chart  -->
+      <div class="boxWhite " v-if="false">
         <div class="q-mt-lg q-ml-lg">
           <div
             class="q-pb-md"
@@ -251,6 +252,12 @@
             </div>
             <div class="q-py-md"></div>
           </div>
+        </div>
+      </div>
+      <!-- underconstruction -->
+      <div v-else>
+        <div class="bigCow">
+          <img src="../../public/images/bigcow.png" alt="" />
         </div>
       </div>
     </div>
@@ -609,5 +616,10 @@ export default {
 .scrollArea {
   height: calc(100vh - 220px);
   overflow-y: auto;
+}
+.bigCow {
+  position: absolute;
+  bottom: 0px;
+  left: -60px;
 }
 </style>

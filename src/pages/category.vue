@@ -5,7 +5,7 @@
         <!-- เพิ่มหมวด -->
         <div class="row items-center q-pt-lg">
           <div class="col"></div>
-          <div class="col-2" align="center">
+          <!-- <div class="col-2" align="center" >
             <q-btn
               rounded
               outlined
@@ -15,7 +15,7 @@
               no-caps=""
               @click="updateDataBtn()"
             />
-          </div>
+          </div> -->
           <div class="col-2" align="center">
             <q-btn
               rounded
@@ -352,12 +352,13 @@ export default {
     async updateDataBtn() {
       let url = this.serverpath + "bo_updatecategory.php";
       let res = await axios.get(url);
-      this.greenNotify("update movie/series data completely");
+      // this.greenNotify("update movie/series data completely");
       this.loadData();
     }
   },
   mounted() {
     this.loadData();
+    this.updateDataBtn();
     this.checkMenuAccess(1);
   }
 };

@@ -203,6 +203,8 @@ export default {
         this.menu = 2;
       } else if (this.$route.name == "series") {
         this.menu = 3;
+      } else if (this.$route.name == "episode") {
+        this.menu = 3;
       } else if (this.$route.name == "ads") {
         this.menu = 4;
       } else if (this.$route.name == "stat") {
